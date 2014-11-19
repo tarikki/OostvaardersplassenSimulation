@@ -104,4 +104,20 @@ public class MapLoader {
         }
         return color;
     }
+
+    public int getHeight() {
+        return height;
+    }
+
+
+
+    public int getWidth() {
+        return width;
+    }
+
+    public byte getValue(int x, int y){
+        return map[x][y];
+    }
+
+
 }
