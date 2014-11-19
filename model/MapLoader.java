@@ -9,7 +9,7 @@ import java.io.IOException;
  * Created by extradikke on 19-11-14.
  */
 public class MapLoader {
-    private String mapLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/basicmap.jpg";
+    private String mapLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/basicmap.jpg";
     private int height;
     private int width;
     private static byte[][] map;
@@ -50,11 +50,11 @@ public class MapLoader {
 
     private void scanImage() {
 
-        for (int h = 0; h < height; h++) {
-            for (int w = 0; w < width; w++) {
+        for (int h = 0; h < width; h++) {
+            for (int w = 0; w < height; w++) {
                 int pixel = image.getRGB(w, h);
                 String color = recognizeColorString(pixel);
-                map[w][h] = recognizeColorByte(pixel);
+                map[h][w] = recognizeColorByte(pixel);
                 System.out.print(color);
             }
             System.out.println();

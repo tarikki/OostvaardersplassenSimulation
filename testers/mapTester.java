@@ -9,9 +9,10 @@ public class mapTester {
 
     public static void main(String[] args) {
         MapLoader mapLoader = new MapLoader();
-        for (int i = 0; i < mapLoader.getWidth(); i++) {
-            for (int j = 0; j < mapLoader.getHeight(); j++) {
-                System.out.print(mapLoader.getValue(i, j));
+        for (int j = 0; j < mapLoader.getHeight(); j++) {
+            for (int i = 0; i < mapLoader.getWidth(); i++) {
+
+                System.out.print(mapLoader.getValue(j, i));
             }
             System.out.println();
         }
