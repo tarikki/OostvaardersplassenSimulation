@@ -9,10 +9,13 @@ import java.io.IOException;
  * Created by extradikke on 19-11-14.
  */
 public class MapLoader {
-    private String mapLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/basicmap.jpg";
+    private String mapLocation = "C:\\Workspace BU\\Simulation-project\\src\\basicmap.jpg";
     private int height;
     private int width;
     private static byte[][] map;
+
+
+
     private BufferedImage image;
 
     public enum ColorCode {
@@ -117,6 +120,10 @@ public class MapLoader {
 
     public byte getValue(int x, int y){
         return map[x][y];
+    }
+
+    public BufferedImage getImage() {
+        return image;
     }
 
 
