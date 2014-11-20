@@ -1,6 +1,6 @@
 package view;
 
-import model.MapLoader;
+import model.MapHandler;
 import util.ButtonUtils;
 
 import javax.swing.*;
@@ -23,7 +23,7 @@ public class MainandGUI {
     private JMenuBar menuBar;
     private GUI.MapHolder mapHolder;
     private JPanel buttonPanel;
-    private MapLoader mapLoader;
+    private MapHandler mapLoader;
 
 
     // Constructor for creating the GUI
@@ -72,8 +72,8 @@ public class MainandGUI {
             this.setLayout(new BorderLayout());
 
 
-            /// Initialize mapLoader and MapHolder
-            mapLoader = new MapLoader();
+            /// Initialize mapHandler and MapHolder
+            mapLoader = new MapHandler();
             mapHolder = new MapHolder(mapLoader);
             mapHolder.setVisible(true);
 
@@ -206,7 +206,7 @@ public class MainandGUI {
 
 
 
-            public MapHolder(MapLoader mapLoader) {
+            public MapHolder(MapHandler mapLoader) {
             this.setLayout(new BorderLayout());
 
                 /// Set map as the background

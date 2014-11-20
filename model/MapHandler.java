@@ -8,12 +8,12 @@ import java.io.IOException;
 /**
  * Created by extradikke on 19-11-14.
  */
-public class MapLoader {
-    private String mapLocation = "C:\\Workspace BU\\Simulation-project\\src\\basicmap.jpg";
-    private int height;
-    private int width;
+public class MapHandler {
+    private String mapLocation = "/basicmap.jpg";
+    private static int height;
+    private static int width;
     private static byte[][] map;
-
+    private static int[][] animalMap;
 
 
     private BufferedImage image;
@@ -34,16 +34,17 @@ public class MapLoader {
         }
     }
 
-    public MapLoader() {
+    public MapHandler() {
         loadImage();
         map = new byte[width][height];
+        animalMap = new int[width][height];
         scanImage();
 
     }
 
     private void loadImage() {
         try {
-            this.image = ImageIO.read(new File(mapLocation));
+            this.image = ImageIO.read((this.getClass().getResourceAsStream(mapLocation)));
             this.height = image.getHeight();
             this.width = image.getWidth();
         } catch (IOException e) {
@@ -58,19 +59,12 @@ public class MapLoader {
                 int pixel = image.getRGB(w, h);
                 String color = recognizeColorString(pixel);
                 map[h][w] = recognizeColorByte(pixel);
-                System.out.print(color);
+//                System.out.print(color);
             }
-            System.out.println();
+//            System.out.println();
         }
     }
 
-    public void printPixelARGB(int pixel) {
-        int alpha = (pixel >> 24) & 0xff;
-        int red = (pixel >> 16) & 0xff;
-        int green = (pixel >> 8) & 0xff;
-        int blue = (pixel) & 0xff;
-        System.out.println("argb: " + alpha + ", " + red + ", " + green + ", " + blue);
-    }
 
     private String recognizeColorString(int pixel) {
         String color = "0";
@@ -108,17 +102,15 @@ public class MapLoader {
         return color;
     }
 
-    public int getHeight() {
+    public static int getHeight() {
         return height;
     }
 
-
-
-    public int getWidth() {
+    public static int getWidth() {
         return width;
     }
 
-    public byte getValue(int x, int y){
+    public static byte getValue(int x, int y) {
         return map[x][y];
     }
 
@@ -126,5 +118,28 @@ public class MapLoader {
         return image;
     }
 
+    public static void increaseFoodValue(int x, int y) {
+        map[x][y]++;
+    }
+
+    public static void decreaseFoodValue(int x, int y) {
+        map[x][y]--;
+    }
+
+    public static boolean putAnimal(int x, int y, int animalID) {
+        if (map[x][y] > -1 || map[x][y] == ColorCode.BROWN.getValue()) {
+            animalMap[x][y] = animalID;
+            return true;
+        } else {
+            return false;
+        }
+
+
+    }
+
+    public void moveAnimal(int newX, int newY, int oldX, int oldY, int animalID) {
+
+
+    }
 
 }

@@ -1,6 +1,6 @@
 package testers;
 
-import model.MapLoader;
+import model.MapHandler;
 
 /**
  * Created by extradikke on 19-11-14.
@@ -8,11 +8,12 @@ import model.MapLoader;
 public class mapTester {
 
     public static void main(String[] args) {
-        MapLoader mapLoader = new MapLoader();
-        for (int j = 0; j < mapLoader.getHeight(); j++) {
-            for (int i = 0; i < mapLoader.getWidth(); i++) {
+        MapHandler mapHandler = new MapHandler();
+        mapHandler.increaseFoodValue(10, 10);
+        for (int j = 0; j < mapHandler.getHeight(); j++) {
+            for (int i = 0; i < mapHandler.getWidth(); i++) {
 
-                System.out.print(mapLoader.getValue(j, i));
+                System.out.print(mapHandler.getValue(j, i));
             }
             System.out.println();
         }
