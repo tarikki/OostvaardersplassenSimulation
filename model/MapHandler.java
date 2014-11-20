@@ -2,7 +2,6 @@ package model;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -17,6 +16,7 @@ public class MapHandler {
 
 
     private BufferedImage image;
+
 
     public enum ColorCode {
         GREEN((byte) 10),   //grass
@@ -34,15 +34,19 @@ public class MapHandler {
         }
     }
 
+
+
     public MapHandler() {
         loadImage();
         map = new byte[width][height];
 
         scanImage();
 
+
+
     }
 
-    private void loadImage() {
+    public void loadImage() {
         try {
             this.image = ImageIO.read((this.getClass().getResourceAsStream(mapLocation)));
             this.height = image.getHeight();
@@ -116,6 +120,7 @@ public class MapHandler {
 
     public BufferedImage getImage() {
         return image;
+
     }
 
     public static void increaseFoodValue(int x, int y) {

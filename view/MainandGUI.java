@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 /**
  * Created by Pepe on 19.11.2014.
@@ -217,7 +218,8 @@ public class MainandGUI {
         class MapHolder extends JPanel {
             private BufferedImage backgroundImage;
             private JLabel bgImageHolder;
-
+            private ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
+            private Graphics2D g2d;
 
             public MapHolder(MapHandler mapLoader) {
                 this.setLayout(new BorderLayout());
@@ -226,23 +228,49 @@ public class MainandGUI {
                 backgroundImage = mapLoader.getImage();
                 bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
                 add(bgImageHolder, BorderLayout.CENTER);
+                animalstoRectangles();
                 drawAnimals();
+                //clearAnimals();
+
 
             }
 
-
-            public void drawAnimals() {
-                Graphics2D g2d = backgroundImage.createGraphics();
-                g2d.setColor(Color.RED);
-                System.out.println(preserve.getNumberOfAnimals()); /// Just to test for NullPointerException
+            public void animalstoRectangles() {
                 for (int i = 0; i < preserve.getNumberOfAnimals(); i++) {
 
-                    // Animal 1
-                    g2d.fillRect(preserve.getAnimalX(i), preserve.getAnimalY(i), 5, 5); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
+
+                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 5, 5)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
 
 
                 }
-                g2d.dispose(); /// Remove graphics after drawing
+            }
+
+            public void drawAnimals() {
+                g2d = (Graphics2D) backgroundImage.getGraphics();
+
+                g2d.setColor(Color.RED);
+                System.out.println(preserve.getNumberOfAnimals()); /// Just to test for NullPointerException
+
+
+                for (Rectangle rectangle : rectangles) {
+                    g2d.fill(rectangle);
+
+                }
+                ///   g2d.dispose(); /// Remove graphics after drawing
+            }
+
+            //TODO
+            /// This needs to be fixed somehow... Current implementation not working. If we call clearRect it replaces every red square with a black one!
+            /// Attach to reset button when working.
+            public void clearAnimals() {
+                for (Rectangle rectangle : rectangles) {
+                    g2d.clearRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+
+                }
+                bgImageHolder.repaint();
+                g2d.dispose();
+
+
             }
 
 
