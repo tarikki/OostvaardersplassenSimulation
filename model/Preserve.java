@@ -1,7 +1,6 @@
 package model;
 
 import java.util.Random;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -10,6 +9,9 @@ import java.util.concurrent.Executors;
  */
 public class Preserve {
     private int numberOfAnimals;
+
+
+
     private Animal[] animals;
     private ExecutorService executor = Executors.newFixedThreadPool(10);
 
@@ -35,11 +37,16 @@ public class Preserve {
         return numberOfAnimals;
     }
 
+
     public int getAnimalX(int id){
         return animals[id].getX();
     }
 
     public int getAnimalY(int id){
         return animals[id].getY();
+    }
+
+    public Animal[] getAnimals() {
+        return animals;
     }
 }

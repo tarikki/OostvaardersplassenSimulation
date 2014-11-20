@@ -1,6 +1,7 @@
 package view;
 
 import model.MapHandler;
+import model.Preserve;
 import util.ButtonUtils;
 
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class MainandGUI {
     private GUI.MapHolder mapHolder;
     private JPanel buttonPanel;
     private MapHandler mapLoader;
+    private Preserve preserve;
 
 
     // Constructor for creating the GUI
@@ -32,6 +34,7 @@ public class MainandGUI {
 
         EventQueue.invokeLater(new Runnable() {
             public void run() {
+
                 GUI gui = new GUI();
 
                 gui.setVisible(true);
@@ -45,14 +48,12 @@ public class MainandGUI {
 
     /// Run new GUI
     public static void main(String[] args) {
+
         new MainandGUI();
     }
 
 
-
-
     class GUI extends JFrame {
-
 
 
         private static final long serialVersionUID = 1L;
@@ -68,12 +69,16 @@ public class MainandGUI {
             createMenuButtons();
             createButtons();
 
+            /// Register map and preserve for GUI to use
+            createMap();
+            createPreserve();
+
             this.setTitle("Simulation project - Group 2");
             this.setLayout(new BorderLayout());
 
 
-            /// Initialize mapHandler and MapHolder
-            mapLoader = new MapHandler();
+            /// Attach map to it's holder
+
             mapHolder = new MapHolder(mapLoader);
             mapHolder.setVisible(true);
 
@@ -199,21 +204,45 @@ public class MainandGUI {
         }
 
 
+        public void createPreserve() {
+
+            preserve = new Preserve(50); /// Create preserve with X amount of animals
+        }
+
+        public void createMap() {
+            mapLoader = new MapHandler();
+        }
+
         /// Panel to hold the Map
         class MapHolder extends JPanel {
             private BufferedImage backgroundImage;
             private JLabel bgImageHolder;
 
 
-
             public MapHolder(MapHandler mapLoader) {
-            this.setLayout(new BorderLayout());
+                this.setLayout(new BorderLayout());
 
                 /// Set map as the background
                 backgroundImage = mapLoader.getImage();
                 bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
                 add(bgImageHolder, BorderLayout.CENTER);
+                drawAnimals();
 
+            }
+
+
+            public void drawAnimals() {
+                Graphics2D g2d = backgroundImage.createGraphics();
+                g2d.setColor(Color.RED);
+                System.out.println(preserve.getNumberOfAnimals()); /// Just to test for NullPointerException
+                for (int i = 0; i < preserve.getNumberOfAnimals(); i++) {
+
+                    // Animal 1
+                    g2d.fillRect(preserve.getAnimalX(i), preserve.getAnimalY(i), 5, 5); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
+
+
+                }
+                g2d.dispose(); /// Remove graphics after drawing
             }
 
 
