@@ -4,11 +4,14 @@ import model.MapHandler;
 import model.Preserve;
 import util.ButtonUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -218,20 +221,38 @@ public class MainandGUI {
         class MapHolder extends JPanel {
             private BufferedImage backgroundImage;
             private JLabel bgImageHolder;
+            private JLabel drawHolder;
             private ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
             private Graphics2D g2d;
+            private BufferedImage drawingSurface;
 
             public MapHolder(MapHandler mapLoader) {
                 this.setLayout(new BorderLayout());
+                this.setOpaque(false);
+                try {
+                    drawingSurface = ImageIO.read(new File("C:/WorkSpace BU/Simulation-project/src/bgtransu.png")); //// Just testing things with transparent drawing surface. TODO fix path later.
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 /// Set map as the background
                 backgroundImage = mapLoader.getImage();
                 bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
-                add(bgImageHolder, BorderLayout.CENTER);
+                bgImageHolder.setLayout(new BorderLayout());
+                add(bgImageHolder); /// Add the background (map) holder to the JPanel
+
+                drawHolder = new JLabel(new ImageIcon(drawingSurface));
+                drawHolder.setVisible(true);
+                drawHolder.setHorizontalAlignment(JLabel.CENTER); /// Center the img
+                bgImageHolder.add(drawHolder);                    /// attach the drawingSurface to the background holder so we can have them on top of each other
+
+
+
+                ///setVisible(true);
+
                 animalstoRectangles();
                 drawAnimals();
-                //clearAnimals();
-
+               // clearAnimals();
 
             }
 
@@ -245,30 +266,41 @@ public class MainandGUI {
                 }
             }
 
-            public void drawAnimals() {
-                g2d = (Graphics2D) backgroundImage.getGraphics();
 
-                g2d.setColor(Color.RED);
-                System.out.println(preserve.getNumberOfAnimals()); /// Just to test for NullPointerException
+            public void drawAnimals()
+            {
+                g2d = (Graphics2D) drawingSurface.createGraphics();
 
+                g2d.setColor(Color.red);
+                System.out.println(preserve.getNumberOfAnimals()); /// Just to drawingSurface for NullPointerException
+
+                super.paintComponent(g2d);
+                for (Rectangle rectangle : rectangles) {
+                    g2d.fill(rectangle);
+                    repaint();
+                }
+                g2d.dispose(); /// Remove graphics after drawing
+            }
+
+
+            //TODO
+            /// Attach to reset button when working.
+            public void clearAnimals() {
+                g2d = (Graphics2D) drawingSurface.createGraphics();
+
+
+                /// Set composite so we can draw transparent rectangles. Clearrect doesn't work here.
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
 
                 for (Rectangle rectangle : rectangles) {
                     g2d.fill(rectangle);
 
                 }
-                ///   g2d.dispose(); /// Remove graphics after drawing
-            }
-
-            //TODO
-            /// This needs to be fixed somehow... Current implementation not working. If we call clearRect it replaces every red square with a black one!
-            /// Attach to reset button when working.
-            public void clearAnimals() {
-                for (Rectangle rectangle : rectangles) {
-                    g2d.clearRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
-                }
-                bgImageHolder.repaint();
+                rectangles.clear();
+                repaint();
                 g2d.dispose();
+                }
+
 
 
             }
@@ -276,4 +308,4 @@ public class MainandGUI {
 
         }
     }
-}
+

@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by extradikke on 19-11-14.
  */
 public class MapHandler {
-    private String mapLocation = "/basicmap.jpg";
+    private String mapLocation = "/basicmap.png";
     private static int height;
     private static int width;
     private static byte[][] map;
