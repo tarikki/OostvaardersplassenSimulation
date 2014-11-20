@@ -13,7 +13,7 @@ public class MapHandler {
     private static int height;
     private static int width;
     private static byte[][] map;
-    private static int[][] animalMap;
+
 
 
     private BufferedImage image;
@@ -37,7 +37,7 @@ public class MapHandler {
     public MapHandler() {
         loadImage();
         map = new byte[width][height];
-        animalMap = new int[width][height];
+
         scanImage();
 
     }
@@ -128,7 +128,7 @@ public class MapHandler {
 
     public static boolean putAnimal(int x, int y, int animalID) {
         if (map[x][y] > -1 || map[x][y] == ColorCode.BROWN.getValue()) {
-            animalMap[x][y] = animalID;
+
             return true;
         } else {
             return false;
