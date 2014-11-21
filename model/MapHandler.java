@@ -8,14 +8,13 @@ import java.io.IOException;
  * Created by extradikke on 19-11-14.
  */
 public class MapHandler {
-    private String mapLocation = "/basicmap.png";
+    private String mapLocation = "/biggermap.png";
     private static int height;
     private static int width;
     private static byte[][] map;
 
 
-
-    private BufferedImage image;
+    private static BufferedImage image;
 
 
     public enum ColorCode {
@@ -35,7 +34,6 @@ public class MapHandler {
     }
 
 
-
     public MapHandler() {
         loadImage();
         map = new byte[width][height];
@@ -43,26 +41,27 @@ public class MapHandler {
         scanImage();
 
 
-
     }
 
     public void loadImage() {
         try {
-            this.image = ImageIO.read((this.getClass().getResourceAsStream(mapLocation)));
-            this.height = image.getHeight();
-            this.width = image.getWidth();
+            image = ImageIO.read((this.getClass().getResourceAsStream(mapLocation)));
+            height = image.getHeight();
+            width = image.getWidth();
+            System.out.println("height: " + height + " width: " + width);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void scanImage() {
+        for (int h = 0; h < height; h++) {
+            for (int w = 0; w < width; w++) {
 
-        for (int h = 0; h < width; h++) {
-            for (int w = 0; w < height; w++) {
+
                 int pixel = image.getRGB(w, h);
                 String color = recognizeColorString(pixel);
-                map[h][w] = recognizeColorByte(pixel);
+                map[w][h] = recognizeColorByte(pixel);
 //                System.out.print(color);
             }
 //            System.out.println();

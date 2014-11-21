@@ -178,6 +178,7 @@ public class MainandGUI {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     //reset();
+                    mapHolder.clearAnimals();
                 }
             });
 
@@ -210,7 +211,7 @@ public class MainandGUI {
 
         public void createPreserve() {
 
-            preserve = new Preserve(50); /// Create preserve with X amount of animals
+            preserve = new Preserve(50000); /// Create preserve with X amount of animals
         }
 
         public void createMap() {
@@ -229,11 +230,8 @@ public class MainandGUI {
             public MapHolder(MapHandler mapLoader) {
                 this.setLayout(new BorderLayout());
                 this.setOpaque(false);
-                try {
-                    drawingSurface = ImageIO.read(new File("C:/WorkSpace BU/Simulation-project/src/bgtransu.png")); //// Just testing things with transparent drawing surface. TODO fix path later.
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                drawingSurface = new BufferedImage(MapHandler.getWidth(), MapHandler.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
 
                 /// Set map as the background
                 backgroundImage = mapLoader.getImage();
@@ -248,7 +246,7 @@ public class MainandGUI {
 
 
 
-                ///setVisible(true);
+                setVisible(true);
 
                 animalstoRectangles();
                 drawAnimals();
@@ -260,7 +258,7 @@ public class MainandGUI {
                 for (int i = 0; i < preserve.getNumberOfAnimals(); i++) {
 
 
-                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 5, 5)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
+                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 1, 1)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
 
 
                 }
@@ -283,8 +281,6 @@ public class MainandGUI {
             }
 
 
-            //TODO
-            /// Attach to reset button when working.
             public void clearAnimals() {
                 g2d = (Graphics2D) drawingSurface.createGraphics();
 
