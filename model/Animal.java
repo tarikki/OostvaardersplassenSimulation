@@ -22,8 +22,13 @@ public class Animal implements Runnable{
         return location[1];
     }
 
+    public int getId() {
+        return id;
+    }
+
     @Override
     public void run() {
+        this.location[0]+=10;
 
     }
 }

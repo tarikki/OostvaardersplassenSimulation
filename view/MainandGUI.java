@@ -4,15 +4,13 @@ import model.MapHandler;
 import model.Preserve;
 import util.ButtonUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TimerTask;
 
 /**
  * Created by Pepe on 19.11.2014.
@@ -26,10 +24,11 @@ public class MainandGUI {
 
     private JMenu menu;
     private JMenuBar menuBar;
-    private GUI.MapHolder mapHolder;
+    private static GUI.MapHolder mapHolder;
+
     private JPanel buttonPanel;
-    private MapHandler mapLoader;
-    private Preserve preserve;
+    private static MapHandler mapHandler;
+    private static Preserve preserve;
 
 
     // Constructor for creating the GUI
@@ -40,20 +39,37 @@ public class MainandGUI {
             public void run() {
 
                 GUI gui = new GUI();
-
                 gui.setVisible(true);
-
 
             }
         });
-
     }
 
 
     /// Run new GUI
     public static void main(String[] args) {
-
+        mapHandler = new MapHandler();
+        preserve = new Preserve(5000);
         new MainandGUI();
+        moveTester();
+
+
+    }
+
+    public static void moveTester() {
+        java.util.Timer timer = new java.util.Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    preserve.executeTurn();
+                    mapHolder.refresh();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 1000, 1000);
+
     }
 
 
@@ -74,8 +90,8 @@ public class MainandGUI {
             createButtons();
 
             /// Register map and preserve for GUI to use
-            createMap();
-            createPreserve();
+//            createMap();
+
 
             this.setTitle("Simulation project - Group 2");
             this.setLayout(new BorderLayout());
@@ -83,7 +99,7 @@ public class MainandGUI {
 
             /// Attach map to it's holder
 
-            mapHolder = new MapHolder(mapLoader);
+            mapHolder = new MapHolder(mapHandler);
             mapHolder.setVisible(true);
 
             this.add(mapHolder, BorderLayout.CENTER); //// Add the mapHolder to the center of the frame
@@ -209,14 +225,14 @@ public class MainandGUI {
         }
 
 
-        public void createPreserve() {
+//        public void createPreserve() {
+//
+//            preserve = new Preserve(50000); /// Create preserve with X amount of animals
+//        }
 
-            preserve = new Preserve(50000); /// Create preserve with X amount of animals
-        }
-
-        public void createMap() {
-            mapLoader = new MapHandler();
-        }
+//        public void createMap() {
+//            mapHandler = new MapHandler();
+////        }
 
         /// Panel to hold the Map
         class MapHolder extends JPanel {
@@ -245,12 +261,13 @@ public class MainandGUI {
                 bgImageHolder.add(drawHolder);                    /// attach the drawingSurface to the background holder so we can have them on top of each other
 
 
-
                 setVisible(true);
 
                 animalstoRectangles();
                 drawAnimals();
-               // clearAnimals();
+                repaint();
+
+                // clearAnimals();
 
             }
 
@@ -265,25 +282,25 @@ public class MainandGUI {
             }
 
 
-            public void drawAnimals()
-            {
+            public void drawAnimals() {
                 g2d = (Graphics2D) drawingSurface.createGraphics();
 
                 g2d.setColor(Color.red);
-                System.out.println(preserve.getNumberOfAnimals()); /// Just to drawingSurface for NullPointerException
+
 
                 super.paintComponent(g2d);
                 for (Rectangle rectangle : rectangles) {
                     g2d.fill(rectangle);
-                    repaint();
+
                 }
+                repaint();
                 g2d.dispose(); /// Remove graphics after drawing
             }
 
 
             public void clearAnimals() {
                 g2d = (Graphics2D) drawingSurface.createGraphics();
-
+//                Composite composite = g2d.getComposite();
 
                 /// Set composite so we can draw transparent rectangles. Clearrect doesn't work here.
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
@@ -294,14 +311,22 @@ public class MainandGUI {
                 }
                 rectangles.clear();
                 repaint();
+//                g2d.setComposite(composite);
                 g2d.dispose();
-                }
+            }
 
+            public void refresh() {
+                clearAnimals();
+                animalstoRectangles();
+
+                drawAnimals();
 
 
             }
 
-
         }
+
+
     }
+}
 
