@@ -29,7 +29,7 @@ public class Preserve {
                 y = r.nextInt(MapHandler.getHeight());
             }
             animals[id] = new Animal(id, x, y);
-//            System.out.println("Animal " + id + " x, y: " + x + " " + y);
+// /           System.out.println("Animal " + id + " x, y: " + x + " " + y);
         }
     }
 
