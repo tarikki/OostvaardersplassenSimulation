@@ -37,7 +37,6 @@ public class MapHandler {
     public MapHandler() {
         loadImage();
         map = new byte[width][height];
-
         scanImage();
 
 
@@ -62,9 +61,9 @@ public class MapHandler {
                 int pixel = image.getRGB(w, h);
                 String color = recognizeColorString(pixel);
                 map[w][h] = recognizeColorByte(pixel);
-//                System.out.print(color);
+                System.out.print(color);
             }
-//            System.out.println();
+            System.out.println();
         }
     }
 

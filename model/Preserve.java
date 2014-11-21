@@ -17,7 +17,7 @@ public class Preserve {
 
 
     public Preserve(int numberOfAnimals) {
-        //TODO still possible to place animals on top of each other
+        //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
         Random r = new Random();
         this.numberOfAnimals = numberOfAnimals;
         animals = new Animal[numberOfAnimals];
@@ -29,7 +29,7 @@ public class Preserve {
                 y = r.nextInt(MapHandler.getHeight());
             }
             animals[id] = new Animal(id, x, y);
-            System.out.println("Animal " + id + " x, y: " + x + " " + y);
+//            System.out.println("Animal " + id + " x, y: " + x + " " + y);
         }
     }
 
