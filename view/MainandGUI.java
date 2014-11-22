@@ -215,7 +215,8 @@ public class MainandGUI {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        // Enable restart button and start simulation!
+                        // Enable restart and stop button and start simulation!
+                        buttonPanel.getComponent(1).setEnabled(true);
                         buttonPanel.getComponent(2).setEnabled(true);
                         moveTester();
                     } catch (Exception e1) {
@@ -232,6 +233,9 @@ public class MainandGUI {
 
                 }
             });
+
+            /// Disable the stop button so it can't be clicked until simulation has started!
+            buttonPanel.getComponent(1).setEnabled(false);
 
             // Reset button
 
