@@ -215,6 +215,8 @@ public class MainandGUI {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
+                        // Enable restart button and start simulation!
+                        buttonPanel.getComponent(2).setEnabled(true);
                         moveTester();
                     } catch (Exception e1) {
                         e1.printStackTrace();
@@ -234,12 +236,21 @@ public class MainandGUI {
             // Reset button
 
             ButtonUtils.addButton(buttonPanel, "Reset", new ActionListener() {
+
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     /// Clear the animal and create a new preserve
                     reset();
                 }
             });
+
+            /// Disable the reset button so it can't be clicked until simulation has started!
+            buttonPanel.getComponent(2).setEnabled(false);
+
+
+
+
+
 
             // Exit button
             ButtonUtils.addButton(buttonPanel, "Exit", new ActionListener() {
@@ -285,10 +296,12 @@ public class MainandGUI {
             super();
                 this.setPreferredSize(new Dimension(100, 100));
              this.setVisible(true);
-                this.setBackground(Color.cyan);
+
 
             }
 
+
+            //// Very preliminary version of legend. TODO implement as a icon instead so we can position it better.
             @Override
             public void paintComponent(Graphics g)
             {
@@ -296,8 +309,11 @@ public class MainandGUI {
                 super.paintComponent(g);
 
                 g.setColor(Color.red); //// Add animal color with getColor
-                g.fillRect(0, 0, 10, 10);
-                g.drawString("Dikke deer", 15, 10);
+                g.fillRect(this.getWidth()/2, this.getHeight()/2, 10, 10);
+                g.drawString("Dikke deer", this.getWidth()/2 + 15, this.getHeight()/2 + 10);
+                g.setColor(Color.blue);
+                g.fillRect(this.getWidth()/2, this.getHeight()/2+15, 10, 10);
+                g.drawString("Tarikki", this.getWidth()/2+15, this.getHeight()/2+25);
             }
 
         }
