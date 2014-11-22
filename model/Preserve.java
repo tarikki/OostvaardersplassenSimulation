@@ -17,6 +17,7 @@ public class Preserve {
     private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 
+
     public Preserve(int numberOfAnimals) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
         Random r = new Random();
@@ -24,7 +25,7 @@ public class Preserve {
         for (int id = 0; id < numberOfAnimals; id++) {
             int x = r.nextInt(MapHandler.getWidth());
             int y = r.nextInt(MapHandler.getHeight());
-            while (!MapHandler.isValidMove(x, y, id)) {
+            while (!MapHandler.isValidMove(x, y)) {
                 x = r.nextInt(MapHandler.getWidth());
                 y = r.nextInt(MapHandler.getHeight());
             }

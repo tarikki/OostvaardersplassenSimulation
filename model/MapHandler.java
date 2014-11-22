@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by extradikke on 19-11-14.
  */
 public class MapHandler {
-    private String mapLocation = "/biggermap.png";
+    private String mapLocation = "/DijkstraTesterMap2.png";
     private static int height;
     private static int width;
     private static byte[][] map;
@@ -129,7 +129,7 @@ public class MapHandler {
         map[x][y]--;
     }
 
-    public static boolean isValidMove(int x, int y, int animalID) {
+    public static boolean isValidMove(int x, int y) {
         if (map[x][y] > -1 || map[x][y] == ColorCode.BROWN.getValue()) {
 
             return true;
