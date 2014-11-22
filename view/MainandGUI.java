@@ -9,8 +9,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.Timer;
 
 /**
  * Created by Pepe on 19.11.2014.
@@ -29,7 +29,7 @@ public class MainandGUI {
     private JPanel buttonPanel;
     private static MapHandler mapHandler;
     private static Preserve preserve;
-
+    private static java.util.Timer timer;
 
     // Constructor for creating the GUI
     public MainandGUI() {
@@ -48,16 +48,28 @@ public class MainandGUI {
 
     /// Run new GUI
     public static void main(String[] args) {
-        mapHandler = new MapHandler();
-        preserve = new Preserve(5000);
+        mapHandler = new MapHandler(); /// Create map
+        createPreserve();
         new MainandGUI();
-        moveTester();
+        ///    moveTester(); //// Probably needs to be called elsewhere
 
 
     }
 
+
+    public void stopMovement() {
+        timer.cancel();
+
+    }
+
+    public void resume() {
+        moveTester();
+    }
+
+    /// Acts as our start method
     public static void moveTester() {
-        java.util.Timer timer = new java.util.Timer();
+        timer = new Timer();
+
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -72,11 +84,17 @@ public class MainandGUI {
 
     }
 
+    public static void createPreserve() {
+
+        preserve = new Preserve(5); /// Create preserve with X amount of animals
+    }
+
 
     class GUI extends JFrame {
 
 
         private static final long serialVersionUID = 1L;
+        private JLabel drawHolder;
 
         public GUI() {
 
@@ -88,9 +106,6 @@ public class MainandGUI {
             createMenuBar();
             createMenuButtons();
             createButtons();
-
-            /// Register map and preserve for GUI to use
-//            createMap();
 
 
             this.setTitle("Simulation project - Group 2");
@@ -121,16 +136,27 @@ public class MainandGUI {
         }
 
         public void createMenuButtons() {
-
+            final boolean[] counter = {false};
             /// FIRST MENU ITEM
-            JMenuItem firstItem = new JMenuItem("PLACEHOLDER");
+            final JMenuItem firstItem = new JMenuItem("Show / hide animals");
             firstItem.setBackground(Color.black);
             firstItem.setForeground(Color.white);
             menu.add(firstItem);
             firstItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    createSecondPane();
+                    /// Toggle between show and hide animals.
+                    counter[0] = !counter[0];
+
+                    if (counter[0]) {
+                        drawHolder.setVisible(false);
+                    } else {
+                        drawHolder.setVisible(true);
+                    }
+
+                    //createSecondPane();
+
+
                 }
             });
 
@@ -172,7 +198,7 @@ public class MainandGUI {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-
+                        moveTester();
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
@@ -183,7 +209,7 @@ public class MainandGUI {
             ButtonUtils.addButton(buttonPanel, "Stop", new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    stopMovement();
 
                 }
             });
@@ -193,8 +219,11 @@ public class MainandGUI {
             ButtonUtils.addButton(buttonPanel, "Reset", new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //reset();
+                    /// Clear the animal and create a new preserve
+                    timer.cancel();
                     mapHolder.clearAnimals();
+                    createPreserve();
+                    resume();
                 }
             });
 
@@ -202,6 +231,7 @@ public class MainandGUI {
             ButtonUtils.addButton(buttonPanel, "Exit", new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    preserve.stopThreads();
                     System.exit(1);
                 }
             });
@@ -225,20 +255,11 @@ public class MainandGUI {
         }
 
 
-//        public void createPreserve() {
-//
-//            preserve = new Preserve(50000); /// Create preserve with X amount of animals
-//        }
-
-//        public void createMap() {
-//            mapHandler = new MapHandler();
-////        }
-
         /// Panel to hold the Map
         class MapHolder extends JPanel {
             private BufferedImage backgroundImage;
             private JLabel bgImageHolder;
-            private JLabel drawHolder;
+
             private ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
             private Graphics2D g2d;
             private BufferedImage drawingSurface;
@@ -267,7 +288,6 @@ public class MainandGUI {
                 drawAnimals();
                 repaint();
 
-                // clearAnimals();
 
             }
 
@@ -275,7 +295,7 @@ public class MainandGUI {
                 for (int i = 0; i < preserve.getNumberOfAnimals(); i++) {
 
 
-                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 1, 1)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
+                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 10, 10)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
 
 
                 }
@@ -311,14 +331,12 @@ public class MainandGUI {
                 }
                 rectangles.clear();
                 repaint();
-//                g2d.setComposite(composite);
                 g2d.dispose();
             }
 
             public void refresh() {
                 clearAnimals();
                 animalstoRectangles();
-
                 drawAnimals();
 
 

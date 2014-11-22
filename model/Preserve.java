@@ -55,6 +55,11 @@ public class Preserve {
         return animals.get(id).getY();
     }
 
+    public void stopThreads()
+    {
+        executor.shutdownNow();
+    }
+
     public List<Animal> getAnimals() {
         return animals;
     }
