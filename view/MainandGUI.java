@@ -84,6 +84,7 @@ public class MainandGUI {
 
     }
 
+    /// Just initializing
     public static void createPreserve() {
 
         preserve = new Preserve(5); /// Create preserve with X amount of animals
@@ -95,6 +96,7 @@ public class MainandGUI {
 
         private static final long serialVersionUID = 1L;
         private JLabel drawHolder;
+        private Legend legend;
 
         public GUI() {
 
@@ -120,6 +122,10 @@ public class MainandGUI {
             this.add(mapHolder, BorderLayout.CENTER); //// Add the mapHolder to the center of the frame
             this.add(buttonPanel, BorderLayout.SOUTH); /// Add buttons to the bottom
 
+            legend = new Legend();
+            this.add(legend, BorderLayout.NORTH);
+
+
 
         }
 
@@ -137,6 +143,8 @@ public class MainandGUI {
 
         public void createMenuButtons() {
             final boolean[] counter = {false};
+            final boolean[] counter2 = {false};
+
             /// FIRST MENU ITEM
             final JMenuItem firstItem = new JMenuItem("Show / hide animals");
             firstItem.setBackground(Color.black);
@@ -145,10 +153,10 @@ public class MainandGUI {
             firstItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    /// Toggle between show and hide animals.
-                    counter[0] = !counter[0];
+                    /// Toggle between show and hide legend
+                    counter2[0] = !counter2[0];
 
-                    if (counter[0]) {
+                    if (counter2[0]) {
                         drawHolder.setVisible(false);
                     } else {
                         drawHolder.setVisible(true);
@@ -162,14 +170,21 @@ public class MainandGUI {
 
 
             /// SECOND MENU ITEM
-            JMenuItem secondItem = new JMenuItem("PLACEHOLDER 2");
+            JMenuItem secondItem = new JMenuItem("Show / hide legend");
             secondItem.setBackground(Color.black);
             secondItem.setForeground(Color.white);
 
             secondItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    createFirstPane();
+                    /// Toggle between show and hide animals.
+                    counter[0] = !counter[0];
+
+                    if (counter[0]) {
+                        legend.setVisible(false);
+                    } else {
+                        legend.setVisible(true);
+                    }
                 }
             });
             menu.add(secondItem);
@@ -186,6 +201,8 @@ public class MainandGUI {
             });
             menu.add(thirdItem);
         }
+
+
 
         public void createButtons() {
             buttonPanel = new JPanel();
@@ -220,10 +237,7 @@ public class MainandGUI {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     /// Clear the animal and create a new preserve
-                    timer.cancel();
-                    mapHolder.clearAnimals();
-                    createPreserve();
-                    resume();
+                    reset();
                 }
             });
 
@@ -255,6 +269,38 @@ public class MainandGUI {
         }
 
 
+        /// Cancel timers, clear animals from map. Create new preserve and "resume" timer.
+        public void reset() {
+            timer.cancel();
+            mapHolder.clearAnimals();
+            drawHolder.setVisible(true);
+            createPreserve();
+            resume();
+        }
+
+        class Legend extends JLabel
+        {
+            public Legend()
+            {
+            super();
+                this.setPreferredSize(new Dimension(100, 100));
+             this.setVisible(true);
+                this.setBackground(Color.cyan);
+
+            }
+
+            @Override
+            public void paintComponent(Graphics g)
+            {
+
+                super.paintComponent(g);
+
+                g.setColor(Color.red); //// Add animal color with getColor
+                g.fillRect(0, 0, 10, 10);
+                g.drawString("Dikke deer", 15, 10);
+            }
+
+        }
         /// Panel to hold the Map
         class MapHolder extends JPanel {
             private BufferedImage backgroundImage;
@@ -320,7 +366,7 @@ public class MainandGUI {
 
             public void clearAnimals() {
                 g2d = (Graphics2D) drawingSurface.createGraphics();
-//                Composite composite = g2d.getComposite();
+
 
                 /// Set composite so we can draw transparent rectangles. Clearrect doesn't work here.
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
