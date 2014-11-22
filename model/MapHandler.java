@@ -129,7 +129,7 @@ public class MapHandler {
         map[x][y]--;
     }
 
-    public static boolean putAnimal(int x, int y, int animalID) {
+    public static boolean isValidMove(int x, int y, int animalID) {
         if (map[x][y] > -1 || map[x][y] == ColorCode.BROWN.getValue()) {
 
             return true;

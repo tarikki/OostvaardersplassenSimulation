@@ -1,7 +1,5 @@
 package model;
 
-import javafx.concurrent.Task;
-
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -26,7 +24,7 @@ public class Preserve {
         for (int id = 0; id < numberOfAnimals; id++) {
             int x = r.nextInt(MapHandler.getWidth());
             int y = r.nextInt(MapHandler.getHeight());
-            while (!MapHandler.putAnimal(x, y, id)) {
+            while (!MapHandler.isValidMove(x, y, id)) {
                 x = r.nextInt(MapHandler.getWidth());
                 y = r.nextInt(MapHandler.getHeight());
             }
