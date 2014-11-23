@@ -64,6 +64,7 @@ public class Animal implements Runnable {
     }
 
     public boolean makeItDijkstra(MapHandler.ColorCode lookingFor) { // looking for is the byte value of either food or drink
+        //TODO add comments on this before I forget how it works
         movementCostArray[lineOfSight / 2][lineOfSight / 2] = new DijkstraNode(0, 0, 0);
         boolean foundIt = false;
         boolean loopingDone = false;
@@ -139,6 +140,7 @@ public class Animal implements Runnable {
     }
 
     public void move() {
+        //TODO check if waypoints in waypoints, move if yes
 
     }
 
