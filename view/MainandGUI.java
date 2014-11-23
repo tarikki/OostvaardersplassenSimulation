@@ -9,8 +9,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.Timer;
 
 /**
  * Created by Pepe on 19.11.2014.
@@ -29,7 +29,7 @@ public class MainandGUI {
     private JPanel buttonPanel;
     private static MapHandler mapHandler;
     private static Preserve preserve;
-
+    private static java.util.Timer timer;
 
     // Constructor for creating the GUI
     public MainandGUI() {
@@ -48,16 +48,28 @@ public class MainandGUI {
 
     /// Run new GUI
     public static void main(String[] args) {
-        mapHandler = new MapHandler();
-        preserve = new Preserve(5000);
+        mapHandler = new MapHandler(); /// Create map
+        createPreserve();
         new MainandGUI();
-        moveTester();
+        ///    moveTester(); //// Probably needs to be called elsewhere
 
 
     }
 
+
+    public void stopMovement() {
+        timer.cancel();
+
+    }
+
+    public void resume() {
+        moveTester();
+    }
+
+    /// Acts as our start method
     public static void moveTester() {
-        java.util.Timer timer = new java.util.Timer();
+        timer = new Timer();
+
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -72,11 +84,19 @@ public class MainandGUI {
 
     }
 
+    /// Just initializing
+    public static void createPreserve() {
+
+        preserve = new Preserve(5); /// Create preserve with X amount of animals
+    }
+
 
     class GUI extends JFrame {
 
 
         private static final long serialVersionUID = 1L;
+        private JLabel drawHolder;
+        private Legend legend;
 
         public GUI() {
 
@@ -88,9 +108,6 @@ public class MainandGUI {
             createMenuBar();
             createMenuButtons();
             createButtons();
-
-            /// Register map and preserve for GUI to use
-//            createMap();
 
 
             this.setTitle("Simulation project - Group 2");
@@ -104,6 +121,10 @@ public class MainandGUI {
 
             this.add(mapHolder, BorderLayout.CENTER); //// Add the mapHolder to the center of the frame
             this.add(buttonPanel, BorderLayout.SOUTH); /// Add buttons to the bottom
+
+            legend = new Legend();
+            this.add(legend, BorderLayout.NORTH);
+
 
 
         }
@@ -121,29 +142,49 @@ public class MainandGUI {
         }
 
         public void createMenuButtons() {
+            final boolean[] counter = {false};
+            final boolean[] counter2 = {false};
 
             /// FIRST MENU ITEM
-            JMenuItem firstItem = new JMenuItem("PLACEHOLDER");
+            final JMenuItem firstItem = new JMenuItem("Show / hide animals");
             firstItem.setBackground(Color.black);
             firstItem.setForeground(Color.white);
             menu.add(firstItem);
             firstItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    createSecondPane();
+                    /// Toggle between show and hide legend
+                    counter2[0] = !counter2[0];
+
+                    if (counter2[0]) {
+                        drawHolder.setVisible(false);
+                    } else {
+                        drawHolder.setVisible(true);
+                    }
+
+                    //createSecondPane();
+
+
                 }
             });
 
 
             /// SECOND MENU ITEM
-            JMenuItem secondItem = new JMenuItem("PLACEHOLDER 2");
+            JMenuItem secondItem = new JMenuItem("Show / hide legend");
             secondItem.setBackground(Color.black);
             secondItem.setForeground(Color.white);
 
             secondItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    createFirstPane();
+                    /// Toggle between show and hide animals.
+                    counter[0] = !counter[0];
+
+                    if (counter[0]) {
+                        legend.setVisible(false);
+                    } else {
+                        legend.setVisible(true);
+                    }
                 }
             });
             menu.add(secondItem);
@@ -161,6 +202,8 @@ public class MainandGUI {
             menu.add(thirdItem);
         }
 
+
+
         public void createButtons() {
             buttonPanel = new JPanel();
             buttonPanel.setLayout(new FlowLayout());
@@ -172,7 +215,10 @@ public class MainandGUI {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-
+                        // Enable restart and stop button and start simulation!
+                        buttonPanel.getComponent(1).setEnabled(true);
+                        buttonPanel.getComponent(2).setEnabled(true);
+                        moveTester();
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
@@ -183,25 +229,38 @@ public class MainandGUI {
             ButtonUtils.addButton(buttonPanel, "Stop", new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    stopMovement();
 
                 }
             });
+
+            /// Disable the stop button so it can't be clicked until simulation has started!
+            buttonPanel.getComponent(1).setEnabled(false);
 
             // Reset button
 
             ButtonUtils.addButton(buttonPanel, "Reset", new ActionListener() {
+
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //reset();
-                    mapHolder.clearAnimals();
+                    /// Clear the animal and create a new preserve
+                    reset();
                 }
             });
+
+            /// Disable the reset button so it can't be clicked until simulation has started!
+            buttonPanel.getComponent(2).setEnabled(false);
+
+
+
+
+
 
             // Exit button
             ButtonUtils.addButton(buttonPanel, "Exit", new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    preserve.stopThreads();
                     System.exit(1);
                 }
             });
@@ -225,20 +284,48 @@ public class MainandGUI {
         }
 
 
-//        public void createPreserve() {
-//
-//            preserve = new Preserve(50000); /// Create preserve with X amount of animals
-//        }
+        /// Cancel timers, clear animals from map. Create new preserve and "resume" timer.
+        public void reset() {
+            timer.cancel();
+            mapHolder.clearAnimals();
+            drawHolder.setVisible(true);
+            createPreserve();
+            resume();
+        }
 
-//        public void createMap() {
-//            mapHandler = new MapHandler();
-////        }
+        class Legend extends JLabel
+        {
+            public Legend()
+            {
+            super();
+                this.setPreferredSize(new Dimension(100, 100));
+             this.setVisible(true);
 
+
+            }
+
+
+            //// Very preliminary version of legend. TODO implement as a icon instead so we can position it better.
+            @Override
+            public void paintComponent(Graphics g)
+            {
+
+                super.paintComponent(g);
+
+                g.setColor(Color.red); //// Add animal color with getColor
+                g.fillRect(this.getWidth()/2, this.getHeight()/2, 10, 10);
+                g.drawString("Dikke deer", this.getWidth()/2 + 15, this.getHeight()/2 + 10);
+                g.setColor(Color.blue);
+                g.fillRect(this.getWidth()/2, this.getHeight()/2+15, 10, 10);
+                g.drawString("Tarikki", this.getWidth()/2+15, this.getHeight()/2+25);
+            }
+
+        }
         /// Panel to hold the Map
         class MapHolder extends JPanel {
             private BufferedImage backgroundImage;
             private JLabel bgImageHolder;
-            private JLabel drawHolder;
+
             private ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
             private Graphics2D g2d;
             private BufferedImage drawingSurface;
@@ -267,7 +354,6 @@ public class MainandGUI {
                 drawAnimals();
                 repaint();
 
-                // clearAnimals();
 
             }
 
@@ -275,7 +361,7 @@ public class MainandGUI {
                 for (int i = 0; i < preserve.getNumberOfAnimals(); i++) {
 
 
-                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 1, 1)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
+                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 10, 10)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
 
 
                 }
@@ -300,7 +386,7 @@ public class MainandGUI {
 
             public void clearAnimals() {
                 g2d = (Graphics2D) drawingSurface.createGraphics();
-//                Composite composite = g2d.getComposite();
+
 
                 /// Set composite so we can draw transparent rectangles. Clearrect doesn't work here.
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
@@ -311,14 +397,12 @@ public class MainandGUI {
                 }
                 rectangles.clear();
                 repaint();
-//                g2d.setComposite(composite);
                 g2d.dispose();
             }
 
             public void refresh() {
                 clearAnimals();
                 animalstoRectangles();
-
                 drawAnimals();
 
 
