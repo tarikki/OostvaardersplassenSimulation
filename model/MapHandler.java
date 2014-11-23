@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by extradikke on 19-11-14.
  */
 public class MapHandler {
-    private String mapLocation = "/DijkstraTesterMap2.png";
+    private String mapLocation = "/TestMapWeek1.png";
     private static int height;
     private static int width;
     private static byte[][] map;
@@ -112,7 +112,7 @@ public class MapHandler {
         return width;
     }
 
-    public static byte getValue(int x, int y) {
+    public synchronized static byte getValue(int x, int y) {
         return map[x][y];
     }
 
@@ -121,11 +121,11 @@ public class MapHandler {
 
     }
 
-    public static void increaseFoodValue(int x, int y) {
+    public synchronized static void increaseFoodValue(int x, int y) {
         map[x][y]++;
     }
 
-    public static void decreaseFoodValue(int x, int y) {
+    public synchronized static void decreaseFoodValue(int x, int y) {
         map[x][y]--;
     }
 
@@ -140,9 +140,13 @@ public class MapHandler {
 
     }
 
-    public void moveAnimal(int newX, int newY, int oldX, int oldY, int animalID) {
 
 
+    public synchronized static boolean eatFromSquare(int x, int y){
+        if (map[x][y] > 0){
+            decreaseFoodValue(x, y);
+            return true;
+        } else return false;
     }
 
 }

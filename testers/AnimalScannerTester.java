@@ -13,6 +13,6 @@ public class AnimalScannerTester {
         Preserve preserve = new Preserve(1);
         Animal animal = preserve.getAnimals().get(0);
         animal.scanSurroundings();
-        System.out.println(animal.getId() + " "+animal.getX() + " " + animal.getY());
+        System.out.println(animal.getId() + " "+animal.getxPos() + " " + animal.getyPos());
     }
 }

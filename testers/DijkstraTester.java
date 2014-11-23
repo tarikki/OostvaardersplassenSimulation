@@ -14,11 +14,22 @@ public class DijkstraTester {
         MapHandler mapHandler = new MapHandler();
         Preserve preserve = new Preserve(1);
         Animal animal = preserve.getAnimals().get(0);
-        animal.setX(7);
-        animal.setY(17);
+        animal.setxPos(7);
+        animal.setyPos(17);
 //        animal.scanSurroundings();
-        System.out.println(animal.getId() + " " + animal.getX() + " " + animal.getY());
+        System.out.println(animal.getId() + " " + animal.getxPos() + " " + animal.getyPos());
         animal.makeItDijkstra(MapHandler.ColorCode.GREEN);
+        System.out.println(animal);
+        animal.checkForWayPoints();
+        System.out.println(animal);
+        animal.checkForWayPoints();
+        System.out.println(animal);
+        animal.checkForWayPoints();
+        System.out.println(animal);
+        animal.checkForWayPoints();        System.out.println(animal);
+        animal.checkForWayPoints();        System.out.println(animal);
+        animal.checkForWayPoints();
+
 
     }
 

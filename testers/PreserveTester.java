@@ -16,7 +16,7 @@ public class PreserveTester {
             try {
                 preserve.executeTurn();
                 for (Animal animal : preserve.getAnimals()) {
-                    System.out.println(animal.getId() + " "+animal.getX());
+                    System.out.println(animal.getId() + " "+animal.getxPos());
                 }
                 System.out.println(preserve.getAnimalX(0));
             } catch (InterruptedException e) {

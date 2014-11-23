@@ -11,15 +11,16 @@ import java.util.concurrent.Future;
  */
 public class Preserve {
     private int numberOfAnimals;
+    private int turn;
 
 
     private List<Animal> animals = new ArrayList<Animal>();
     private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 
-
     public Preserve(int numberOfAnimals) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
+        turn = 0;
         Random r = new Random();
         this.numberOfAnimals = numberOfAnimals;
         for (int id = 0; id < numberOfAnimals; id++) {
@@ -41,23 +42,24 @@ public class Preserve {
 
     public void executeTurn() throws InterruptedException {
         List<Callable<Object>> todo = new ArrayList<Callable<Object>>(animals.size());
+        // TODO shuffle the animals first so they don't always move in order of creation
         for (Animal animal : animals) {
             todo.add(Executors.callable(animal));
         }
         List<Future<Object>> dikke = executor.invokeAll(todo);
+        System.out.println(turn++);
     }
 
 
     public int getAnimalX(int id) {
-        return animals.get(id).getX();
+        return animals.get(id).getxPos();
     }
 
     public int getAnimalY(int id) {
-        return animals.get(id).getY();
+        return animals.get(id).getyPos();
     }
 
-    public void stopThreads()
-    {
+    public void stopThreads() {
         executor.shutdownNow();
     }
 

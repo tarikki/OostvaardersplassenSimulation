@@ -76,18 +76,19 @@ public class MainandGUI {
                 try {
                     preserve.executeTurn();
                     mapHolder.refresh();
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        }, 1000, 1000);
+        }, 100, 500);
 
     }
 
     /// Just initializing
     public static void createPreserve() {
 
-        preserve = new Preserve(5); /// Create preserve with X amount of animals
+        preserve = new Preserve(100); /// Create preserve with X amount of animals
     }
 
 
@@ -124,7 +125,6 @@ public class MainandGUI {
 
             legend = new Legend();
             this.add(legend, BorderLayout.NORTH);
-
 
 
         }
@@ -203,7 +203,6 @@ public class MainandGUI {
         }
 
 
-
         public void createButtons() {
             buttonPanel = new JPanel();
             buttonPanel.setLayout(new FlowLayout());
@@ -252,10 +251,6 @@ public class MainandGUI {
             buttonPanel.getComponent(2).setEnabled(false);
 
 
-
-
-
-
             // Exit button
             ButtonUtils.addButton(buttonPanel, "Exit", new ActionListener() {
                 @Override
@@ -293,13 +288,11 @@ public class MainandGUI {
             resume();
         }
 
-        class Legend extends JLabel
-        {
-            public Legend()
-            {
-            super();
+        class Legend extends JLabel {
+            public Legend() {
+                super();
                 this.setPreferredSize(new Dimension(100, 100));
-             this.setVisible(true);
+                this.setVisible(true);
 
 
             }
@@ -307,20 +300,20 @@ public class MainandGUI {
 
             //// Very preliminary version of legend. TODO implement as a icon instead so we can position it better.
             @Override
-            public void paintComponent(Graphics g)
-            {
+            public void paintComponent(Graphics g) {
 
                 super.paintComponent(g);
 
                 g.setColor(Color.red); //// Add animal color with getColor
-                g.fillRect(this.getWidth()/2, this.getHeight()/2, 10, 10);
-                g.drawString("Dikke deer", this.getWidth()/2 + 15, this.getHeight()/2 + 10);
+                g.fillRect(this.getWidth() / 2, this.getHeight() / 2, 10, 10);
+                g.drawString("Dikke deer", this.getWidth() / 2 + 15, this.getHeight() / 2 + 10);
                 g.setColor(Color.blue);
-                g.fillRect(this.getWidth()/2, this.getHeight()/2+15, 10, 10);
-                g.drawString("Tarikki", this.getWidth()/2+15, this.getHeight()/2+25);
+                g.fillRect(this.getWidth() / 2, this.getHeight() / 2 + 15, 10, 10);
+                g.drawString("Tarikki", this.getWidth() / 2 + 15, this.getHeight() / 2 + 25);
             }
 
         }
+
         /// Panel to hold the Map
         class MapHolder extends JPanel {
             private BufferedImage backgroundImage;
@@ -361,7 +354,7 @@ public class MainandGUI {
                 for (int i = 0; i < preserve.getNumberOfAnimals(); i++) {
 
 
-                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 10, 10)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
+                    rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 5, 5)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
 
 
                 }

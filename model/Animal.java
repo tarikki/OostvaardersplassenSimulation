@@ -16,36 +16,19 @@ public class Animal implements Runnable {
     private int energy;
     private boolean living = true;
     private boolean tired = false;
-    private int lineOfSight = 9; //how far the animal can see around it
+    private int lineOfSight = 139; //how far the animal can see around it
     private byte[][] fieldOfVision = new byte[lineOfSight + 2][lineOfSight + 2];
-    private DijkstraNode[][] movementCostArray = new DijkstraNode[lineOfSight][lineOfSight];
-    private int[] location = new int[2];
-    private Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>();
-    private int[] destination = new int[2];
+    private DijkstraNode[][] movementCostArray = new DijkstraNode[lineOfSight][lineOfSight]; // a temp array for calculating the optimal path to a desired location
+    private int xPos;
+    private int yPos;
+    private Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>(); // the path expressed in DjikstraNodes
 
 
     public Animal(int id, int x, int y) {
         this.id = id;
-        this.location[0] = x;
-        this.location[1] = y;
+        xPos = x;
+        yPos = y;
     }
-
-    public int getX() {
-        return location[0];
-    }
-
-    public int getY() {
-        return location[1];
-    }
-
-    public void setX(int x) {
-        location[0] = x;
-    }
-
-    public void setY(int y) {
-        location[1] = y;
-    }
-
 
     public int getId() {
         return id;
@@ -54,8 +37,8 @@ public class Animal implements Runnable {
     public void scanSurroundings() {
         for (int w = 0; w < lineOfSight; w++) {
             for (int h = 0; h < lineOfSight; h++) {
-                fieldOfVision[w][h] = MapHandler.getValue(location[0] - lineOfSight / 2 + w, location[1] - lineOfSight / 2 + h);
-//                System.out.println(location[0]-lineOfSight/2+w);
+                fieldOfVision[w][h] = MapHandler.getValue(xPos - lineOfSight / 2 + w, yPos - lineOfSight / 2 + h);
+//                System.out.println(xPos-lineOfSight/2+w);
                 System.out.print(fieldOfVision[w][h]);
 
             }
@@ -63,51 +46,63 @@ public class Animal implements Runnable {
         }
     }
 
-    public boolean makeItDijkstra(MapHandler.ColorCode lookingFor) { // looking for is the byte value of either food or drink
-        //TODO add comments on this before I forget how it works
-        movementCostArray[lineOfSight / 2][lineOfSight / 2] = new DijkstraNode(0, 0, 0);
+    /**
+     * a method for finding the way to a color code the animal might want to go to
+     * so to find a way to some food would look like this animal.makeItDijkstra(MapHandler.ColorCode.GREEN);
+     *
+     * @param lookingFor the color code in the map that we want to find
+     * @return foundIt
+     */
+    public boolean makeItDijkstra(MapHandler.ColorCode lookingFor) { // looking for is the color of the item we're looking for
+        //TODO make this private once testing done
+        //TODO still error in algorithm, animals don't take shortest path
+
+        movementCostArray = new DijkstraNode[lineOfSight][lineOfSight];
+        movementCostArray[lineOfSight / 2][lineOfSight / 2] = new DijkstraNode(0, 0, 0); // centre the costArray on the animal
         boolean foundIt = false;
         boolean loopingDone = false;
-        System.out.println(lineOfSight / 2);
+//        System.out.println(lineOfSight / 2);
         int scanRadius = 0;
-        while (!loopingDone) {
+        while (!loopingDone) { // loop until item found or field of vision scanned
             scanRadius++;
-            System.out.println("scanradius" + scanRadius);
-            for (int h = 0; h < (scanRadius*2) + 1; h++) {
-                for (int w = 0; w < (scanRadius*2) + 1; w++) {
+//            System.out.println("scanradius" + scanRadius);
+            for (int h = 0; h < (scanRadius * 2) + 1; h++) {              // every time scan radius increases, double that so we get both sides
+                for (int w = 0; w < (scanRadius * 2) + 1; w++) {
 
-                    int currentX = (lineOfSight / 2) - scanRadius + w;
+                    int currentX = (lineOfSight / 2) - scanRadius + w;  // coordinates for square being scanned
                     int currentY = (lineOfSight / 2) - scanRadius + h;
-                    int lowestCost = 100;
-                    int closestX = 0;
+                    int lowestCost = 100;                               // initialize it with an impossible cost
+                    int closestX = 0;                                   // coordinates for the closest scanned square with the lowest cost
                     int closestY = 0;
-                    System.out.println("Cx: " + currentX + ",  Cy" + currentY);
-                    if (movementCostArray[currentX][currentY] == null && MapHandler.isValidMove(location[0] - scanRadius + w, location[1] - scanRadius + h)) {
-                        for (int j = 0; j < 3; j++) {
+//                    System.out.println("Cx: " + currentX + ",  Cy" + currentY);
+                    if (movementCostArray[currentX][currentY] == null &&        // TODO should values be recalculated at some conditions?
+                            MapHandler.isValidMove(xPos - scanRadius + w, yPos - scanRadius + h)) { // if not scanned and is valid square
+                        for (int j = 0; j < 3; j++) {                   // check all squares surrounding this square
                             for (int i = 0; i < 3; i++) {
 
-                                if (currentX - 1 + i >= 0 && currentX - 1 + i < movementCostArray.length && currentY - 1 + j >= 0 && currentY - 1 + j < movementCostArray.length)
-                                    if (movementCostArray[currentX - 1 + i][currentY - 1 + j] != null) {
-                                        if (movementCostArray[currentX - 1 + i][currentY - 1 + j].getCost() < lowestCost) {
-                                            lowestCost = movementCostArray[currentX - 1 + i][currentY - 1 + j].getCost() + 1;
-                                            closestX = currentX - 1 + i;
+                                if (currentX - 1 + i >= 0 && currentX - 1 + i < movementCostArray.length &&
+                                        currentY - 1 + j >= 0 && currentY - 1 + j < movementCostArray.length)                       // make sure we remain within array bounds
+                                    if (movementCostArray[currentX - 1 + i][currentY - 1 + j] != null) {                            // if there's a dijkstraNode, check it's cost
+                                        if (movementCostArray[currentX - 1 + i][currentY - 1 + j].getCost() < lowestCost) {         // if cost lower than previous lowest cost
+                                            lowestCost = movementCostArray[currentX - 1 + i][currentY - 1 + j].getCost() + 1;       // make this the lowest cost node and add 1 for the node we're in
+                                            closestX = currentX - 1 + i;                                                            // save it's coordinates in respect to the center of movementcostarray
                                             closestY = currentY - 1 + j;
                                         }
                                     }
                             }
                         }
-                        movementCostArray[currentX][currentY] = new DijkstraNode(closestX, closestY, lowestCost);
-                        System.out.println("Scanning at x " + (location[0] - scanRadius + w) + " and y " + (location[1] - scanRadius + h));
-                        if (MapHandler.getValue(location[0] - scanRadius + w, location[1] - scanRadius + h) == lookingFor.getValue()) {
-                            foundIt = loopingDone = true;
-                            System.out.println("Food found at x " + (location[0] - scanRadius + w) + " and y " + (location[1] - scanRadius + h));
-                            stackDijkstra(movementCostArray[currentX][currentY], currentX, currentY);
+                        movementCostArray[currentX][currentY] = new DijkstraNode(closestX, closestY, lowestCost);                   // make a new dijkstraNode in this place with the optimum cost
+//                        System.out.println("Scanning at x " + (xPos - scanRadius + w) + " and y " + (yPos - scanRadius + h));
+                        if (MapHandler.getValue(xPos - scanRadius + w, yPos - scanRadius + h) == lookingFor.getValue() && !foundIt) {           // is this the value we're looking for?
+                            foundIt = loopingDone = true;                                                                           // we found it! stop looping!
+                            System.out.println("Food found at x " + (xPos - scanRadius + w) + " and y " + (yPos - scanRadius + h));
+                            stackDijkstra(movementCostArray[currentX][currentY], currentX, currentY);                               // this is the winning node, put it on the bottom of the dikstraStack
                         }
                     }
                 }
             }
-            if (scanRadius >= lineOfSight / 2) {
-                loopingDone = true;
+            if (scanRadius >= lineOfSight / 2) {            // lineOfSight scanned?
+                loopingDone = true;                         // stop and admit defeat
             }
         }
         for (DijkstraNode wayPoint : wayPoints) {
@@ -116,33 +111,82 @@ public class Animal implements Runnable {
         return foundIt;
     }
 
+    /**
+     * This method recursively retraces the path from desired spot to animal
+     *
+     * @param targetAcquired the DijkstraNode we're heading to
+     * @param currentX       its x position in the movementCostArray
+     * @param currentY       its y position in the movementCostArray
+     * @return
+     */
     private boolean stackDijkstra(DijkstraNode targetAcquired, int currentX, int currentY) {
 
-        System.out.println("Cost: " + targetAcquired.getCost() + " nextX: " + targetAcquired.getxDirection()+ " nextY" + targetAcquired.getyDirection());
-        DijkstraNode next = movementCostArray[targetAcquired.getxDirection()][targetAcquired.getyDirection()];
-        System.out.println("Cost: " + next.getCost() + " nextX: " + next.getxDirection()+ " nextY" + next.getyDirection());
+        System.out.println("Cost: " + targetAcquired.getCost() + " nextX: " + targetAcquired.getxDirection() + " nextY" + targetAcquired.getyDirection());
+        DijkstraNode next = movementCostArray[targetAcquired.getxDirection()][targetAcquired.getyDirection()];              // next node is where the current is pointing att
+//        System.out.println("Cost: " + next.getCost() + " nextX: " + next.getxDirection() + " nextY" + next.getyDirection());
 
-        wayPoints.add(new DijkstraNode(currentX - targetAcquired.getxDirection(), currentY - targetAcquired.getyDirection(), 1));
-        if (targetAcquired.getCost() > 1){
-            stackDijkstra(next, targetAcquired.getxDirection(), targetAcquired.getyDirection());
+        wayPoints.add(new DijkstraNode(currentX - targetAcquired.getxDirection(),   // add the current node to the waypoint list,
+                currentY - targetAcquired.getyDirection(), 1));                     // and make it point the way to the next node
+        if (targetAcquired.getCost() > 1) {                                          // if we're more than one node away from the animal
+            stackDijkstra(next, targetAcquired.getxDirection(),                     // process the next node recursively
+                    targetAcquired.getyDirection());
         }
 
         return true;
     }
 
-    public void eat() {
-        this.energy += 1;
+    public boolean checkForWayPoints() {
+        boolean result = false;
+        if (!wayPoints.isEmpty()) {
+            DijkstraNode nextStep = wayPoints.pop();
+            move(nextStep.getxDirection(), nextStep.getyDirection());
+            result = true;
+        }
+        return result;
+    }
 
+    public void eat() {
+        if (MapHandler.eatFromSquare(xPos, yPos))
+            this.energy += 10;
+        reduceHunger(1);
+        System.out.println("Food left: " + MapHandler.getValue(xPos, yPos));
+
+    }
+
+    public void reduceHunger(int amount) {
+        if (hunger - amount > 0) {
+            hunger -= amount;
+        } else hunger = 0;
+    }
+
+    public void useBrain() {
+        if (wayPoints.isEmpty()) {
+            if (hunger > 1) {
+
+                if (MapHandler.getValue(xPos, yPos) > 0) {
+                    eat();
+
+                } else {
+                    makeItDijkstra(MapHandler.ColorCode.GREEN);
+
+                }
+
+            }
+        }
+        checkForWayPoints();
+//        System.out.println("Number of waypoints: " + wayPoints.size());
     }
 
     public void drink() {
 
     }
 
-    public void move() {
-        //TODO check if waypoints in waypoints, move if yes
-
+    public void move(int x, int y) {
+        //TODO make this first check if mapSquare valid, then make sure no other animals there
+        xPos += x;
+        yPos += y;
     }
+
 
     public void sleep() {
 
@@ -155,7 +199,33 @@ public class Animal implements Runnable {
 
     @Override
     public void run() {
-        this.location[0] += 10;
+        useBrain();
+        hunger++;
 
+    }
+
+    @Override
+    public String toString() {
+        return "Animal{" +
+                "id=" + id +
+                ", xPos=" + xPos +
+                ", yPos=" + yPos +
+                '}';
+    }
+
+    public int getxPos() {
+        return xPos;
+    }
+
+    public void setxPos(int xPos) {
+        this.xPos = xPos;
+    }
+
+    public int getyPos() {
+        return yPos;
+    }
+
+    public void setyPos(int yPos) {
+        this.yPos = yPos;
     }
 }
