@@ -5,12 +5,15 @@ import model.Preserve;
 import util.ButtonUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Pepe on 19.11.2014.
@@ -22,14 +25,25 @@ public class MainandGUI {
     public static final int DEFAULT_WIDTH = SCREEN_SIZE.width * 2 / 3;
     public static final int DEFAULT_HEIGHT = SCREEN_SIZE.height * 2 / 3;
 
-    private JMenu menu;
+    private JMenu simulationMenu; ////  Simulation menu
+    private JMenu mapMenu; ///  map menu
     private JMenuBar menuBar;
-    private static GUI.MapHolder mapHolder;
+    private static MapHolder mapHolder;
+    private static StatisticsPanel statisticsPanel;
 
-    private JPanel buttonPanel;
+
+
+    private JPanel mapButtons; /// Could be moved to mapHolder since it only uses these
+    private JPanel statisticButtons;
+
     private static MapHandler mapHandler;
     private static Preserve preserve;
     private static java.util.Timer timer;
+
+    /// Instantiated here because simulationMenu needs to use it
+    private JLabel drawHolder;
+    private Legend legend;
+    private JFileChooser chooser;
 
     // Constructor for creating the GUI
     public MainandGUI() {
@@ -46,12 +60,12 @@ public class MainandGUI {
     }
 
 
-    /// Run new GUI
+    /// Run new GUI.. TODO move these to static block?
     public static void main(String[] args) {
         mapHandler = new MapHandler(); /// Create map
         createPreserve();
         new MainandGUI();
-        ///    moveTester(); //// Probably needs to be called elsewhere
+
 
 
     }
@@ -91,13 +105,13 @@ public class MainandGUI {
         preserve = new Preserve(100); /// Create preserve with X amount of animals
     }
 
-
+    /// Our frame with simulationMenu
     class GUI extends JFrame {
 
 
         private static final long serialVersionUID = 1L;
-        private JLabel drawHolder;
-        private Legend legend;
+
+        private GUI.TabbedPane TabbedPane;
 
         public GUI() {
 
@@ -106,51 +120,99 @@ public class MainandGUI {
             this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             this.setSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-            createMenuBar();
-            createMenuButtons();
-            createButtons();
 
+            createMenuBar();
+
+            createSimulationMenu();
+            createSimulationMenuButtons();
+
+
+            createMapMenu();
+            createMapMenuButtons();
+
+
+
+            createFileChooser();
 
             this.setTitle("Simulation project - Group 2");
             this.setLayout(new BorderLayout());
 
+            /// Create the tabbed pane
+            TabbedPane = new GUI.TabbedPane();
+            TabbedPane.setVisible(true);
 
-            /// Attach map to it's holder
+            this.add(TabbedPane, BorderLayout.CENTER); // Add TabbedPane tab to center
 
-            mapHolder = new MapHolder(mapHandler);
-            mapHolder.setVisible(true);
 
-            this.add(mapHolder, BorderLayout.CENTER); //// Add the mapHolder to the center of the frame
-            this.add(buttonPanel, BorderLayout.SOUTH); /// Add buttons to the bottom
 
-            legend = new Legend();
-            this.add(legend, BorderLayout.NORTH);
 
 
         }
 
-        public void createMenuBar() {
-            menu = new JMenu("Menu - click me for options");
-            menu.setBackground(Color.black);
-            menu.setForeground(Color.white);
+        public void createMenuBar()
+        {
             menuBar = new JMenuBar();
-            menuBar.add(menu);
             menuBar.setBackground(Color.black);
             menuBar.setForeground(Color.white);
             menuBar.setVisible(true);
             this.setJMenuBar(menuBar);
         }
 
-        public void createMenuButtons() {
+        /// Menu and its buttons for Maps
+        public void createMapMenu()
+        {
+            mapMenu = new JMenu("Map configuration");
+            mapMenu.setBackground(Color.black);
+            mapMenu.setForeground(Color.white);
+
+            menuBar.add(mapMenu);
+
+                    }
+        public void createMapMenuButtons()
+        {
+            /// FIRST ITEM
+            JMenuItem saveMap = new JMenuItem("Save map");
+            saveMap.setBackground(Color.black);
+            saveMap.setForeground(Color.white);
+            saveMap.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    /// FUNCTIONALITY HERE;
+                }
+            });
+            mapMenu.add(saveMap);
+
+            /// FOURTH MENU ITEM
+            JMenuItem openMap = new JMenuItem("Open map");
+            openMap.setBackground(Color.black);
+            openMap.setForeground(Color.white);
+            openMap.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    /// FUNCTIONALITY HERE();
+                }
+            });
+            mapMenu.add(openMap);
+        }
+
+        /// Menu and its buttons for Simulation
+        public void createSimulationMenu() {
+            simulationMenu = new JMenu("Simulation options");
+            simulationMenu.setBackground(Color.black);
+            simulationMenu.setForeground(Color.white);
+            menuBar.add(simulationMenu);
+
+        }
+        public void createSimulationMenuButtons() {
             final boolean[] counter = {false};
             final boolean[] counter2 = {false};
 
             /// FIRST MENU ITEM
-            final JMenuItem firstItem = new JMenuItem("Show / hide animals");
-            firstItem.setBackground(Color.black);
-            firstItem.setForeground(Color.white);
-            menu.add(firstItem);
-            firstItem.addActionListener(new ActionListener() {
+            final JMenuItem showHideAnimals = new JMenuItem("Show / hide animals");
+            showHideAnimals.setBackground(Color.black);
+            showHideAnimals.setForeground(Color.white);
+            simulationMenu.add(showHideAnimals);
+            showHideAnimals.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     /// Toggle between show and hide legend
@@ -162,22 +224,20 @@ public class MainandGUI {
                         drawHolder.setVisible(true);
                     }
 
-                    //createSecondPane();
-
 
                 }
             });
 
 
             /// SECOND MENU ITEM
-            JMenuItem secondItem = new JMenuItem("Show / hide legend");
-            secondItem.setBackground(Color.black);
-            secondItem.setForeground(Color.white);
+            JMenuItem showHideLegend = new JMenuItem("Show / hide legend");
+            showHideLegend.setBackground(Color.black);
+            showHideLegend.setForeground(Color.white);
 
-            secondItem.addActionListener(new ActionListener() {
+            showHideLegend.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    /// Toggle between show and hide animals.
+                    /// Toggle between show and hide legend.
                     counter[0] = !counter[0];
 
                     if (counter[0]) {
@@ -187,81 +247,36 @@ public class MainandGUI {
                     }
                 }
             });
-            menu.add(secondItem);
-
-            /// THIRD MENU ITEM
-            JMenuItem thirdItem = new JMenuItem("PLACEHOLDER 3");
-            thirdItem.setBackground(Color.black);
-            thirdItem.setForeground(Color.white);
-            thirdItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    createThirdPane();
-                }
-            });
-            menu.add(thirdItem);
-        }
-
-
-        public void createButtons() {
-            buttonPanel = new JPanel();
-            buttonPanel.setLayout(new FlowLayout());
-            buttonPanel.setVisible(true);
-
-
-            /// Start button
-            ButtonUtils.addButton(buttonPanel, "Start", new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        // Enable restart and stop button and start simulation!
-                        buttonPanel.getComponent(1).setEnabled(true);
-                        buttonPanel.getComponent(2).setEnabled(true);
-                        moveTester();
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            });
-
-            // Stop button
-            ButtonUtils.addButton(buttonPanel, "Stop", new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    stopMovement();
-
-                }
-            });
-
-            /// Disable the stop button so it can't be clicked until simulation has started!
-            buttonPanel.getComponent(1).setEnabled(false);
-
-            // Reset button
-
-            ButtonUtils.addButton(buttonPanel, "Reset", new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    /// Clear the animal and create a new preserve
-                    reset();
-                }
-            });
-
-            /// Disable the reset button so it can't be clicked until simulation has started!
-            buttonPanel.getComponent(2).setEnabled(false);
-
-
-            // Exit button
-            ButtonUtils.addButton(buttonPanel, "Exit", new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    preserve.stopThreads();
-                    System.exit(1);
-                }
-            });
+            simulationMenu.add(showHideLegend);
 
 
         }
+
+        // Filechooser
+        public void createFileChooser()
+        {
+            chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File("MapFiles")); //Set directory to local MapFiles folder
+            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            chooser.addChoosableFileFilter(new FileFilter() //User can only save and load txt files
+            {
+
+                @Override
+                public boolean accept(File file)
+                {
+                    return file.getName().endsWith(".txt");
+                }
+
+                @Override
+                public String getDescription()
+                {
+                    return ".txt files";
+                }
+
+            });
+        }
+
+
 
 
         /// ADD FUNCTIONALITY FOR MENU ITEMS HERE!
@@ -279,15 +294,34 @@ public class MainandGUI {
         }
 
 
-        /// Cancel timers, clear animals from map. Create new preserve and "resume" timer.
-        public void reset() {
-            timer.cancel();
-            mapHolder.clearAnimals();
-            drawHolder.setVisible(true);
-            createPreserve();
-            resume();
+
+
+
+        /// Main pane with tabs. TODO change BG-color
+        class TabbedPane extends JTabbedPane {
+
+            public TabbedPane() {
+
+                super();
+
+                /// Create the mapHolder
+                mapHolder = new MapHolder(mapHandler);
+                statisticsPanel = new StatisticsPanel();
+
+                this.addTab("Map View", mapHolder); /// Add the mapHolder to our first tab
+                this.addTab("Statistics",statisticsPanel);
+
+
+
+
+            }
         }
 
+
+
+        }
+
+        /// Legend which MapView uses
         class Legend extends JLabel {
             public Legend() {
                 super();
@@ -314,8 +348,64 @@ public class MainandGUI {
 
         }
 
-        /// Panel to hold the Map
+        /// Statistics view
+        class StatisticsPanel extends JPanel {
+            JList chartList;
+            String[] chartNames = {"Chart 1", "Chart 2", "Chart 3"};
+            public StatisticsPanel() {
+                this.setLayout(new BorderLayout());
+
+                createStatisticButtons();
+                this.add(statisticButtons, BorderLayout.SOUTH);
+
+                createChartList();
+                this.add(chartList, BorderLayout.WEST);
+
+
+
+            }
+            public void createStatisticButtons() {
+                statisticButtons = new JPanel();
+                statisticButtons.setLayout(new FlowLayout());
+                statisticButtons.setVisible(true);
+
+
+                /// Save button
+                ButtonUtils.addButton(statisticButtons, "Save chart", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            // Add functionality to save chart here
+
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                });
+
+                // Stop button
+                ButtonUtils.addButton(statisticButtons, "PLACEHOLDER", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                     /// ENABLE BUTTON FUNCTIONALITY HERE
+
+                    }
+                });
+
+                            }
+
+            // TODO add mouselisteners to each item in list and make them switch between charts
+            public void createChartList()
+            {
+            chartList = new JList(chartNames);
+
+            }
+        }
+
+        /// Panel to hold the Map /// MapView
         class MapHolder extends JPanel {
+
+
             private BufferedImage backgroundImage;
             private JLabel bgImageHolder;
 
@@ -324,17 +414,31 @@ public class MainandGUI {
             private BufferedImage drawingSurface;
 
             public MapHolder(MapHandler mapLoader) {
+
+
+
                 this.setLayout(new BorderLayout());
                 this.setOpaque(false);
-                drawingSurface = new BufferedImage(MapHandler.getWidth(), MapHandler.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
+                // Create buttons
+                createMapButtons();
+
+                /// Add legend
+                legend = new Legend();
+                this.add(legend, BorderLayout.NORTH);
+
+                // Create the drawing surface
+                drawingSurface = new BufferedImage(MapHandler.getWidth(), MapHandler.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
                 /// Set map as the background
                 backgroundImage = mapLoader.getImage();
                 bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
                 bgImageHolder.setLayout(new BorderLayout());
-                add(bgImageHolder); /// Add the background (map) holder to the JPanel
+                add(bgImageHolder, BorderLayout.CENTER); /// Add the background (map) holder to the JPanel
+                add(mapButtons, BorderLayout.SOUTH);
 
+
+                /// Holder for drawingSurface
                 drawHolder = new JLabel(new ImageIcon(drawingSurface));
                 drawHolder.setVisible(true);
                 drawHolder.setHorizontalAlignment(JLabel.CENTER); /// Center the img
@@ -348,6 +452,73 @@ public class MainandGUI {
                 repaint();
 
 
+            }
+
+            public void createMapButtons() {
+                mapButtons = new JPanel();
+                mapButtons.setLayout(new FlowLayout());
+                mapButtons.setVisible(true);
+
+
+                /// Start button
+                ButtonUtils.addButton(mapButtons, "Start", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            // Enable restart and stop button and start simulation!
+                            mapButtons.getComponent(1).setEnabled(true);
+                            mapButtons.getComponent(2).setEnabled(true);
+                            moveTester();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                });
+
+                // Stop button
+                ButtonUtils.addButton(mapButtons, "Stop", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        stopMovement();
+
+                    }
+                });
+
+                /// Disable the stop button so it can't be clicked until simulation has started!
+                mapButtons.getComponent(1).setEnabled(false);
+
+                // Reset button
+
+                ButtonUtils.addButton(mapButtons, "Reset", new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        /// Clear the animal and create a new preserve
+                        reset();
+                    }
+                });
+
+                /// Disable the reset button so it can't be clicked until simulation has started!
+                mapButtons.getComponent(2).setEnabled(false);
+
+
+                // Exit button
+                ButtonUtils.addButton(mapButtons, "Exit", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        preserve.stopThreads();
+                        System.exit(1);
+                    }
+                });
+
+
+            }
+            public void reset() {
+                timer.cancel();
+                mapHolder.clearAnimals();
+                drawHolder.setVisible(true);
+                createPreserve();
+                resume();
             }
 
             public void animalstoRectangles() {
@@ -405,5 +576,9 @@ public class MainandGUI {
 
 
     }
-}
+
+
+
+
+
 
