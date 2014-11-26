@@ -256,12 +256,12 @@ public class MainandGUI {
 
                 @Override
                 public boolean accept(File file) {
-                    return file.getName().endsWith(".txt");
+                    return file.getName().endsWith(".png");
                 }
 
                 @Override
                 public String getDescription() {
-                    return ".txt files";
+                    return ".png files";
                 }
 
             });
