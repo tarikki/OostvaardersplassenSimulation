@@ -8,10 +8,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -57,6 +54,7 @@ public class MainandGUI {
 
                 GUI gui = new GUI();
                 gui.setVisible(true);
+                gui.pack();
 
             }
         });
@@ -425,6 +423,8 @@ public class MainandGUI {
         public MapHolder(MapHandler mapLoader) {
 
 
+
+
             this.setLayout(new BorderLayout());
 
             this.setOpaque(false);
@@ -442,7 +442,11 @@ public class MainandGUI {
             /// Set map as the background
             backgroundImage = mapLoader.getImage();
             bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
+            ToolTipManager.sharedInstance().registerComponent(bgImageHolder);
+            bgImageHolder.setToolTipText("Hover over an animal for more info");
             bgImageHolder.setLayout(new BorderLayout());
+
+
 
             this.add(bgImageHolder, BorderLayout.WEST); /// Add the background (map) holder to the JPanel
             this.add(mapButtons, BorderLayout.SOUTH);
@@ -452,6 +456,8 @@ public class MainandGUI {
             drawHolder = new JLabel(new ImageIcon(drawingSurface));
             drawHolder.setVisible(true);
             drawHolder.setHorizontalAlignment(JLabel.LEFT); /// Center the img
+
+
             bgImageHolder.add(drawHolder);                    /// attach the drawingSurface to the background holder so we can have them on top of each other
 
 
@@ -459,13 +465,14 @@ public class MainandGUI {
 
 
             drawAnimals();
-            tooltipTest();
 
+            tooltipTest();
 
             repaint();
 
 
         }
+
 
 
         public void createMapButtons() {
@@ -594,9 +601,8 @@ public class MainandGUI {
 
 
         /// Maybe add this to mouseclick instead on mousemove since now it updates kinda slowly.
-        public void tooltipTest()
-        {
-
+        public void tooltipTest() {
+            final AnimalRectangle[] animalRectangle = new AnimalRectangle[1];
 
 
             bgImageHolder.addMouseMotionListener(new MouseMotionListener() {
@@ -607,16 +613,20 @@ public class MainandGUI {
 
                 @Override
                 public void mouseMoved(MouseEvent e) {
-                    for (AnimalRectangle animalRectangle : rectangles)
-                    if (animalRectangle.contains(e.getPoint()))
-                    {
-                        bgImageHolder.setToolTipText(animalRectangle.report);
+                    for (int i = 0; i < rectangles.size(); i++) {
+                        animalRectangle[0] = rectangles.get(i);
+                        if (animalRectangle[0].contains(e.getPoint())) {
 
-                        repaint();
-                        break;
+                          bgImageHolder.setToolTipText(animalRectangle[0].report);
+                            repaint();
+                            break;
+                        }
+                        else
+                        {
+                            bgImageHolder.setToolTipText("");
+                        }
 
                     }
-
                 }
             });
         }
@@ -641,8 +651,9 @@ public class MainandGUI {
 
 
         }
-    }
 
+
+    }
 }
 
 
