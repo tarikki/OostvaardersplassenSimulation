@@ -8,8 +8,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -25,14 +24,14 @@ public class MainandGUI {
     public static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
     public static final int DEFAULT_WIDTH = SCREEN_SIZE.width * 2 / 3;
     public static final int DEFAULT_HEIGHT = SCREEN_SIZE.height * 2 / 3;
-   public static final Color DEFAULT_BG_COLOR = new Color(238, 238, 238);
+    public static final Color DEFAULT_BG_COLOR = new Color(238, 238, 238);
 
     private JMenu simulationMenu; ////  Simulation menu
     private JMenu mapMenu; ///  map menu
     private JMenuBar menuBar;
     private static MapHolder mapHolder;
     private static StatisticsPanel statisticsPanel;
-
+    private GUI.TabbedPane TabbedPane;
 
     private JPanel mapButtons; /// Could be moved to mapHolder since it only uses these
     private JPanel statisticButtons;
@@ -65,6 +64,8 @@ public class MainandGUI {
     public static void main(String[] args) {
         mapHandler = new MapHandler(); /// Create map
         createPreserve();
+
+
         new MainandGUI();
 
 
@@ -110,7 +111,7 @@ public class MainandGUI {
 
 
         private static final long serialVersionUID = 1L;
-        private GUI.TabbedPane TabbedPane;
+
 
         public GUI() {
 
@@ -170,7 +171,7 @@ public class MainandGUI {
             saveMap.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                   saveMap();
+                    saveMap();
                 }
             });
             mapMenu.add(saveMap);
@@ -182,7 +183,7 @@ public class MainandGUI {
             openMap.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                   openNewMap();
+                    openNewMap();
                 }
             });
             mapMenu.add(openMap);
@@ -273,9 +274,8 @@ public class MainandGUI {
 
             int returnVal = chooser.showSaveDialog(this);
 
-            if(returnVal == JFileChooser.APPROVE_OPTION)
-            {
-               /// Add functionality to save map here!
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                /// Add functionality to save map here!
 
                 System.out.println("Saved: " + chooser.getSelectedFile().getAbsolutePath());
             }
@@ -285,8 +285,7 @@ public class MainandGUI {
         public void openNewMap() {
             int returnVal = chooser.showOpenDialog(this);
 
-            if(returnVal == JFileChooser.APPROVE_OPTION)
-            {
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File input = new File(chooser.getSelectedFile().getAbsolutePath());
 
                 /// Add functionality to open a new map here
@@ -305,12 +304,10 @@ public class MainandGUI {
 
             public TabbedPane() {
 
-                super();
 
                 /// Create the mapHolder
                 mapHolder = new MapHolder(mapHandler);
                 statisticsPanel = new StatisticsPanel();
-
 
 
                 this.addTab("Map View", mapHolder); /// Add the mapHolder to our first tab
@@ -370,8 +367,6 @@ public class MainandGUI {
             this.add(chartList, BorderLayout.WEST);
 
 
-
-
         }
 
         public void createStatisticButtons() {
@@ -409,7 +404,6 @@ public class MainandGUI {
             chartList = new JList(chartNames);
 
 
-
         }
     }
 
@@ -420,7 +414,7 @@ public class MainandGUI {
         private BufferedImage backgroundImage;
         private JLabel bgImageHolder;
 
-        private ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
+        private ArrayList<AnimalRectangle> rectangles = new ArrayList<AnimalRectangle>();
         private Graphics2D g2d;
         private BufferedImage drawingSurface;
 
@@ -429,7 +423,7 @@ public class MainandGUI {
 
             this.setLayout(new BorderLayout());
 
-            this.setOpaque(false); //Needs to be commented out if we want to switch BG color
+            this.setOpaque(false);
 
             // Create buttons
             createMapButtons();
@@ -445,6 +439,7 @@ public class MainandGUI {
             backgroundImage = mapLoader.getImage();
             bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
             bgImageHolder.setLayout(new BorderLayout());
+
             add(bgImageHolder, BorderLayout.CENTER); /// Add the background (map) holder to the JPanel
             add(mapButtons, BorderLayout.SOUTH);
 
@@ -459,8 +454,36 @@ public class MainandGUI {
             setVisible(true);
 
 
+            /// Mouse listener for tooltip
+            this.addMouseMotionListener(new MouseMotionListener() {
+                @Override
+                public void mouseDragged(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                for (AnimalRectangle animalRectangle : rectangles)
+                {
+                    if (animalRectangle.contains(e.getPoint()))
+                    {
+                        setToolTipText(animalRectangle.report);
+                    }
+                    else
+                    {
+                        setToolTipText("TEST"); ////// WHy does it print here instead of inside the if statement?
+
+                    }
+                }
+                }
+            });
+
+
             animalstoRectangles();
+
             drawAnimals();
+
+
             repaint();
 
 
@@ -538,10 +561,12 @@ public class MainandGUI {
             for (int i = 0; i < preserve.getNumberOfAnimals(); i++) {
 
 
-                rectangles.add(new Rectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 5, 5)); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT
+                rectangles.add(new AnimalRectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 5, 5, preserve.getAnimals().get(i).getId())); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
 
 
             }
+
+
         }
 
 
@@ -552,8 +577,9 @@ public class MainandGUI {
 
 
             super.paintComponent(g2d);
-            for (Rectangle rectangle : rectangles) {
-                g2d.fill(rectangle);
+            for (AnimalRectangle animalRectangle : rectangles) {
+                g2d.fill(animalRectangle);
+
 
             }
             repaint();
@@ -585,10 +611,36 @@ public class MainandGUI {
 
         }
 
+        public void printRectangles() {
+            System.out.println(rectangles);
+            System.out.println(rectangles.get(5).toString());
+        }
+
     }
 
+    class AnimalRectangle extends Rectangle {
+        private int id;
+        private String report;
+        private int x;
+        private int y;
+        private int width;
+        private int height;
 
+
+        public AnimalRectangle(int x, int y, int width, int height, int id) {
+            super(x, y, width, height);
+            this.id = id;
+            this.report = preserve.getAnimals().get(this.id).report();
+
+
+        }
+
+
+    }
 }
+
+
+
 
 
 
