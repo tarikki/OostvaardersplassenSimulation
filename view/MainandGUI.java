@@ -8,7 +8,10 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -418,6 +421,7 @@ public class MainandGUI {
         private Graphics2D g2d;
         private BufferedImage drawingSurface;
 
+
         public MapHolder(MapHandler mapLoader) {
 
 
@@ -440,54 +444,29 @@ public class MainandGUI {
             bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
             bgImageHolder.setLayout(new BorderLayout());
 
-            add(bgImageHolder, BorderLayout.CENTER); /// Add the background (map) holder to the JPanel
-            add(mapButtons, BorderLayout.SOUTH);
+            this.add(bgImageHolder, BorderLayout.WEST); /// Add the background (map) holder to the JPanel
+            this.add(mapButtons, BorderLayout.SOUTH);
 
 
             /// Holder for drawingSurface
             drawHolder = new JLabel(new ImageIcon(drawingSurface));
             drawHolder.setVisible(true);
-            drawHolder.setHorizontalAlignment(JLabel.CENTER); /// Center the img
+            drawHolder.setHorizontalAlignment(JLabel.LEFT); /// Center the img
             bgImageHolder.add(drawHolder);                    /// attach the drawingSurface to the background holder so we can have them on top of each other
-
-
-            setVisible(true);
-
-
-            /// Mouse listener for tooltip
-            this.addMouseMotionListener(new MouseMotionListener() {
-                @Override
-                public void mouseDragged(MouseEvent e) {
-
-                }
-
-                @Override
-                public void mouseMoved(MouseEvent e) {
-                for (AnimalRectangle animalRectangle : rectangles)
-                {
-                    if (animalRectangle.contains(e.getPoint()))
-                    {
-                        setToolTipText(animalRectangle.report);
-                    }
-                    else
-                    {
-                        setToolTipText("TEST"); ////// WHy does it print here instead of inside the if statement?
-
-                    }
-                }
-                }
-            });
 
 
             animalstoRectangles();
 
+
             drawAnimals();
+            tooltipTest();
 
 
             repaint();
 
 
         }
+
 
         public void createMapButtons() {
             mapButtons = new JPanel();
@@ -561,7 +540,7 @@ public class MainandGUI {
             for (int i = 0; i < preserve.getNumberOfAnimals(); i++) {
 
 
-                rectangles.add(new AnimalRectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 5, 5, preserve.getAnimals().get(i).getId())); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
+                rectangles.add(new AnimalRectangle(preserve.getAnimalX(i), preserve.getAnimalY(i), 10, 10, preserve.getAnimals().get(i).getId())); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
 
 
             }
@@ -577,6 +556,8 @@ public class MainandGUI {
 
 
             super.paintComponent(g2d);
+
+
             for (AnimalRectangle animalRectangle : rectangles) {
                 g2d.fill(animalRectangle);
 
@@ -611,33 +592,59 @@ public class MainandGUI {
 
         }
 
-        public void printRectangles() {
-            System.out.println(rectangles);
-            System.out.println(rectangles.get(5).toString());
+
+        /// Maybe add this to mouseclick instead on mousemove since now it updates kinda slowly.
+        public void tooltipTest()
+        {
+
+
+
+            bgImageHolder.addMouseMotionListener(new MouseMotionListener() {
+                @Override
+                public void mouseDragged(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    for (AnimalRectangle animalRectangle : rectangles)
+                    if (animalRectangle.contains(e.getPoint()))
+                    {
+                        bgImageHolder.setToolTipText(animalRectangle.report);
+
+                        repaint();
+                        break;
+
+                    }
+
+                }
+            });
         }
 
-    }
 
-    class AnimalRectangle extends Rectangle {
-        private int id;
-        private String report;
-        private int x;
-        private int y;
-        private int width;
-        private int height;
+        class AnimalRectangle extends Rectangle {
+            private int id;
+            private String report;
+            private int x;
+            private int y;
+            private int width;
+            private int height;
 
 
-        public AnimalRectangle(int x, int y, int width, int height, int id) {
-            super(x, y, width, height);
-            this.id = id;
-            this.report = preserve.getAnimals().get(this.id).report();
+            public AnimalRectangle(int x, int y, int width, int height, int id) {
+                super(x, y, width, height);
+                this.id = id;
+                this.report = preserve.getAnimals().get(this.id).report();
+
+
+            }
 
 
         }
-
-
     }
+
 }
+
 
 
 
