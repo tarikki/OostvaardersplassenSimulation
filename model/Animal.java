@@ -302,7 +302,7 @@ public class Animal implements Runnable {
 
     @Override
     public void run() {
-        useBrain();
+        useBrain2();
         hunger++;
         thirst++;
 

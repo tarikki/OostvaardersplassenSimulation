@@ -2,6 +2,7 @@ package view;
 
 import model.MapHandler;
 import model.Preserve;
+import org.joda.time.DateTime;
 import util.ButtonUtils;
 
 import javax.swing.*;
@@ -56,6 +57,19 @@ public class MainandGUI {
 
                 GUI gui = new GUI();
                 gui.setVisible(true);
+                Timer timerGUI = new Timer();
+
+                timerGUI.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+
+
+                        mapHolder.refresh();
+
+
+                    }
+
+                }, 100, 100);
                 //gui.pack(); Can be uncommented again
 
             }
@@ -93,20 +107,20 @@ public class MainandGUI {
             public void run() {
                 try {
                     preserve.executeTurn();
-                    mapHolder.refresh();
+
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        }, 100, 500);
+        }, 10, 10);
 
     }
 
     /// Just initializing
     public static void createPreserve() {
 
-        preserve = new Preserve(100); /// Create preserve with X amount of animals
+        preserve = new Preserve(52.3667, 100, new DateTime(), (new DateTime()).plusDays(3)); /// Create preserve with X amount of animals
     }
 
     /// Our frame with simulationMenu
