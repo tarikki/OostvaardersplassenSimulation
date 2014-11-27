@@ -46,6 +46,10 @@ public class Animal implements Runnable {
         }
     }
 
+    public void FindClosestTarget(){
+
+    }
+
     /**
      * a method for finding the way to a color code the animal might want to go to
      * so to find a way to some food would look like this animal.makeItDijkstra(MapHandler.ColorCode.GREEN);
@@ -75,18 +79,18 @@ public class Animal implements Runnable {
                     int closestX = 0;                                   // coordinates for the closest scanned square with the lowest cost
                     int closestY = 0;
 //                    System.out.println("Cx: " + currentX + ",  Cy" + currentY);
-                    if (movementCostArray[currentX][currentY] == null){ //&&        // TODO should values be recalculated at some conditions?
-                            //MapHandler.isValidMove(xPos - scanRadius + w, yPos - scanRadius + h)) { // if not scanned and is valid square
-                        for (int j = 0; j < 3; j++) {                   // check all squares surrounding this square
-                            for (int i = 0; i < 3; i++) {
+                    if (movementCostArray[currentX][currentY] == null) { //&&        // TODO should values be recalculated at some conditions?
+                        //MapHandler.isValidMove(xPos - scanRadius + w, yPos - scanRadius + h)) { // if not scanned and is valid square
+                        for (int j = -1; j < 2; j++) {                   // check all squares surrounding this square
+                            for (int i = -1; i < 2; i++) {
 
-                                if (currentX - 1 + i >= 0 && currentX - 1 + i < movementCostArray.length &&
-                                        currentY - 1 + j >= 0 && currentY - 1 + j < movementCostArray.length)                       // make sure we remain within array bounds
-                                    if (movementCostArray[currentX - 1 + i][currentY - 1 + j] != null) {                            // if there's a dijkstraNode, check it's cost
-                                        if (movementCostArray[currentX - 1 + i][currentY - 1 + j].getCost() < lowestCost) {         // if cost lower than previous lowest cost
-                                            lowestCost = movementCostArray[currentX - 1 + i][currentY - 1 + j].getCost() + 1;       // make this the lowest cost node and add 1 for the node we're in
-                                            closestX = currentX - 1 + i;                                                            // save it's coordinates in respect to the center of movementcostarray
-                                            closestY = currentY - 1 + j;
+                                if (currentX + i >= 0 && currentX  + i < movementCostArray.length &&
+                                        currentY  + j >= 0 && currentY + j < movementCostArray.length)                       // make sure we remain within array bounds
+                                    if (movementCostArray[currentX  + i][currentY + j] != null) {                            // if there's a dijkstraNode, check it's cost
+                                        if (movementCostArray[currentX + i][currentY + j].getCost() < lowestCost) {         // if cost lower than previous lowest cost
+                                            lowestCost = movementCostArray[currentX + i][currentY + j].getCost() + 1;       // make this the lowest cost node and add 1 for the node we're in
+                                            closestX = currentX + i;                                                            // save it's coordinates in respect to the center of movementcostarray
+                                            closestY = currentY + j;
                                         }
                                     }
                             }
@@ -97,6 +101,7 @@ public class Animal implements Runnable {
                             foundIt = loopingDone = true;                                                                           // we found it! stop looping!
                             System.out.println("Food found at x " + (xPos - scanRadius + w) + " and y " + (yPos - scanRadius + h));
                             stackDijkstra(movementCostArray[currentX][currentY], currentX, currentY);                               // this is the winning node, put it on the bottom of the dikstraStack
+//                            dijkstraPrinter();
                         }
                     }
                 }
@@ -110,6 +115,54 @@ public class Animal implements Runnable {
         }
         return foundIt;
     }
+
+    private void dijkstraPrinter() {
+        for (int h = 0; h < movementCostArray.length; h++) {
+            for (int w = 0; w < movementCostArray.length; w++) {
+                if (movementCostArray[w][h] != null) {
+                    System.out.print(" " + movementCostArray[w][h].getxDirection()+" " + movementCostArray[w][h].getyDirection() + " ");
+                } else {
+                    System.out.print(" X X ");
+                }
+
+            }
+            System.out.println();
+        }
+    }
+
+    private void dijkstraDirectionPrinter() {
+        for (int h = 0; h < movementCostArray.length; h++) {
+            for (int w = 0; w < movementCostArray.length; w++) {
+                String arrows = "";
+                if (movementCostArray[w][h] != null) {
+                    if (movementCostArray[w][h].getxDirection() == -1) {
+                        arrows += " U";
+                    }
+                    else if (movementCostArray[w][h].getxDirection() == 1) {
+                        arrows += " D";
+                    }
+                    else  {
+                        arrows += " o";
+                    }
+
+                    if (movementCostArray[w][h].getyDirection() == -1){
+                        arrows += "L ";
+                    }else if (movementCostArray[w][h].getyDirection() == 1){
+                        arrows += "R ";
+                    }else {
+                        arrows += "o ";
+                    }
+
+                    System.out.print(arrows);
+                } else {
+                    System.out.print(" XX ");
+                }
+
+            }
+            System.out.println();
+        }
+    }
+
 
     /**
      * This method recursively retraces the path from desired spot to animal
@@ -248,7 +301,7 @@ public class Animal implements Runnable {
 
     @Override
     public void run() {
-        useBrain2();
+        useBrain();
         hunger++;
         thirst++;
 

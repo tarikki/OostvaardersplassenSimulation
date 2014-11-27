@@ -3,6 +3,7 @@ package testers;
 import model.Animal;
 import model.MapHandler;
 import model.Preserve;
+import org.joda.time.DateTime;
 
 /**
  * Created by extradikke on 22-11-14.
@@ -12,7 +13,7 @@ public class DijkstraTester {
 
 
         MapHandler mapHandler = new MapHandler();
-        Preserve preserve = new Preserve(1);
+        Preserve preserve = new Preserve(1, new DateTime(), (new DateTime()).plusDays(3));
         Animal animal = preserve.getAnimals().get(0);
         animal.setxPos(7);
         animal.setyPos(17);

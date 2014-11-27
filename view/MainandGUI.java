@@ -2,6 +2,7 @@ package view;
 
 import model.MapHandler;
 import model.Preserve;
+import org.joda.time.DateTime;
 import util.ButtonUtils;
 
 import javax.swing.*;
@@ -40,6 +41,19 @@ public class MainandGUI {
 
                 GUI gui = new GUI();
                 gui.setVisible(true);
+                Timer timer2 = new Timer();
+
+                timer2.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+
+
+                            mapHolder.refresh();
+
+
+                        }
+
+                }, 100, 100);
 
             }
         });
@@ -76,21 +90,21 @@ public class MainandGUI {
                 try {
                     long start = System.nanoTime();
                     preserve.executeTurn();
-                    mapHolder.refresh();
+//                    mapHolder.refresh();
                     System.out.println("Elapsed time: " + (System.nanoTime() - start) / 1000000);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        }, 10, 10);
+        }, 5, 5);
 
     }
 
     /// Just initializing
     public static void createPreserve() {
 
-        preserve = new Preserve(100); /// Create preserve with X amount of animals
+        preserve = new Preserve(100, new DateTime(), (new DateTime()).plusDays(3)); /// Create preserve with X amount of animals
     }
 
 
