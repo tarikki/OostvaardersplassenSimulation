@@ -295,8 +295,9 @@ public class Animal implements Runnable {
     }
 
 
-    public void report() {
-        System.out.println("Animal [id = " + this.id + ", Energy = " + this.energy + ", Living = " + this.living + "]");
+    public String report() {
+
+        return "Animal [id = " + this.id + ", Energy = " + this.energy + ", Living = " + this.living + "]";
     }
 
     @Override
