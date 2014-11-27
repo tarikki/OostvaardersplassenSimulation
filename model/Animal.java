@@ -71,12 +71,12 @@ public class Animal implements Runnable {
 
                     int currentX = (lineOfSight / 2) - scanRadius + w;  // coordinates for square being scanned
                     int currentY = (lineOfSight / 2) - scanRadius + h;
-                    int lowestCost = 100;                               // initialize it with an impossible cost
+                    int lowestCost = 1000;                               // initialize it with an impossible cost
                     int closestX = 0;                                   // coordinates for the closest scanned square with the lowest cost
                     int closestY = 0;
 //                    System.out.println("Cx: " + currentX + ",  Cy" + currentY);
-                    if (movementCostArray[currentX][currentY] == null &&        // TODO should values be recalculated at some conditions?
-                            MapHandler.isValidMove(xPos - scanRadius + w, yPos - scanRadius + h)) { // if not scanned and is valid square
+                    if (movementCostArray[currentX][currentY] == null){ //&&        // TODO should values be recalculated at some conditions?
+                            //MapHandler.isValidMove(xPos - scanRadius + w, yPos - scanRadius + h)) { // if not scanned and is valid square
                         for (int j = 0; j < 3; j++) {                   // check all squares surrounding this square
                             for (int i = 0; i < 3; i++) {
 
@@ -138,9 +138,17 @@ public class Animal implements Runnable {
     public boolean checkForWayPoints() {
         boolean result = false;
         if (!wayPoints.isEmpty()) {
+
             DijkstraNode nextStep = wayPoints.pop();
-            move(nextStep.getxDirection(), nextStep.getyDirection());
-            result = true;
+            if (MapHandler.isValidMove(nextStep.getxDirection() + xPos, nextStep.getyDirection() + yPos)) {
+
+                move(nextStep.getxDirection(), nextStep.getyDirection());
+            } else {
+                wayPoints.clear();
+                System.out.println(MapHandler.getValue(nextStep.getxDirection() + xPos, nextStep.getyDirection() + xPos));
+                System.out.println("waypoint cleared");
+            }
+
         }
         return result;
     }
@@ -177,8 +185,49 @@ public class Animal implements Runnable {
 //        System.out.println("Number of waypoints: " + wayPoints.size());
     }
 
-    public void drink() {
+    public void useBrain2() {
+        if (wayPoints.isEmpty()) {
+            if (thirst > 1) {
 
+                if (standingNextToWater(xPos, yPos)) {
+                    drink();
+
+                } else {
+                    makeItDijkstra(MapHandler.ColorCode.BLUE);
+
+                }
+
+            }
+        }
+        checkForWayPoints();
+//        System.out.println("Number of waypoints: " + wayPoints.size());
+    }
+
+    public void drink() {
+        if (standingNextToWater(xPos, yPos)) {
+            reduceThirst(1);
+        }
+
+    }
+
+    public void reduceThirst(int amount) {
+        if (thirst - amount > 0) {
+            thirst -= amount;
+        } else thirst = 0;
+    }
+
+    public boolean standingNextToWater(int x, int y) {
+        boolean water = false;
+        for (int w = -1; w < 2; w++) {
+            for (int h = -1; h < 2; h++) {
+                if (MapHandler.getValue(x + w, y + h) == MapHandler.ColorCode.BLUE.getValue()) {
+                    water = true;
+
+                }
+            }
+
+        }
+        return water;
     }
 
     public void move(int x, int y) {
@@ -199,8 +248,9 @@ public class Animal implements Runnable {
 
     @Override
     public void run() {
-        useBrain();
+        useBrain2();
         hunger++;
+        thirst++;
 
     }
 

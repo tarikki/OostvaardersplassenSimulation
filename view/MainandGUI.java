@@ -74,14 +74,16 @@ public class MainandGUI {
             @Override
             public void run() {
                 try {
+                    long start = System.nanoTime();
                     preserve.executeTurn();
                     mapHolder.refresh();
+                    System.out.println("Elapsed time: " + (System.nanoTime() - start) / 1000000);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        }, 100, 500);
+        }, 10, 10);
 
     }
 
