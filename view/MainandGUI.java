@@ -29,9 +29,9 @@ public class MainandGUI {
     private JMenu simulationMenu; ////  Simulation menu
     private JMenu mapMenu; ///  map menu
     private JMenuBar menuBar;
-    private static MapHolder mapHolder;
-    private static StatisticsPanel statisticsPanel;
-    private GUI.TabbedPane TabbedPane;
+    private static MapHolder mapHolder; // Needs to be static for timers
+    private StatisticsPanel statisticsPanel;
+    private TabbedPane TabbedPane;
 
     private JPanel mapButtons; /// Could be moved to mapHolder since it only uses these
     private JPanel statisticButtons;
@@ -45,7 +45,7 @@ public class MainandGUI {
     private Legend legend;
     private JFileChooser chooser;
     private JPanel dikkeHolder; /// JPanel to hold the MapHolder so ToolTip doesnt fuck up due to BorderLayOut
-    private JPanel dikkeholder2;
+
 
     // Constructor for creating the GUI
     public MainandGUI() {
@@ -140,7 +140,7 @@ public class MainandGUI {
 
 
             /// Create the tabbed pane
-            TabbedPane = new GUI.TabbedPane();
+            TabbedPane = new TabbedPane();
             TabbedPane.setVisible(true);
 
             this.add(TabbedPane); // Add TabbedPane tab to center
@@ -250,7 +250,6 @@ public class MainandGUI {
             simulationMenu.add(showHideLegend);
 
 
-
         }
 
         // Filechooser
@@ -304,33 +303,31 @@ public class MainandGUI {
         }
 
 
-        /// Main pane with tabs. TODO change BG-color
-        class TabbedPane extends JTabbedPane {
+    }
+
+    /// Main pane with tabs. TODO change BG-color
+    class TabbedPane extends JTabbedPane {
 
 
-            public TabbedPane() {
+        public TabbedPane() {
 
-                /// Holds mapHolder so ToolTips wont be retarded
-                dikkeHolder = new JPanel();
-
-
-                /// Create the mapHolder
-                mapHolder = new MapHolder(mapHandler);
-                statisticsPanel = new StatisticsPanel();
-
-                dikkeHolder.add(mapHolder);
+            /// Holds mapHolder so ToolTips wont be retarded
+            dikkeHolder = new JPanel();
 
 
+            /// Create the mapHolder
+            mapHolder = new MapHolder(mapHandler);
+            statisticsPanel = new StatisticsPanel();
+
+            dikkeHolder.add(mapHolder);
 
 
-                this.addTab("Map View", dikkeHolder); /// Add the mapHolder to our first tab
-                this.addTab("Statistics", statisticsPanel);
+
+            this.addTab("Map View", dikkeHolder); /// Add the mapHolder to our first tab
+            this.addTab("Statistics", statisticsPanel);
 
 
-            }
         }
-
-
     }
 
     /// Legend which MapView uses
@@ -435,14 +432,13 @@ public class MainandGUI {
         public MapHolder(MapHandler mapLoader) {
 
 
-
-
             this.setLayout(new BorderLayout());
 
             this.setOpaque(false);
 
             // Create buttons
             createMapButtons();
+            this.add(mapButtons, BorderLayout.SOUTH);
 
             /// Add legend
             legend = new Legend();
@@ -455,19 +451,17 @@ public class MainandGUI {
             backgroundImage = mapLoader.getImage();
             bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
             ToolTipManager.sharedInstance().registerComponent(bgImageHolder);
-            bgImageHolder.setToolTipText("Hover over an animal for more info");
-            bgImageHolder.setLayout(new BorderLayout());
-
+            bgImageHolder.setLayout(new BorderLayout()); /// Needs to be here so we can position drawHolder and drawingSurface
 
 
             this.add(bgImageHolder, BorderLayout.WEST); /// Add the background (map) holder to the JPanel
-            this.add(mapButtons, BorderLayout.SOUTH);
+
 
 
             /// Holder for drawingSurface
             drawHolder = new JLabel(new ImageIcon(drawingSurface));
             drawHolder.setVisible(true);
-            drawHolder.setHorizontalAlignment(JLabel.LEFT); /// Center the img
+            drawHolder.setHorizontalAlignment(JLabel.CENTER); /// Center the img
 
 
             bgImageHolder.add(drawHolder);                    /// attach the drawingSurface to the background holder so we can have them on top of each other
@@ -484,7 +478,6 @@ public class MainandGUI {
 
 
         }
-
 
 
         public void createMapButtons() {
@@ -629,12 +622,10 @@ public class MainandGUI {
                         animalRectangle[0] = rectangles.get(i);
                         if (animalRectangle[0].contains(e.getPoint())) {
 
-                          bgImageHolder.setToolTipText(animalRectangle[0].report);
+                            bgImageHolder.setToolTipText(animalRectangle[0].report);
                             repaint();
                             break;
-                        }
-                        else
-                        {
+                        } else {
                             bgImageHolder.setToolTipText("");
                         }
 
@@ -647,10 +638,6 @@ public class MainandGUI {
         class AnimalRectangle extends Rectangle {
             private int id;
             private String report;
-            private int x;
-            private int y;
-            private int width;
-            private int height;
 
 
             public AnimalRectangle(int x, int y, int width, int height, int id) {
