@@ -12,7 +12,7 @@ public class PreserveTester {
 
     public static void main(String[] args) {
         MapHandler mapHandler = new MapHandler();
-        Preserve preserve = new Preserve(10, new DateTime(), (new DateTime()).plusDays(3));
+        Preserve preserve = new Preserve(52.3667, 100, new DateTime(), (new DateTime()).plusDays(3));
         for (int i = 0; i < 10; i++) {
             try {
                 preserve.executeTurn();

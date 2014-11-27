@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
 public class AnimalScannerTester {
     public static void main(String[] args) {
         MapHandler mapHandler = new MapHandler();
-        Preserve preserve = new Preserve(1, new DateTime(), (new DateTime()).plusDays(3));
+        Preserve preserve = new Preserve(52.3667, 1, new DateTime(), (new DateTime()).plusDays(3));
         Animal animal = preserve.getAnimals().get(0);
         animal.scanSurroundings();
         System.out.println(animal.getId() + " "+animal.getxPos() + " " + animal.getyPos());

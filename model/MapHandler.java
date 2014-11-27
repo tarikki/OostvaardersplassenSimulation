@@ -33,8 +33,9 @@ public class MapHandler {
         }
     }
 
-
-    public MapHandler() {
+    /// Init block
+    {
+        System.out.println("Ekana?");
         loadImage();
         map = new byte[width][height];
         scanImage();
@@ -116,7 +117,7 @@ public class MapHandler {
         return map[x][y];
     }
 
-    public BufferedImage getImage() {
+    public static BufferedImage getImage() {
         return image;
 
     }

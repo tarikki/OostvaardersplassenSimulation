@@ -13,7 +13,7 @@ public class DijkstraTester {
 
 
         MapHandler mapHandler = new MapHandler();
-        Preserve preserve = new Preserve(1, new DateTime(), (new DateTime()).plusDays(3));
+        Preserve preserve = new Preserve(52.3667, 1, new DateTime(), (new DateTime()).plusDays(3));
         Animal animal = preserve.getAnimals().get(0);
         animal.setxPos(7);
         animal.setyPos(17);
