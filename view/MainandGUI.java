@@ -44,6 +44,8 @@ public class MainandGUI {
     private JLabel drawHolder;
     private Legend legend;
     private JFileChooser chooser;
+    private JPanel dikkeHolder; /// JPanel to hold the MapHolder so ToolTip doesnt fuck up due to BorderLayOut
+    private JPanel dikkeholder2;
 
     // Constructor for creating the GUI
     public MainandGUI() {
@@ -54,7 +56,7 @@ public class MainandGUI {
 
                 GUI gui = new GUI();
                 gui.setVisible(true);
-                gui.pack();
+                //gui.pack(); Can be uncommented again
 
             }
         });
@@ -135,13 +137,13 @@ public class MainandGUI {
             createFileChooser();
 
             this.setTitle("Simulation project - Group 2");
-            this.setLayout(new BorderLayout());
+
 
             /// Create the tabbed pane
             TabbedPane = new GUI.TabbedPane();
             TabbedPane.setVisible(true);
 
-            this.add(TabbedPane, BorderLayout.CENTER); // Add TabbedPane tab to center
+            this.add(TabbedPane); // Add TabbedPane tab to center
 
 
         }
@@ -238,12 +240,15 @@ public class MainandGUI {
 
                     if (counter[0]) {
                         legend.setVisible(false);
+
                     } else {
                         legend.setVisible(true);
+
                     }
                 }
             });
             simulationMenu.add(showHideLegend);
+
 
 
         }
@@ -305,13 +310,20 @@ public class MainandGUI {
 
             public TabbedPane() {
 
+                /// Holds mapHolder so ToolTips wont be retarded
+                dikkeHolder = new JPanel();
+
 
                 /// Create the mapHolder
                 mapHolder = new MapHolder(mapHandler);
                 statisticsPanel = new StatisticsPanel();
 
+                dikkeHolder.add(mapHolder);
 
-                this.addTab("Map View", mapHolder); /// Add the mapHolder to our first tab
+
+
+
+                this.addTab("Map View", dikkeHolder); /// Add the mapHolder to our first tab
                 this.addTab("Statistics", statisticsPanel);
 
 
@@ -600,7 +612,7 @@ public class MainandGUI {
         }
 
 
-        /// Maybe add this to mouseclick instead on mousemove since now it updates kinda slowly.
+        /// Ask Harald about this. Only works with frame.pack() or without BorderLayOut
         public void tooltipTest() {
             final AnimalRectangle[] animalRectangle = new AnimalRectangle[1];
 
