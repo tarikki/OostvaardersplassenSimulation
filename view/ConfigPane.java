@@ -3,6 +3,7 @@ package view;
 import util.ButtonUtils;
 
 import javax.swing.*;
+import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -94,24 +95,28 @@ public class ConfigPane extends JPanel {
         });
     }
 
+
+    // TODO format dates with Joda instead?
     private void createTextFields() {
-        Dimension maxSize = new Dimension(20, 20);
-        Dimension minSize = new Dimension(20, 20);
+
 
         //// Formatting for textFields
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormatter dateFormatter = new DateFormatter(dateFormat);
 
 
-        startTime = new JFormattedTextField(dateFormat); //// Get default starting date
-        startTime.setValue(new Date()); /// Probably needs to be new JodaDate or something.
+
+
+        startTime = new JFormattedTextField(dateFormatter);
+        startTime.setValue(new Date()); //// Get default starting date here or use the current date?
 
         startTime.setToolTipText("Enter the start date, eg. 10/12/1990");
         startTime.addPropertyChangeListener("value", (java.beans.PropertyChangeListener) holder);
         startTime.setVisible(true);
 
-        endTime = new JFormattedTextField(dateFormat);
-        endTime.setValue(new Date());
-        endTime.setToolTipText("Enter the end date, eg. 10/12/1990"); /// Get default end date
+        endTime = new JFormattedTextField(dateFormatter);
+        endTime.setValue(new Date()); //Get default end date here or use the current date?
+        endTime.setToolTipText("Enter the end date, eg. 10/12/1990");
         endTime.addPropertyChangeListener("value", (java.beans.PropertyChangeListener) holder);
         endTime.setVisible(true);
 
