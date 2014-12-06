@@ -16,7 +16,7 @@ public class Animal implements Runnable {
     private int energy;
     private boolean living = true;
     private boolean tired = false;
-    private int lineOfSight = 139; //how far the animal can see around it
+    private int lineOfSight = 239; //how far the animal can see around it
     private byte[][] fieldOfVision = new byte[lineOfSight + 2][lineOfSight + 2];
     private DijkstraNode[][] movementCostArray = new DijkstraNode[lineOfSight][lineOfSight]; // a temp array for calculating the optimal path to a desired location
     private int xPos;
@@ -46,7 +46,7 @@ public class Animal implements Runnable {
         }
     }
 
-    public void FindClosestTarget(){
+    public void FindClosestTarget() {
 
     }
 
@@ -84,9 +84,9 @@ public class Animal implements Runnable {
                         for (int j = -1; j < 2; j++) {                   // check all squares surrounding this square
                             for (int i = -1; i < 2; i++) {
 
-                                if (currentX + i >= 0 && currentX  + i < movementCostArray.length &&
-                                        currentY  + j >= 0 && currentY + j < movementCostArray.length)                       // make sure we remain within array bounds
-                                    if (movementCostArray[currentX  + i][currentY + j] != null) {                            // if there's a dijkstraNode, check it's cost
+                                if (currentX + i >= 0 && currentX + i < movementCostArray.length &&
+                                        currentY + j >= 0 && currentY + j < movementCostArray.length)                       // make sure we remain within array bounds
+                                    if (movementCostArray[currentX + i][currentY + j] != null) {                            // if there's a dijkstraNode, check it's cost
                                         if (movementCostArray[currentX + i][currentY + j].getCost() < lowestCost) {         // if cost lower than previous lowest cost
                                             lowestCost = movementCostArray[currentX + i][currentY + j].getCost() + 1;       // make this the lowest cost node and add 1 for the node we're in
                                             closestX = currentX + i;                                                            // save it's coordinates in respect to the center of movementcostarray
@@ -120,7 +120,7 @@ public class Animal implements Runnable {
         for (int h = 0; h < movementCostArray.length; h++) {
             for (int w = 0; w < movementCostArray.length; w++) {
                 if (movementCostArray[w][h] != null) {
-                    System.out.print(" " + movementCostArray[w][h].getxDirection()+" " + movementCostArray[w][h].getyDirection() + " ");
+                    System.out.print(" " + movementCostArray[w][h].getxDirection() + " " + movementCostArray[w][h].getyDirection() + " ");
                 } else {
                     System.out.print(" X X ");
                 }
@@ -137,19 +137,17 @@ public class Animal implements Runnable {
                 if (movementCostArray[w][h] != null) {
                     if (movementCostArray[w][h].getxDirection() == -1) {
                         arrows += " U";
-                    }
-                    else if (movementCostArray[w][h].getxDirection() == 1) {
+                    } else if (movementCostArray[w][h].getxDirection() == 1) {
                         arrows += " D";
-                    }
-                    else  {
+                    } else {
                         arrows += " o";
                     }
 
-                    if (movementCostArray[w][h].getyDirection() == -1){
+                    if (movementCostArray[w][h].getyDirection() == -1) {
                         arrows += "L ";
-                    }else if (movementCostArray[w][h].getyDirection() == 1){
+                    } else if (movementCostArray[w][h].getyDirection() == 1) {
                         arrows += "R ";
-                    }else {
+                    } else {
                         arrows += "o ";
                     }
 
@@ -162,6 +160,36 @@ public class Animal implements Runnable {
             System.out.println();
         }
     }
+
+//    public boolean findClosestStraight(MapHandler.ColorCode lookingFor) {
+//        int closestX = 0;
+//        int closestY = 0;
+//        double lowestCost = lineOfSight * lineOfSight;
+//        for (int h = -lineOfSight / 2; h < lineOfSight; h++) {
+//            for (int w = -lineOfSight / 2; w < lineOfSight; w++) {
+//                double cost = Math.pow(xPos + w, 2) + Math.pow(yPos + h, 2);
+//                if (MapHandler.getValue(xPos + w, yPos + h) == lookingFor.getValue()) {
+//                    closestX = xPos + w;
+//                    closestY = yPos + h;
+//                    lowestCost = cost;
+//                }
+//            }
+//        }
+//
+//        int xDistance = closestX-xPos;
+//        int xDirection = xDistance/Math.abs(xDistance);
+//        int yDistance = closestY - yPos;
+//        int yDirection = yDistance/Math.abs(yDistance);
+//        float scale = Math.abs(xDistance)/Math.abs(yDistance);
+//        float y= 0;
+//        float yExtra = 0;
+//        for (int x = 0; x < Math.abs(xDistance); x++) {
+//            y +=scale;
+//            yExtra +=
+//            wayPoints.add(new DijkstraNode(xDirection, yDirection,1));
+//        }
+//        return true;
+//    }
 
 
     /**
@@ -209,7 +237,7 @@ public class Animal implements Runnable {
     public void eat() {
         if (MapHandler.eatFromSquare(xPos, yPos))
             this.energy += 10;
-        reduceHunger(1);
+        reduceHunger(3);
         System.out.println("Food left: " + MapHandler.getValue(xPos, yPos));
 
     }
@@ -221,6 +249,7 @@ public class Animal implements Runnable {
     }
 
     public void useBrain() {
+        System.out.println(hunger);
         if (wayPoints.isEmpty()) {
             if (hunger > 1) {
 
@@ -235,7 +264,7 @@ public class Animal implements Runnable {
             }
         }
         checkForWayPoints();
-//        System.out.println("Number of waypoints: " + wayPoints.size());
+        System.out.println("Number of waypoints: " + wayPoints.size());
     }
 
     public void useBrain2() {

@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by extradikke on 19-11-14.
  */
 public class MapHandler {
-    private String mapLocation = "/TestMapWeek1.png";
+    private String mapLocation = "/allGreen.png";
     private static int height;
     private static int width;
     private static byte[][] map;
@@ -77,7 +77,7 @@ public class MapHandler {
         int blue = (pixel) & 0xff;
         if (red < 15 && blue < 15 && green < 15) {
             color = "B";
-        } else if (green > 200 && blue < 100) {
+        } else if (green > 100 && blue < 100) {
             color = "G";
         } else if (blue > 200) {
             color = "U";

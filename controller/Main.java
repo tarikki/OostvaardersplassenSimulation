@@ -74,7 +74,7 @@ public class Main {
                     e.printStackTrace();
                 }
             }
-        }, 100, 500);
+        }, 50, 50);
 
     }
 }
