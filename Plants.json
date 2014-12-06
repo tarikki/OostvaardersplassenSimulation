@@ -2,36 +2,42 @@
 "plants":[
     {
         "name": "A",
+        "id":1,
         "maxHealth": 100,
         "recoveryDays": 5,
         "nutrition": 100
     },
     {
         "name": "B",
+        "id":2,
         "maxHealth": 100,
         "recoveryDays": 5,
         "nutrition": 100
     },
     {
         "name": "C",
+        "id":3,
         "maxHealth": 100,
         "recoveryDays": 5,
         "nutrition": 100
     },
     {
         "name": "D",
+        "id":4,
         "maxHealth": 100,
         "recoveryDays": 5,
         "nutrition": 100
     },
     {
         "name": "E",
+        "id":5,
         "maxHealth": 100,
         "recoveryDays": 5,
         "nutrition": 100
     },
     {
         "name": "F",
+        "id":6,
         "maxHealth": 100,
         "recoveryDays": 5,
         "nutrition": 100

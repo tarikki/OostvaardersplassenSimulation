@@ -8,6 +8,7 @@ public class Plant {
     private int maxHealth;
     private int recoveryDays;
     private int nutrition;
+    private int id;
 
     public String getName() {
         return name;
@@ -41,6 +42,14 @@ public class Plant {
         this.nutrition = nutrition;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Plant{" +
@@ -48,6 +57,24 @@ public class Plant {
                 ", maxHealth=" + maxHealth +
                 ", recoveryDays=" + recoveryDays +
                 ", nutrition=" + nutrition +
+                ", id=" + id +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Plant plant = (Plant) o;
+
+        if (!name.equals(plant.name)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

@@ -1,6 +1,7 @@
 package mapUtils;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Created by extradikke on 06/12/14.
@@ -72,17 +73,35 @@ public class Terrain {
         this.plants = plants;
     }
 
-    public boolean compareColor(int red, int green, int blue){
+    public boolean compareColor(int red, int green, int blue) {
         boolean sameColor = false;
-        if (red == r && green == g && blue == b){
+        if (red == r && green == g && blue == b) {
             sameColor = true;
         }
 
         return sameColor;
     }
 
-    public Plant returnRandomPlant(){
-        Plant result = new Plant();
+    public int returnRandomPlant() {
+        int result = 0;
+        if (this.coverage != null) {
+            Random random = new Random();
+            float rand = random.nextFloat();
+            float cumulativeProb = 0;
+            int index = 0;
+            boolean done = false;
+            while (!done) {
+                cumulativeProb += coverage[index];
+                if (cumulativeProb >= rand) {
+                    done = true;
+                    result = Integer.valueOf(plants[index]);
+                }
+                index++;
+                if (index > coverage.length - 1) {
+                    done = true;
+                }
+            }
+        }
 
 
         return result;
