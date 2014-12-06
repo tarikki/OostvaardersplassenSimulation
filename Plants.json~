@@ -1,0 +1,38 @@
+{"plants":[
+    {
+        "name": "A",
+        "maxhealth": 100,
+        "recoverydays": 5,
+        "nutrition": 100
+    },
+    {
+        "name": "B",
+        "maxhealth": 100,
+        "recoverydays": 5,
+        "nutrition": 100
+    },
+    {
+        "name": "C",
+        "maxhealth": 100,
+        "recoverydays": 5,
+        "nutrition": 100
+    },
+    {
+        "name": "D",
+        "maxhealth": 100,
+        "recoverydays": 5,
+        "nutrition": 100
+    },
+    {
+        "name": "E",
+        "maxhealth": 100,
+        "recoverydays": 5,
+        "nutrition": 100
+    },
+    {
+        "name": "F",
+        "maxhealth": 100,
+        "recoverydays": 5,
+        "nutrition": 100
+    }
+]}
