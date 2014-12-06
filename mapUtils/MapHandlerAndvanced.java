@@ -1,19 +1,26 @@
-package model;
+package mapUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 /**
  * Created by extradikke on 19-11-14.
  */
-public class MapHandler {
-    private String mapLocation = "/allGreen.png";
+public class MapHandlerAndvanced {
+    private String mapLocation = "/testMapJSON.png";
+    private String plantsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/Plants.json";
+    private String terrainsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/terrainTypes.json";
     private static int height;
     private static int width;
-    private static byte[][] map;
-    
-
+    private static int[][] map;
+    private static Terrains terrains;
+    private Plants plants;
 
     private static BufferedImage image;
 
@@ -35,13 +42,19 @@ public class MapHandler {
     }
 
     /// Init block
-    {
-        System.out.println("Ekana?");
+//    {
+//        System.out.println("Ekana?");
+//        loadImage();
+//        map = new int[width][height];
+////        scanImage();
+//
+//
+//    }
+
+    public void starters(){
         loadImage();
-        map = new byte[width][height];
+        loadJsons();
         scanImage();
-
-
     }
 
     public void loadImage() {
@@ -55,55 +68,53 @@ public class MapHandler {
         }
     }
 
+
+
     private void scanImage() {
         for (int h = 0; h < height; h++) {
             for (int w = 0; w < width; w++) {
 
 
                 int pixel = image.getRGB(w, h);
-                String color = recognizeColorString(pixel);
-                map[w][h] = recognizeColorByte(pixel);
-                System.out.print(color);
+                int id = recognizeTerrain(pixel);
+//                map[w][h] = recognizeColorByte(pixel);
+                System.out.print(id);
             }
             System.out.println();
         }
     }
 
+    private void loadJsons(){
+        try {
+            JsonReader readerTerrains = new JsonReader(new FileReader(terrainsLocation));
+            JsonReader readerPlants = new JsonReader(new FileReader(plantsLocation));
 
-    private String recognizeColorString(int pixel) {
-        String color = "0";
-        int alpha = (pixel >> 24) & 0xff;
-        int red = (pixel >> 16) & 0xff;
-        int green = (pixel >> 8) & 0xff;
-        int blue = (pixel) & 0xff;
-        if (red < 15 && blue < 15 && green < 15) {
-            color = "B";
-        } else if (green > 100 && blue < 100) {
-            color = "G";
-        } else if (blue > 200) {
-            color = "U";
-        } else {
-            color = "R";
+            Gson gson = new Gson();
+            terrains = gson.fromJson(readerTerrains, Terrains.class);
+            plants = gson.fromJson(readerPlants, Plants.class);
+            System.out.println(plants);
+            System.out.println(terrains);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        return color;
+    }
+    private void encodeMap(){
+
     }
 
-    private Byte recognizeColorByte(int pixel) {
-        Byte color = 0;
+
+    private int recognizeTerrain(int pixel){
+        int id = -1;
         int alpha = (pixel >> 24) & 0xff;
         int red = (pixel >> 16) & 0xff;
         int green = (pixel >> 8) & 0xff;
         int blue = (pixel) & 0xff;
-        if (red < 15 && blue < 15 && green < 15) {
-            color = ColorCode.BLACK.getValue();
-        } else if (green > 200 && blue < 100) {
-            color = ColorCode.GREEN.getValue();
-        } else if (blue > 200) {
-            color = ColorCode.BLUE.getValue();
-        } else {
-            color = ColorCode.BROWN.getValue();
+        for (Terrain terrain : terrains.getTerrains()) {
+            if (terrain.compareColor(red, green, blue)){
+                id = terrain.getId();
+            }
         }
-        return color;
+        return id;
     }
 
     public static int getHeight() {
@@ -114,9 +125,9 @@ public class MapHandler {
         return width;
     }
 
-    public synchronized static byte getValue(int x, int y) {
-        return map[x][y];
-    }
+//    public synchronized static byte getValue(int x, int y) {
+//        return map[x][y];
+//    }
 
     public static BufferedImage getImage() {
         return image;

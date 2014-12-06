@@ -1,0 +1,20 @@
+{
+  "originalName": "Rietruigte",
+  "name": "ReedBrushwood",
+  "id": 3,
+  "r": 253,
+  "g": 4,
+  "b": 2,
+  "plants": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "coverage": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ]
+}

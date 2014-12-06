@@ -1,0 +1,169 @@
+{
+    "terrains": [
+        {
+            "originalName": "None",
+            "name": "Border",
+            "id": 0,
+            "r": 0,
+            "g": 0,
+            "b": 0
+        },
+        {
+            "originalName": "Water",
+            "name": "WaterDeep",
+            "id": 1,
+            "r": 0,
+            "g": 0,
+            "b": 255
+        },
+        {
+            "originalName": "None",
+            "name": "WaterShallow",
+            "id": 2,
+            "r": 0,
+            "g": 255,
+            "b": 233
+        },
+        {
+            "originalName": "Rietruigte",
+            "name": "ReedBrushwood",
+            "id": 3,
+            "r": 253,
+            "g": 4,
+            "b": 2,
+            "plants": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "coverage": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+            ]
+        },
+        {
+            "originalName": "Grazige ruigte (met houtigen)",
+            "name": "Grassy scrubland with wood",
+            "id": 4,
+            "r": 250,
+            "g": 195,
+            "b": 2,
+            "plants": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "coverage": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+            ]
+        },
+        {
+            "originalName": "Riet op land",
+            "name": "Reed on land",
+            "id": 5,
+            "r": 0,
+            "g": 255,
+            "b": 12,
+            "plants": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "coverage": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+            ]
+        },
+        {
+            "originalName": "Grasslanden",
+            "name": "Grassland",
+            "id": 6,
+            "r": 248,
+            "g": 245,
+            "b": 164,
+            "plants": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "coverage": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+            ]
+        },
+        {
+            "originalName": "Riet moeraszone niet begraasd door ganzen",
+            "name": "Reed on swamp",
+            "id": 7,
+            "r": 167,
+            "g": 253,
+            "b": 164,
+            "plants": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "coverage": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+            ]
+        },
+        {
+            "originalName": "Riet moeraszone begraasd door ganzen",
+            "name": "Reed on swamp grazed by geese",
+            "id": 8,
+            "r": 196,
+            "g": 34,
+            "b": 195,
+            "plants": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "coverage": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+            ]
+        },
+{
+            "originalName": "None",
+            "name": "Woods",
+            "id": 9,
+            "r": 1,
+            "g": 137,
+            "b": 0,
+            "plants": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "coverage": [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+            ]
+        }
+    ]
+
+}
