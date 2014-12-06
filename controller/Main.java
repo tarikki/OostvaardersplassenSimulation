@@ -1,13 +1,11 @@
 package controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.MapHandler;
 import model.Preserve;
 import org.joda.time.DateTime;
-import view.AnimalRectangle;
-import view.MainView;
-
-import view.MapView;
-import view.StartScreen;
+import view.*;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -49,6 +47,7 @@ public class Main {
         timer.cancel();
 
     }
+
 
 
     public static void stopThemThreads() {
