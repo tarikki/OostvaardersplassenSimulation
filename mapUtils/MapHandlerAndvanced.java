@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Created by extradikke on 19-11-14.
@@ -20,7 +21,10 @@ public class MapHandlerAndvanced {
     private static int width;
     private static int[][] map;
     private static Terrains terrains;
+    private HashMap<Integer, Terrain> terrainHash = new HashMap<>();
     private Plants plants;
+    private HashMap<Integer, Plant> plantsHash = new HashMap<>();
+
 
     private static BufferedImage image;
 
@@ -51,10 +55,15 @@ public class MapHandlerAndvanced {
 //
 //    }
 
-    public void starters(){
+    public void starters() {
+
         loadImage();
+        map = new int[width][height];
         loadJsons();
+        jsontoHash();
         scanImage();
+
+
     }
 
     public void loadImage() {
@@ -69,7 +78,6 @@ public class MapHandlerAndvanced {
     }
 
 
-
     private void scanImage() {
         for (int h = 0; h < height; h++) {
             for (int w = 0; w < width; w++) {
@@ -77,14 +85,14 @@ public class MapHandlerAndvanced {
 
                 int pixel = image.getRGB(w, h);
                 int id = recognizeTerrain(pixel);
-//                map[w][h] = recognizeColorByte(pixel);
-                System.out.print(id);
+                map[w][h] = encodeMap(id);
+                System.out.print(getPlantId(w,h));
             }
             System.out.println();
         }
     }
 
-    private void loadJsons(){
+    private void loadJsons() {
         try {
             JsonReader readerTerrains = new JsonReader(new FileReader(terrainsLocation));
             JsonReader readerPlants = new JsonReader(new FileReader(plantsLocation));
@@ -98,19 +106,59 @@ public class MapHandlerAndvanced {
             e.printStackTrace();
         }
     }
-    private void encodeMap(){
 
+    private void jsontoHash() {
+        for (Plant plant : plants.getPlants()) {
+            plantsHash.put(plant.getId(), plant);
+        }
+
+        for (Terrain terrain : terrains.getTerrains()) {
+            terrainHash.put(terrain.getId(), terrain);
+        }
     }
 
+    private int encodeMap(int terrainID) {
 
-    private int recognizeTerrain(int pixel){
+        int plantInt = 0;
+        int plantHealthInt = 0;
+        int terrainInt = terrainID << 16;
+
+        int plantId= terrainHash.get(terrainID).returnRandomPlant();
+//        System.out.println(plantName);
+        if (plantId != 0) {
+            Plant plant = plantsHash.get(plantId);
+//            System.out.println(plant.getId());
+            plantInt = plant.getId() << 11;
+            plantHealthInt = plant.getMaxHealth();
+        }
+        int result = terrainInt | plantInt | plantHealthInt;
+//        System.out.println("ph " + Integer.toBinaryString(plantHealthInt));
+//        System.out.println("pi " + Integer.toBinaryString(plantInt));
+//        System.out.println("ti " + Integer.toBinaryString(terrainInt));
+//        System.out.println("ti " + Integer.toBinaryString(result));
+        return result;
+    }
+
+    public int getTerrain(int x, int y) {
+        return (map[x][y] >>> 16) & 0xff;
+    }
+
+    public int getPlantHealth(int x, int y) {
+        return map[x][y] & 0x7f;
+    }
+
+    public int getPlantId(int x, int y) {
+        return (map[x][y] >>> 11) & 0x1f;
+    }
+
+    private int recognizeTerrain(int pixel) {
         int id = -1;
         int alpha = (pixel >> 24) & 0xff;
         int red = (pixel >> 16) & 0xff;
         int green = (pixel >> 8) & 0xff;
         int blue = (pixel) & 0xff;
         for (Terrain terrain : terrains.getTerrains()) {
-            if (terrain.compareColor(red, green, blue)){
+            if (terrain.compareColor(red, green, blue)) {
                 id = terrain.getId();
             }
         }
@@ -154,9 +202,8 @@ public class MapHandlerAndvanced {
     }
 
 
-
-    public synchronized static boolean eatFromSquare(int x, int y){
-        if (map[x][y] > 0){
+    public synchronized static boolean eatFromSquare(int x, int y) {
+        if (map[x][y] > 0) {
             decreaseFoodValue(x, y);
             return true;
         } else return false;
