@@ -17,18 +17,18 @@ private StatisticsView statisticsView;
 
 
         /// Holds mapHolder so ToolTips wont be retarded
-        dikkeHolder = new JPanel();
+
 
 
         /// Create the mapHolder
         mapView = new MapView(animals);
         statisticsView = new StatisticsView();
 
-        dikkeHolder.add(mapView);
 
 
 
-        this.addTab("Map View", dikkeHolder); /// Add the mapHolder to our first tab
+
+        this.addTab("Map View", mapView); /// Add the mapHolder to our first tab
         this.addTab("Statistics", statisticsView);
 
 

@@ -36,6 +36,8 @@ public class StartScreen extends JPanel {
 
     }
 
+    //TODO add title + logo of Staatsbosbeheer. Maybe some better layout?
+
     private void createButtons(){
         ButtonUtils.addButton(startButtons, "Start Simulation", new ActionListener() {
             @Override

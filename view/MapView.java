@@ -5,6 +5,7 @@ import model.MapHandler;
 import util.ButtonUtils;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,19 +23,24 @@ public class MapView extends JPanel {
 
     public Legend legend;
     private JPanel mapButtons;
-    public  JLabel drawHolder;
+    public JLabel drawHolder;
     private BufferedImage backgroundImage;
     private JLabel bgImageHolder;
-
+    private JPanel mapHolder;
 
     private Graphics2D g2d;
     private BufferedImage drawingSurface;
     private ArrayList<AnimalRectangle> rectangles;
+    private BriefStatistics briefStatistics;
 
-    public MapView(ArrayList <Animal> animals) {
-
-        rectangles = new ArrayList<AnimalRectangle>();
+    public MapView(ArrayList<Animal> animals) {
         this.setLayout(new BorderLayout());
+        rectangles = new ArrayList<AnimalRectangle>();
+
+        mapHolder = new JPanel();
+
+        /// Shitty tooltip finally works with Borderlayout west! However, keep map centered for now
+        this.add(mapHolder);
 
         this.setOpaque(false);
 
@@ -47,6 +53,10 @@ public class MapView extends JPanel {
         legend = new Legend();
         this.add(legend, BorderLayout.NORTH);
 
+        /// Add brief statistics
+        briefStatistics = new BriefStatistics(animals);
+        this.add(briefStatistics, BorderLayout.EAST);
+
         // Create the drawing surface
         drawingSurface = new BufferedImage(MapHandler.getWidth(), MapHandler.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
@@ -57,8 +67,7 @@ public class MapView extends JPanel {
         bgImageHolder.setLayout(new BorderLayout()); /// Needs to be here so we can position drawHolder and drawingSurface
 
 
-        this.add(bgImageHolder, BorderLayout.WEST); /// Add the background (map) holder to the JPanel
-
+        mapHolder.add(bgImageHolder); /// Add the background (map) holder to the JPanel
 
 
         /// Holder for drawingSurface
@@ -68,8 +77,6 @@ public class MapView extends JPanel {
 
 
         bgImageHolder.add(drawHolder);                    /// attach the drawingSurface to the background holder so we can have them on top of each other
-
-
 
 
         animalstoRectangles(animals);
@@ -152,15 +159,13 @@ public class MapView extends JPanel {
     }
 
 
+    public void animalstoRectangles(ArrayList<Animal> animals) {
 
 
-    public  void animalstoRectangles(ArrayList<Animal> animals) {
+        for (int i = 0; i < animals.size(); i++) {
 
 
-        for (int i = 0; i < animals.size() ; i++) {
-
-
-            rectangles.add(new AnimalRectangle(animals.get(i).getxPos(),animals.get(i).getyPos(), 10, 10, animals.get(i))); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
+            rectangles.add(new AnimalRectangle(animals.get(i).getxPos(), animals.get(i).getyPos(), 10, 10, animals.get(i))); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
 
 
         }
@@ -266,6 +271,67 @@ public class MapView extends JPanel {
 
     }
 
+    class BriefStatistics extends JPanel {
+        private JLabel currentDate;
+        private JLabel numberofAnimals;
+        private JLabel timeElapsed;
+        private JLabel births;
+        private JLabel deaths;
+        private JLabel birthDeathRatio;
+
+        public BriefStatistics(ArrayList<Animal> animals) {
+            super();
+
+            /// Set size like this
+            //Dimension d = new Dimension (200, 200);
+            //this.setPreferredSize(d);
+
+            this.setVisible(true);
+            this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+            // Border for stats panel here
+            TitledBorder border = BorderFactory.createTitledBorder("Brief statistics");
+            border.setBorder(BorderFactory.createLineBorder(Color.red)); /// Change color of border here
+            this.setBorder(border);
+
+
+
+            /*
+            statsTitle = new JLabel("Brief statistics");
+            Font font = new Font("Serif", Font.BOLD, 24);
+            Map attributes = font.getAttributes();
+            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+            statsTitle.setFont(font.deriveFont(attributes));
+*/
+
+
+
+
+            numberofAnimals = new JLabel("# of animals:  " + animals.size());
+            births = new JLabel("# of births:");
+            deaths = new JLabel("# of deaths:");
+            birthDeathRatio = new JLabel("Births / deaths:");
+            currentDate = new JLabel("Current date: ");
+            timeElapsed = new JLabel("Time elapsed:");
+
+
+            this.add(Box.createVerticalStrut(10));
+            this.add(numberofAnimals);
+            this.add(Box.createVerticalStrut(10));
+            this.add(births);
+            this.add(Box.createVerticalStrut(10));
+            this.add(deaths);
+            this.add(Box.createVerticalStrut(10));
+            this.add(birthDeathRatio);
+            this.add(Box.createVerticalStrut(10));
+            this.add(currentDate);
+            this.add(Box.createVerticalStrut(10));
+            this.add(timeElapsed);
+
+
+
+        }
+    }
 
 
 }
