@@ -14,9 +14,10 @@ import java.util.HashMap;
  * Created by extradikke on 19-11-14.
  */
 public class MapHandlerAndvanced {
-    private String mapLocation = "/FinalTerrainScaled2x2m.png";
+    private String terrainMapLocation = "/FinalTerrainScaled2x2m.png";
     private String plantsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/Plants.json";
     private String terrainsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/terrainTypes.json";
+    private String displayableMapLocation = "/displayableMapScale10.png";
     private static int height;
     private static int width;
     private static int[][] map;
@@ -25,23 +26,20 @@ public class MapHandlerAndvanced {
     private Plants plants;
     private HashMap<Integer, Plant> plantsHash = new HashMap<>();
     private int brokenPixels = 0;
+    private static BufferedImage terrainImage;
+    private static BufferedImage displayableImage;
+    private int scale = 10;
 
+    // Init block
+    {
+        System.out.println("Ekana?");
+        starters();
 
-    private static BufferedImage image;
-
-    /// Init block
-//    {
-//        System.out.println("Ekana?");
-//        loadImage();
-//        map = new int[width][height];
-////        scanImage();
-//
-//
-//    }
+    }
 
     public void starters() {
 
-        loadImage();
+        loadImages();
         map = new int[width][height];
         loadJsons();
         jsonToHash();
@@ -50,12 +48,18 @@ public class MapHandlerAndvanced {
 
     }
 
-    public void loadImage() {
+    public void loadImages() {
         try {
-            image = ImageIO.read((this.getClass().getResourceAsStream(mapLocation)));
-            height = image.getHeight();
-            width = image.getWidth();
+            terrainImage = ImageIO.read((this.getClass().getResourceAsStream(terrainMapLocation)));
+            height = terrainImage.getHeight();
+            width = terrainImage.getWidth();
             System.out.println("height: " + height + " width: " + width);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            displayableImage = ImageIO.read((this.getClass().getResourceAsStream(displayableMapLocation)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,11 +71,12 @@ public class MapHandlerAndvanced {
             for (int w = 0; w < width; w++) {
 
 
-                int pixel = image.getRGB(w, h);
+                int pixel = terrainImage.getRGB(w, h);
                 int id = recognizeTerrain(pixel);
                 if (id == -1) {
-                    System.out.println(w + " " + h);
-                    id = getTerrain(w-1,h); // fixing pixels with wrong color
+                    brokenPixels++;
+//                    System.out.println(w + " " + h);
+                    id = getTerrain(w - 1, h); // fixing pixels with wrong color
                 }
 //                System.out.println(w + " " + h);
                 map[w][h] = encodeMap(id);
@@ -79,7 +84,7 @@ public class MapHandlerAndvanced {
             }
 //            System.out.println();
         }
-        System.out.println(brokenPixels);
+        System.out.println("Broken pixels: " + brokenPixels);
     }
 
     private void loadJsons() {
@@ -131,12 +136,13 @@ public class MapHandlerAndvanced {
         return result;
     }
 
-    public void decreasePlantHealth(int x, int y, int amount) {
-        int plantInt = getPlantId(x, y);
+    public static void decreasePlantHealth(int x, int y, int amount) {
+        int plantInt = getPlantId(x, y) << 11;
         int plantHealthInt = getPlantHealth(x, y);
-        int terrainInt = getTerrain(x, y);
+        int terrainInt = getTerrain(x, y) << 16;
 
         int newHealth = plantHealthInt - amount;
+        System.out.println(newHealth);
         if (newHealth < 0) newHealth = 0;
 
         int encoded = terrainInt | plantInt | newHealth;
@@ -144,9 +150,9 @@ public class MapHandlerAndvanced {
     }
 
     public void increasePlantHealth(int x, int y, int amount) {
-        int plantInt = getPlantId(x, y);
+        int plantInt = getPlantId(x, y) << 11;
         int plantHealthInt = getPlantHealth(x, y);
-        int terrainInt = getTerrain(x, y);
+        int terrainInt = getTerrain(x, y) << 16;
 
         int newHealth = plantHealthInt + amount;
         int maxhealth = plantsHash.get(plantInt).getMaxHealth();
@@ -156,15 +162,15 @@ public class MapHandlerAndvanced {
         map[x][y] = encoded;
     }
 
-    public int getTerrain(int x, int y) {
+    public static int getTerrain(int x, int y) {
         return (map[x][y] >>> 16) & 0xff;
     }
 
-    public int getPlantHealth(int x, int y) {
+    public static int getPlantHealth(int x, int y) {
         return map[x][y] & 0x7f;
     }
 
-    public int getPlantId(int x, int y) {
+    public static int getPlantId(int x, int y) {
         return (map[x][y] >>> 11) & 0x1f;
     }
 
@@ -197,13 +203,14 @@ public class MapHandlerAndvanced {
 //        return map[x][y];
 //    }
 
-    public static BufferedImage getImage() {
-        return image;
+    public static BufferedImage getTerrainImage() {
+        return terrainImage;
 
     }
 
 
     public static boolean isValidMove(int x, int y) {
+
         return true;
 
 

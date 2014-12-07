@@ -15,6 +15,7 @@ public class Terrain {
     private int b;
     private String[] plants;
     private float[] coverage;
+    private boolean traversable;
     private int colorTolerance = 20;
 
 
@@ -116,6 +117,14 @@ public class Terrain {
         this.coverage = coverage;
     }
 
+    public boolean isTraversable() {
+        return traversable;
+    }
+
+    public void setTraversable(boolean traversable) {
+        this.traversable = traversable;
+    }
+
     @Override
     public String toString() {
         return "Terrain{" +
@@ -127,6 +136,8 @@ public class Terrain {
                 ", b=" + b +
                 ", plants=" + Arrays.toString(plants) +
                 ", coverage=" + Arrays.toString(coverage) +
+                ", traversable=" + traversable +
+                ", colorTolerance=" + colorTolerance +
                 '}';
     }
 }
