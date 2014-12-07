@@ -6,7 +6,8 @@
             "id": 0,
             "r": 0,
             "g": 0,
-            "b": 0
+            "b": 0,
+            "traversable": false
         },
         {
             "originalName": "Water",
@@ -14,7 +15,8 @@
             "id": 1,
             "r": 0,
             "g": 0,
-            "b": 255
+            "b": 255,
+            "traversable": false
         },
         {
             "originalName": "None",
@@ -22,7 +24,8 @@
             "id": 2,
             "r": 0,
             "g": 255,
-            "b": 233
+            "b": 233,
+            "traversable": true
         },
         {
             "originalName": "Rietruigte",
@@ -31,6 +34,7 @@
             "r": 253,
             "g": 4,
             "b": 2,
+            "traversable": true,
             "plants": [
                 "1",
                 "2",
@@ -51,6 +55,7 @@
             "r": 250,
             "g": 195,
             "b": 2,
+            "traversable": true,
             "plants": [
                 "1",
                 "2",
@@ -70,6 +75,7 @@
             "r": 0,
             "g": 255,
             "b": 12,
+            "traversable": true,
             "plants": [
                 "1",
                 "2",
@@ -90,6 +96,7 @@
             "r": 248,
             "g": 245,
             "b": 164,
+            "traversable": true,
             "plants": [
                 "1",
                 "2",
@@ -110,6 +117,7 @@
             "r": 167,
             "g": 253,
             "b": 164,
+            "traversable": true,
             "plants": [
                 "1",
                 "2",
@@ -130,6 +138,7 @@
             "r": 196,
             "g": 34,
             "b": 195,
+            "traversable": true,
             "plants": [
                 "1",
                 "2",
@@ -150,6 +159,7 @@
             "r": 1,
             "g": 137,
             "b": 0,
+            "traversable": true,
             "plants": [
                 "1",
                 "2",

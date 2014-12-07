@@ -14,7 +14,7 @@ import java.util.HashMap;
  * Created by extradikke on 19-11-14.
  */
 public class MapHandlerAndvanced {
-    private String mapLocation = "/testMapJSON.png";
+    private String mapLocation = "/FinalTerrainScaled2x2m.png";
     private String plantsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/Plants.json";
     private String terrainsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/terrainTypes.json";
     private static int height;
@@ -24,26 +24,10 @@ public class MapHandlerAndvanced {
     private HashMap<Integer, Terrain> terrainHash = new HashMap<>();
     private Plants plants;
     private HashMap<Integer, Plant> plantsHash = new HashMap<>();
+    private int brokenPixels = 0;
 
 
     private static BufferedImage image;
-
-
-    public enum ColorCode {
-        GREEN((byte) 10),   //grass
-        BLUE((byte) -1),    // water
-        BROWN((byte) -2),   // swamp
-        BLACK((byte) -10);  //border
-        private final byte value;
-
-        private ColorCode(byte value) {
-            this.value = value;
-        }
-
-        public byte getValue() {
-            return value;
-        }
-    }
 
     /// Init block
 //    {
@@ -60,7 +44,7 @@ public class MapHandlerAndvanced {
         loadImage();
         map = new int[width][height];
         loadJsons();
-        jsontoHash();
+        jsonToHash();
         scanImage();
 
 
@@ -85,11 +69,17 @@ public class MapHandlerAndvanced {
 
                 int pixel = image.getRGB(w, h);
                 int id = recognizeTerrain(pixel);
+                if (id == -1) {
+                    System.out.println(w + " " + h);
+                    id = getTerrain(w-1,h); // fixing pixels with wrong color
+                }
+//                System.out.println(w + " " + h);
                 map[w][h] = encodeMap(id);
-                System.out.print(getPlantId(w,h));
+//                System.out.print(getPlantId(w,h));
             }
-            System.out.println();
+//            System.out.println();
         }
+        System.out.println(brokenPixels);
     }
 
     private void loadJsons() {
@@ -100,14 +90,14 @@ public class MapHandlerAndvanced {
             Gson gson = new Gson();
             terrains = gson.fromJson(readerTerrains, Terrains.class);
             plants = gson.fromJson(readerPlants, Plants.class);
-            System.out.println(plants);
-            System.out.println(terrains);
+//            System.out.println(plants);
+//            System.out.println(terrains);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private void jsontoHash() {
+    private void jsonToHash() {
         for (Plant plant : plants.getPlants()) {
             plantsHash.put(plant.getId(), plant);
         }
@@ -118,25 +108,52 @@ public class MapHandlerAndvanced {
     }
 
     private int encodeMap(int terrainID) {
-
-        int plantInt = 0;
-        int plantHealthInt = 0;
-        int terrainInt = terrainID << 16;
-
-        int plantId= terrainHash.get(terrainID).returnRandomPlant();
+        int result = 0;
+        if (terrainID != -1) {
+            int plantInt = 0;
+            int plantHealthInt = 0;
+            int terrainInt = terrainID << 16;
+//        System.out.println(terrainID);
+            int plantId = terrainHash.get(terrainID).returnRandomPlant();
 //        System.out.println(plantName);
-        if (plantId != 0) {
-            Plant plant = plantsHash.get(plantId);
+            if (plantId != 0) {
+                Plant plant = plantsHash.get(plantId);
 //            System.out.println(plant.getId());
-            plantInt = plant.getId() << 11;
-            plantHealthInt = plant.getMaxHealth();
-        }
-        int result = terrainInt | plantInt | plantHealthInt;
+                plantInt = plant.getId() << 11;
+                plantHealthInt = plant.getMaxHealth();
+            }
+            result = terrainInt | plantInt | plantHealthInt;
+        } else brokenPixels++;
 //        System.out.println("ph " + Integer.toBinaryString(plantHealthInt));
 //        System.out.println("pi " + Integer.toBinaryString(plantInt));
 //        System.out.println("ti " + Integer.toBinaryString(terrainInt));
 //        System.out.println("ti " + Integer.toBinaryString(result));
         return result;
+    }
+
+    public void decreasePlantHealth(int x, int y, int amount) {
+        int plantInt = getPlantId(x, y);
+        int plantHealthInt = getPlantHealth(x, y);
+        int terrainInt = getTerrain(x, y);
+
+        int newHealth = plantHealthInt - amount;
+        if (newHealth < 0) newHealth = 0;
+
+        int encoded = terrainInt | plantInt | newHealth;
+        map[x][y] = encoded;
+    }
+
+    public void increasePlantHealth(int x, int y, int amount) {
+        int plantInt = getPlantId(x, y);
+        int plantHealthInt = getPlantHealth(x, y);
+        int terrainInt = getTerrain(x, y);
+
+        int newHealth = plantHealthInt + amount;
+        int maxhealth = plantsHash.get(plantInt).getMaxHealth();
+        if (newHealth > maxhealth) newHealth = maxhealth;
+
+        int encoded = terrainInt | plantInt | newHealth;
+        map[x][y] = encoded;
     }
 
     public int getTerrain(int x, int y) {
@@ -157,11 +174,14 @@ public class MapHandlerAndvanced {
         int red = (pixel >> 16) & 0xff;
         int green = (pixel >> 8) & 0xff;
         int blue = (pixel) & 0xff;
+//        System.out.println(red + " " + green + " " + blue);
         for (Terrain terrain : terrains.getTerrains()) {
             if (terrain.compareColor(red, green, blue)) {
                 id = terrain.getId();
             }
         }
+
+
         return id;
     }
 
@@ -182,21 +202,9 @@ public class MapHandlerAndvanced {
 
     }
 
-    public synchronized static void increaseFoodValue(int x, int y) {
-        map[x][y]++;
-    }
-
-    public synchronized static void decreaseFoodValue(int x, int y) {
-        map[x][y]--;
-    }
 
     public static boolean isValidMove(int x, int y) {
-        if (map[x][y] > -1 || map[x][y] == ColorCode.BROWN.getValue()) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return true;
 
 
     }
@@ -204,7 +212,7 @@ public class MapHandlerAndvanced {
 
     public synchronized static boolean eatFromSquare(int x, int y) {
         if (map[x][y] > 0) {
-            decreaseFoodValue(x, y);
+
             return true;
         } else return false;
     }

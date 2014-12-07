@@ -16,6 +16,9 @@ public class AdvancedMapTester {
         System.out.println(terrain);
         System.out.println(health);
         System.out.println(id);
+        mapHandlerAndvanced.decreasePlantHealth(0,0,30);
+        health = mapHandlerAndvanced.getPlantHealth(0, 0);
+        System.out.println(health);
 
     }
 }
