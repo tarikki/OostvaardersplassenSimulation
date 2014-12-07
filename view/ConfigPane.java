@@ -1,39 +1,29 @@
 package view;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 import util.ButtonUtils;
+import util.DateVerifier;
 
 import javax.swing.*;
-import javax.swing.text.DateFormatter;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by extradikke on 27/11/14.
  */
 public class ConfigPane extends JPanel {
 
-    private final String simulationConfig = "/media/extradikke/shared/Misc Programming/simulation2/src/configuration/Simulation.json";
+    private final String simulationConfig = "C:/Workspace BU/Simulation-project/src/configuration/Simulation.json";
     private JLabel title;
     private JPanel configButtons;
     private JPanel itsame;
@@ -82,6 +72,9 @@ public class ConfigPane extends JPanel {
 
         createButtons();
         createTextFields();
+
+
+
         createConfigPanel();
 
         this.add(configButtons, BorderLayout.SOUTH);
@@ -169,40 +162,35 @@ public class ConfigPane extends JPanel {
     }
 
 
-    // TODO FIND A WAY TO FORMAT DAY IN dd/mm/yyy
-    private void createTextFields(){
+    // TODO display popup / change color of textfield if inputs are wrong.
+    private void createTextFields() {
 
+
+
+        /// Parses for dates
+        DateTimeParser[] parsers = {
+                DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
+                DateTimeFormat.forPattern("dd/MM/yyyy").getParser(),
+                DateTimeFormat.forPattern("dd.MM.yyyy").getParser()};
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
 
 
         String defaultStart = new LocalDate().toString("dd/MM/yyyy");
         String defaultEnd = new LocalDate().plusDays(1).toString("dd/MM/yyyy");
-try{
-        startTime = new JFormattedTextField(new MaskFormatter("##/##/####"));
-        startTime.setValue(defaultStart); //// Get default starting date here or use the current date?
 
+        startTime = new JFormattedTextField(defaultStart);
+        startTime.setInputVerifier(new DateVerifier(formatter));
 
         startTime.setToolTipText("Enter the start date, eg. 10/12/1990");
-        startTime.addPropertyChangeListener("value", (java.beans.PropertyChangeListener) holder);
         startTime.setVisible(true);
 
-    if(startTime.getText().length()>10)
-    {
-        startTime.setText(startTime.getText().substring(0, 10));
-    }
 
-            endTime = new JFormattedTextField(new MaskFormatter("##/##/####"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        endTime.setValue(defaultEnd);
+        /// End time
+        endTime = new JFormattedTextField(defaultEnd);
+        endTime.setInputVerifier(new DateVerifier(formatter));
+
         endTime.setToolTipText("Enter the end date, eg. 10/12/1990");
-        endTime.addPropertyChangeListener("value", (java.beans.PropertyChangeListener) holder);
         endTime.setVisible(true);
-
-        if(endTime.getText().length()>10)
-        {
-            endTime.setText(endTime.getText().substring(0, 10));
-        }
 
 
         numAnimals = new JFormattedTextField(1000); //// Get default num of animals

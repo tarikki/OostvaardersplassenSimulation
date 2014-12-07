@@ -16,7 +16,7 @@ public class SimulationConfig {
     {
         this.numberofAnimals = Integer.parseInt(configPane.getNumAnimals().getValue().toString());
         this.speedofSimulation = Integer.parseInt(configPane.getSpeed().getValue().toString());
-        this.startingDate = configPane.getStartTime().getValue();
-        this.endingDate = configPane.getEndTime().getValue();
+        this.startingDate = configPane.getStartTime().getText();
+        this.endingDate = configPane.getEndTime().getText();
     }
 }
