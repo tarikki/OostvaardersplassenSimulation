@@ -15,6 +15,7 @@ public class Terrain {
     private int b;
     private String[] plants;
     private float[] coverage;
+    private int colorTolerance = 20;
 
 
     public String getOriginalName() {
@@ -75,7 +76,7 @@ public class Terrain {
 
     public boolean compareColor(int red, int green, int blue) {
         boolean sameColor = false;
-        if (red == r && green == g && blue == b) {
+        if ((red < r+colorTolerance) && (red > r-colorTolerance) && (green < g+colorTolerance) && (green > g-colorTolerance) && (blue < b+colorTolerance) && (blue > b-colorTolerance)) {
             sameColor = true;
         }
 
