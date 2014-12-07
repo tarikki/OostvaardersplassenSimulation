@@ -1,7 +1,10 @@
 package util;
 
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.DateTimeParser;
 
 import javax.swing.*;
 
@@ -10,6 +13,11 @@ import javax.swing.*;
  */
 public class DateVerifier extends InputVerifier {
     DateTimeFormatter df;
+    static DateTimeParser[] parsers = {
+            DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
+            DateTimeFormat.forPattern("dd/MM/yyyy").getParser(),
+            DateTimeFormat.forPattern("dd.MM.yyyy").getParser()};
+    public static  DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
 
     public DateVerifier(DateTimeFormatter df) {
         this.df = df;

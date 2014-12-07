@@ -4,10 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
-import org.joda.time.format.DateTimeParser;
 import util.ButtonUtils;
 import util.DateVerifier;
 
@@ -50,6 +46,7 @@ public class ConfigPane extends JPanel {
     private JFormattedTextField speed;
     private JPanel holder;
     private JLabel configLabels;
+    private DateVerifier dateVerifier;
 
     //// Implement speed as drop down (combo box?) now we use JFormattedTextField
 
@@ -71,6 +68,7 @@ public class ConfigPane extends JPanel {
         createTitle();
 
         createButtons();
+
         createTextFields();
 
 
@@ -167,19 +165,14 @@ public class ConfigPane extends JPanel {
 
 
 
-        /// Parses for dates
-        DateTimeParser[] parsers = {
-                DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
-                DateTimeFormat.forPattern("dd/MM/yyyy").getParser(),
-                DateTimeFormat.forPattern("dd.MM.yyyy").getParser()};
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
+
 
 
         String defaultStart = new LocalDate().toString("dd/MM/yyyy");
         String defaultEnd = new LocalDate().plusDays(1).toString("dd/MM/yyyy");
 
         startTime = new JFormattedTextField(defaultStart);
-        startTime.setInputVerifier(new DateVerifier(formatter));
+        startTime.setInputVerifier(new DateVerifier(dateVerifier.formatter));
 
         startTime.setToolTipText("Enter the start date, eg. 10/12/1990");
         startTime.setVisible(true);
@@ -187,7 +180,7 @@ public class ConfigPane extends JPanel {
 
         /// End time
         endTime = new JFormattedTextField(defaultEnd);
-        endTime.setInputVerifier(new DateVerifier(formatter));
+        endTime.setInputVerifier(new DateVerifier(dateVerifier.formatter));
 
         endTime.setToolTipText("Enter the end date, eg. 10/12/1990");
         endTime.setVisible(true);
