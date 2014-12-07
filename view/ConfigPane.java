@@ -165,9 +165,6 @@ public class ConfigPane extends JPanel {
 
 
 
-
-
-
         String defaultStart = new LocalDate().toString("dd/MM/yyyy");
         String defaultEnd = new LocalDate().plusDays(1).toString("dd/MM/yyyy");
 
