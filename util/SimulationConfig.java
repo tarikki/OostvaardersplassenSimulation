@@ -1,5 +1,6 @@
 package util;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import view.ConfigPane;
 
@@ -11,6 +12,8 @@ public class SimulationConfig {
     private int speedofSimulation;
     private String startingDate;
     private String endingDate;
+    public static DateTime startDate;
+    public static DateTime endDate;
 
 
     public SimulationConfig(ConfigPane configPane) {
@@ -18,10 +21,11 @@ public class SimulationConfig {
         this.speedofSimulation = Integer.parseInt(configPane.getSpeed().getValue().toString());
         this.startingDate = configPane.getStartTime().getText();
         this.endingDate = configPane.getEndTime().getText();
-        System.out.println(endingDate);
+
 
         ///// GO FROM STRING TO JODA LIKE THIS
         System.out.println(new LocalDate(LocalDate.parse(endingDate, DateVerifier.formatter)));
+
 
     }
 }

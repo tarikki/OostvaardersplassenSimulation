@@ -3,9 +3,12 @@ package view;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import controller.Main;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import util.ButtonUtils;
 import util.DateVerifier;
+import util.SimulationConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +22,7 @@ import java.io.FileReader;
  */
 public class ConfigPane extends JPanel {
 
-    private final String simulationConfig = "C:/Workspace BU/Simulation-project/src/configuration/Simulation.json";
+    private static final String simulationConfig = "C:/Workspace BU/Simulation-project/src/configuration/Simulation.json";
     private JLabel title;
     private JPanel configButtons;
     private JPanel itsame;
@@ -100,7 +103,7 @@ public class ConfigPane extends JPanel {
     }
 
     /// Testing reading from JSON file
-    private void readConfigFiles() {
+    public static void readConfigFiles() {
         JsonObject jsonObject = new JsonObject();
         try {
             JsonParser parser = new JsonParser();
@@ -118,6 +121,9 @@ public class ConfigPane extends JPanel {
             System.out.println("Starting date " + startingDate);
             System.out.println("Ending date " + endingDate);
 
+            /// Read values from config and initialize the variables
+            SimulationConfig.startDate = (new DateTime(DateTime.parse(startingDate, DateVerifier.formatter)));
+            SimulationConfig.endDate = (new DateTime(DateTime.parse(endingDate, DateVerifier.formatter)));
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -130,6 +136,9 @@ public class ConfigPane extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 createConfigFiles();
+
+                /// IF user edited the configs, call a new preserve.
+                Main.createPreserve();
                 itsame.setVisible(false);
                 gui.getMenuBarHandler().setVisible(true);
                 gui.add(gui.tabbedPane);

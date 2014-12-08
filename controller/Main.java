@@ -1,11 +1,12 @@
 package controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import model.MapHandler;
 import model.Preserve;
-import org.joda.time.DateTime;
-import view.*;
+import util.SimulationConfig;
+import view.ConfigPane;
+import view.MainView;
+import view.MapView;
+import view.StartScreen;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -28,6 +29,7 @@ public class Main {
 
 
         mapHandler = new MapHandler(); /// Create map
+
         createPreserve();
 
 
@@ -40,7 +42,12 @@ public class Main {
     /// Just initializing
     public static void createPreserve() {
 
-        preserve = new Preserve(52.3667, 100, new DateTime(), (new DateTime()).plusDays(3)); /// Create preserve with X amount of animals
+        ConfigPane.readConfigFiles(); //// Read info from config
+
+        /// Create preserve according to configs
+        preserve = new Preserve(52.3667, 100, SimulationConfig.startDate, SimulationConfig.endDate); /// Create preserve with X amount of animals
+        System.out.println("Start on: " + SimulationConfig.startDate);
+        System.out.println("End date on: " + SimulationConfig.endDate);
     }
 
     public static void stopMovement() {
