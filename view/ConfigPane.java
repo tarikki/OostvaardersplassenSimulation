@@ -1,31 +1,55 @@
 package view;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import controller.Main;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import util.ButtonUtils;
+import util.DateVerifier;
+import util.SimulationConfig;
 
 import javax.swing.*;
-import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 /**
  * Created by extradikke on 27/11/14.
  */
 public class ConfigPane extends JPanel {
 
-
+    private static final String simulationConfig = "C:/Workspace BU/Simulation-project/src/configuration/Simulation.json";
     private JLabel title;
     private JPanel configButtons;
     private JPanel itsame;
     private JFormattedTextField startTime;
+
+    public JFormattedTextField getEndTime() {
+        return endTime;
+    }
+
+    public JFormattedTextField getNumAnimals() {
+        return numAnimals;
+    }
+
+    public JFormattedTextField getSpeed() {
+        return speed;
+    }
+
+    public JFormattedTextField getStartTime() {
+        return startTime;
+    }
+
     private JFormattedTextField endTime;
     private JFormattedTextField numAnimals;
     private JFormattedTextField speed;
     private JPanel holder;
     private JLabel configLabels;
+    private DateVerifier dateVerifier;
 
     //// Implement speed as drop down (combo box?) now we use JFormattedTextField
 
@@ -47,7 +71,11 @@ public class ConfigPane extends JPanel {
         createTitle();
 
         createButtons();
+
         createTextFields();
+
+
+
         createConfigPanel();
 
         this.add(configButtons, BorderLayout.SOUTH);
@@ -63,15 +91,59 @@ public class ConfigPane extends JPanel {
 
     }
 
+    private void createConfigFiles() {
+
+        /// TODO fix variable and string names so they are easier to read
+
+        /// Simulation config
+
+        util.JsonWriter.writeSimulationConfig(new util.SimulationConfig(this), simulationConfig); // OUTPUT ---- filepath
+
+
+    }
+
+    /// Testing reading from JSON file
+    public static void readConfigFiles() {
+        JsonObject jsonObject = new JsonObject();
+        try {
+            JsonParser parser = new JsonParser();
+            JsonElement jsonElement = parser.parse(new FileReader(simulationConfig));
+            jsonObject = jsonElement.getAsJsonObject();
+
+
+            int numberofAnimals = jsonObject.get("numberofAnimals").getAsInt();
+            int speedofSimulation = jsonObject.get("speedofSimulation").getAsInt();
+            String startingDate = jsonObject.get("startingDate").getAsString();
+            String endingDate = jsonObject.get("endingDate").getAsString();
+
+            System.out.println("Animals: " + numberofAnimals);
+            System.out.println("Speed: " + speedofSimulation);
+            System.out.println("Starting date " + startingDate);
+            System.out.println("Ending date " + endingDate);
+
+            /// Read values from config and initialize the variables
+            SimulationConfig.startDate = (new DateTime(DateTime.parse(startingDate, DateVerifier.formatter)));
+            SimulationConfig.endDate = (new DateTime(DateTime.parse(endingDate, DateVerifier.formatter)));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void createButtons() {
         createOpenMapButton();
         ButtonUtils.addButton(configButtons, "Start Simulation", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                createConfigFiles();
+
+                /// IF user edited the configs, call a new preserve.
+                Main.createPreserve();
                 itsame.setVisible(false);
                 gui.getMenuBarHandler().setVisible(true);
                 gui.add(gui.tabbedPane);
                 gui.tabbedPane.setVisible(true);
+
 
             }
         });
@@ -80,6 +152,7 @@ public class ConfigPane extends JPanel {
         ButtonUtils.addButton(configButtons, "Exit Application", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                readConfigFiles();
                 System.exit(0);
             }
         });
@@ -96,31 +169,30 @@ public class ConfigPane extends JPanel {
     }
 
 
-    // TODO format dates with Joda instead?
+    // TODO display popup / change color of textfield if inputs are wrong.
     private void createTextFields() {
 
 
-        //// Formatting for textFields
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        DateFormatter dateFormatter = new DateFormatter(dateFormat);
 
+        String defaultStart = new LocalDate().toString("dd/MM/yyyy");
+        String defaultEnd = new LocalDate().plusDays(1).toString("dd/MM/yyyy");
 
-
-
-        startTime = new JFormattedTextField(dateFormatter);
-        startTime.setValue(new Date()); //// Get default starting date here or use the current date?
+        startTime = new JFormattedTextField(defaultStart);
+        startTime.setInputVerifier(new DateVerifier(dateVerifier.formatter));
 
         startTime.setToolTipText("Enter the start date, eg. 10/12/1990");
-        startTime.addPropertyChangeListener("value", (java.beans.PropertyChangeListener) holder);
         startTime.setVisible(true);
 
-        endTime = new JFormattedTextField(dateFormatter);
-        endTime.setValue(new Date()); //Get default end date here or use the current date?
+
+        /// End time
+        endTime = new JFormattedTextField(defaultEnd);
+        endTime.setInputVerifier(new DateVerifier(dateVerifier.formatter));
+
         endTime.setToolTipText("Enter the end date, eg. 10/12/1990");
-        endTime.addPropertyChangeListener("value", (java.beans.PropertyChangeListener) holder);
         endTime.setVisible(true);
 
-        numAnimals = new JFormattedTextField("1000"); //// Get default num of animals
+
+        numAnimals = new JFormattedTextField(1000); //// Get default num of animals
         numAnimals.setToolTipText("Enter the number of animals");
         numAnimals.setVisible(true);
 
@@ -143,60 +215,56 @@ public class ConfigPane extends JPanel {
         JLabel speedster = new JLabel("Speed:");
 
 
-        gbc.insets = new Insets(3,3,15,15);
+        gbc.insets = new Insets(3, 3, 15, 15);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        holder.add(start,gbc);
+        holder.add(start, gbc);
 
         gbc.gridx = 3;
         gbc.gridy = 0;
-        holder.add(startTime,gbc);
+        holder.add(startTime, gbc);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        holder.add(end,gbc);
+        holder.add(end, gbc);
 
         gbc.gridx = 3;
         gbc.gridy = 1;
-        holder.add(endTime,gbc);
+        holder.add(endTime, gbc);
 
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        holder.add(animuls,gbc);
+        holder.add(animuls, gbc);
 
         gbc.gridx = 3;
         gbc.gridy = 2;
-        holder.add(numAnimals,gbc);
+        holder.add(numAnimals, gbc);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        holder.add(speedster,gbc);
+        holder.add(speedster, gbc);
 
         gbc.gridx = 3;
         gbc.gridy = 3;
-        holder.add(speed,gbc);
-
+        holder.add(speed, gbc);
 
 
     }
 
 
-
-
-        private void createTitle()
-        {
-            title = new JLabel("Configuration menu");
-            title.setHorizontalAlignment(JLabel.CENTER);
-            title.setVerticalAlignment(JLabel.CENTER);
-        }
-
+    private void createTitle() {
+        title = new JLabel("Configuration menu");
+        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setVerticalAlignment(JLabel.CENTER);
     }
+
+}

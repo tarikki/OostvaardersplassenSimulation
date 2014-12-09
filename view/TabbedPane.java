@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 /**
- * Created by Veera on 27.11.2014.
+ * Created by Pepe on 27.11.2014.
  */
 public class TabbedPane extends JTabbedPane {
 private JPanel dikkeHolder;
