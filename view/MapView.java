@@ -1,7 +1,8 @@
 package view;
 
+import mapUtils.MapHandlerAdvanced;
 import model.Animal;
-import model.MapHandler;
+import mapUtils.MapHandlerAdvanced;
 import util.ButtonUtils;
 
 import javax.swing.*;
@@ -58,10 +59,10 @@ public class MapView extends JPanel {
         this.add(briefStatistics, BorderLayout.EAST);
 
         // Create the drawing surface
-        drawingSurface = new BufferedImage(MapHandler.getWidth(), MapHandler.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        drawingSurface = new BufferedImage(MapHandlerAdvanced.getWidth(), MapHandlerAdvanced.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         /// Set map as the background
-        backgroundImage = MapHandler.getImage();
+        backgroundImage = MapHandlerAdvanced.getDisplayableImage();
         bgImageHolder = new JLabel(new ImageIcon(backgroundImage));
         ToolTipManager.sharedInstance().registerComponent(bgImageHolder);
         bgImageHolder.setLayout(new BorderLayout()); /// Needs to be here so we can position drawHolder and drawingSurface

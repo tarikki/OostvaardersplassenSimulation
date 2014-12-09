@@ -1,6 +1,6 @@
 package controller;
 
-import model.MapHandler;
+import mapUtils.MapHandlerAdvanced;
 import model.Preserve;
 import util.SimulationConfig;
 import view.ConfigPane;
@@ -18,7 +18,7 @@ import java.util.TimerTask;
 public class Main {
     public static Timer timer;
     private static Preserve preserve;
-    private static MapHandler mapHandler;
+    private static MapHandlerAdvanced mapHandler;
     private static MapView mapView;
     private static MainView mainView;
     private static StartScreen startScreen;
@@ -28,7 +28,7 @@ public class Main {
     public static void main(String[] args) {
 
 
-        mapHandler = new MapHandler(); /// Create map
+        mapHandler = new MapHandlerAdvanced(); /// Create map
 
         createPreserve();
 
