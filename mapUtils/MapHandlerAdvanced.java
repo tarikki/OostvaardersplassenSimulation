@@ -13,7 +13,7 @@ import java.util.HashMap;
 /**
  * Created by extradikke on 19-11-14.
  */
-public class MapHandlerAndvanced {
+public class MapHandlerAdvanced {
     private String terrainMapLocation = "/FinalTerrainScaled2x2m.png";
     private String plantsLocation = "/media/extradikke/shared/Misc Programming/simulation2/src/Plants.json";
     private String terrainsLocation = "/media/extradikke/shared/Misc Programming/simulation2/src/terrainTypes.json";
@@ -22,9 +22,9 @@ public class MapHandlerAndvanced {
     private static int width;
     private static int[][] map;
     private static Terrains terrains;
-    private HashMap<Integer, Terrain> terrainHash = new HashMap<>();
+    private static HashMap<Integer, Terrain> terrainHash = new HashMap<>();
     private Plants plants;
-    private HashMap<Integer, Plant> plantsHash = new HashMap<>();
+    private static HashMap<Integer, Plant> plantsHash = new HashMap<>();
     private int brokenPixels = 0;
     private static BufferedImage terrainImage;
     private static BufferedImage displayableImage;
@@ -210,8 +210,9 @@ public class MapHandlerAndvanced {
 
 
     public static boolean isValidMove(int x, int y) {
-
-        return true;
+        int terrainID = getTerrain(x, y);
+        Terrain terrain = terrainHash.get(terrainID);
+        return terrain.isTraversable();
 
 
     }
@@ -224,4 +225,7 @@ public class MapHandlerAndvanced {
         } else return false;
     }
 
+    public static BufferedImage getDisplayableImage() {
+        return displayableImage;
+    }
 }
