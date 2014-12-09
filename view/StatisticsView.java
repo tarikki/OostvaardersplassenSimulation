@@ -4,6 +4,8 @@ import util.ButtonUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +17,10 @@ public class StatisticsView extends JPanel {
     private JList chartList;
     private String[] chartNames = {"Chart 1", "Chart 2", "Chart 3"};
     private JPanel statisticButtons;
+    private JPanel chartHolder;
+
+    private JLabel test;
+
 
     public StatisticsView() {
         this.setLayout(new BorderLayout());
@@ -29,6 +35,12 @@ public class StatisticsView extends JPanel {
         Border border = BorderFactory.createLineBorder(Color.black);
         chartList.setBorder(border);
         this.add(chartList, BorderLayout.WEST);
+
+        chartHolder = new JPanel();
+        this.add(chartHolder, BorderLayout.CENTER);
+
+        chartHolder.add(test);
+        mouseListeners();
 
 
     }
@@ -67,12 +79,44 @@ public class StatisticsView extends JPanel {
     public void createChartList() {
         chartList = new JList(chartNames);
 
+        test = new JLabel("test");
+
+
 
     }
 
     public void mouseListeners()
     {
+        chartList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    switch(chartList.getSelectedIndex())
+                    {
+                        case 0:
+                            // the user selected the 1st item in the list; display the appropriate chart
+                            test.setText("EKANA");
+                            break;
+                        case 1:
+                            // the user selected the 2nd item in the list; display the appropriate chart
+                            test.setText("TOKANA");
+                            break;
+                        default:
+                            /// Do something here if nothing is selected. Maybe display the 1st one by default??
+                            test.setText("DEFAULT");
+                            break;
+                    }
+                }
+                else
+                {
+                    /// Do something here if nothing is selected. Maybe display the 1st one by default??
+                    /// Maybe do nothing
+                    test.setText("ELSE");
 
+                }
+            }
+        });
     }
 }
-

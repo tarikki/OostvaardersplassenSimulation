@@ -43,7 +43,11 @@ public class MainView {
             public void run() {
 
 
+
+
+
                 gui = new GUI(animals);
+
                 gui.setVisible(true);
                 //gui.pack(); Can be uncommented again
 
@@ -86,8 +90,8 @@ public class MainView {
             /// Create the tabbed pane
             tabbedPane = new TabbedPane(animals);
 //            tabbedPane.setVisible(true);
-
             startScreen = new StartScreen(this);
+
             this.add(startScreen);
 //            this.add(tabbedPane); // Add tabbedPane tab to center
 
