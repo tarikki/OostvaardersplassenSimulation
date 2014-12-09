@@ -22,9 +22,9 @@ public class MapHandlerAndvanced {
     private static int width;
     private static int[][] map;
     private static Terrains terrains;
-    private HashMap<Integer, Terrain> terrainHash = new HashMap<>();
+    private static HashMap<Integer, Terrain> terrainHash = new HashMap<>();
     private Plants plants;
-    private HashMap<Integer, Plant> plantsHash = new HashMap<>();
+    private static HashMap<Integer, Plant> plantsHash = new HashMap<>();
     private int brokenPixels = 0;
     private static BufferedImage terrainImage;
     private static BufferedImage displayableImage;
@@ -76,7 +76,7 @@ public class MapHandlerAndvanced {
                 if (id == -1) {
                     brokenPixels++;
 //                    System.out.println(w + " " + h);
-                    id = getTerrain(w - 1, h); // fixing pixels with wrong color
+                    id = getTerrainID(w - 1, h); // fixing pixels with wrong color
                 }
 //                System.out.println(w + " " + h);
                 map[w][h] = encodeMap(id);
@@ -139,7 +139,7 @@ public class MapHandlerAndvanced {
     public static void decreasePlantHealth(int x, int y, int amount) {
         int plantInt = getPlantId(x, y) << 11;
         int plantHealthInt = getPlantHealth(x, y);
-        int terrainInt = getTerrain(x, y) << 16;
+        int terrainInt = getTerrainID(x, y) << 16;
 
         int newHealth = plantHealthInt - amount;
         System.out.println(newHealth);
@@ -152,7 +152,7 @@ public class MapHandlerAndvanced {
     public void increasePlantHealth(int x, int y, int amount) {
         int plantInt = getPlantId(x, y) << 11;
         int plantHealthInt = getPlantHealth(x, y);
-        int terrainInt = getTerrain(x, y) << 16;
+        int terrainInt = getTerrainID(x, y) << 16;
 
         int newHealth = plantHealthInt + amount;
         int maxhealth = plantsHash.get(plantInt).getMaxHealth();
@@ -162,7 +162,7 @@ public class MapHandlerAndvanced {
         map[x][y] = encoded;
     }
 
-    public static int getTerrain(int x, int y) {
+    public static int getTerrainID(int x, int y) {
         return (map[x][y] >>> 16) & 0xff;
     }
 
@@ -210,8 +210,9 @@ public class MapHandlerAndvanced {
 
 
     public static boolean isValidMove(int x, int y) {
-
-        return true;
+        int terrainID = getTerrainID(x, y);
+        Terrain terrain = terrainHash.get(terrainID);
+        return terrain.isTraversable();
 
 
     }
