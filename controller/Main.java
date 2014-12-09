@@ -1,11 +1,10 @@
 package controller;
 
-import model.MapHandler;
+import mapUtils.MapHandlerAdvanced;
 import model.Preserve;
-import org.joda.time.DateTime;
-import view.AnimalRectangle;
+import util.SimulationConfig;
+import view.ConfigPane;
 import view.MainView;
-
 import view.MapView;
 import view.StartScreen;
 
@@ -19,7 +18,7 @@ import java.util.TimerTask;
 public class Main {
     public static Timer timer;
     private static Preserve preserve;
-    private static MapHandler mapHandler;
+    private static MapHandlerAdvanced mapHandler;
     private static MapView mapView;
     private static MainView mainView;
     private static StartScreen startScreen;
@@ -29,7 +28,8 @@ public class Main {
     public static void main(String[] args) {
 
 
-        mapHandler = new MapHandler(); /// Create map
+        mapHandler = new MapHandlerAdvanced(); /// Create map
+
         createPreserve();
 
 
@@ -42,13 +42,19 @@ public class Main {
     /// Just initializing
     public static void createPreserve() {
 
-        preserve = new Preserve(52.3667, 100, new DateTime(), (new DateTime()).plusDays(3)); /// Create preserve with X amount of animals
+        ConfigPane.readConfigFiles(); //// Read info from config
+
+        /// Create preserve according to configs
+        preserve = new Preserve(52.3667, 100, SimulationConfig.startDate, SimulationConfig.endDate); /// Create preserve with X amount of animals
+        System.out.println("Start on: " + SimulationConfig.startDate);
+        System.out.println("End date on: " + SimulationConfig.endDate);
     }
 
     public static void stopMovement() {
         timer.cancel();
 
     }
+
 
 
     public static void stopThemThreads() {

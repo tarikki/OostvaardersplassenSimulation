@@ -13,10 +13,10 @@ import java.util.HashMap;
 /**
  * Created by extradikke on 19-11-14.
  */
-public class MapHandlerAndvanced {
+public class MapHandlerAdvanced {
     private String terrainMapLocation = "/FinalTerrainScaled2x2m.png";
-    private String plantsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/Plants.json";
-    private String terrainsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/terrainTypes.json";
+    private String plantsLocation = "/media/extradikke/shared/Misc Programming/simulation2/src/Plants.json";
+    private String terrainsLocation = "/media/extradikke/shared/Misc Programming/simulation2/src/terrainTypes.json";
     private String displayableMapLocation = "/displayableMapScale10.png";
     private static int height;
     private static int width;
@@ -210,7 +210,11 @@ public class MapHandlerAndvanced {
 
 
     public static boolean isValidMove(int x, int y) {
+<<<<<<< HEAD:mapUtils/MapHandlerAndvanced.java
         int terrainID = getTerrainID(x, y);
+=======
+        int terrainID = getTerrain(x, y);
+>>>>>>> a64932440ca53e330e3d21b832f45539563c4d96:mapUtils/MapHandlerAdvanced.java
         Terrain terrain = terrainHash.get(terrainID);
         return terrain.isTraversable();
 
@@ -225,4 +229,7 @@ public class MapHandlerAndvanced {
         } else return false;
     }
 
+    public static BufferedImage getDisplayableImage() {
+        return displayableImage;
+    }
 }
