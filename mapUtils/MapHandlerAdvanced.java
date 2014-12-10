@@ -2,9 +2,11 @@ package mapUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import util.Config;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,12 +16,14 @@ import java.util.HashMap;
  * Created by extradikke on 19-11-14.
  */
 public class MapHandlerAdvanced {
-    private String terrainMapLocation = "/FinalTerrainScaled2x2m.png";
-    private String plantsLocation = "C:/Workspace BU/Simulation-project/src/Plants.json";
-    private String terrainsLocation = "C:/Workspace BU/Simulation-project/src/terrainTypes.json";
-    private String displayableMapLocation = "/displayableMapScale10.png";
+    private String terrainMapLocation;
+    private String plantsLocation;
+    private String terrainsLocation;
+    private String displayableMapLocation;
     private static int height;
     private static int width;
+    private static int displayableImageHeight;
+    private static int displayableImageWidth;
     private static int[][] map;
     private static Terrains terrains;
     private static HashMap<Integer, Terrain> terrainHash = new HashMap<>();
@@ -38,7 +42,7 @@ public class MapHandlerAdvanced {
     }
 
     public void starters() {
-
+        setPaths();
         loadImages();
         map = new int[width][height];
         loadJsons();
@@ -48,9 +52,16 @@ public class MapHandlerAdvanced {
 
     }
 
+    public void setPaths() {
+        terrainMapLocation = Config.getTerrainMapPath();
+        plantsLocation = Config.getPlantsPath();
+        terrainsLocation = Config.getTerrainsPath();
+        displayableMapLocation = Config.getDisplayableMapPath();
+    }
+
     public void loadImages() {
         try {
-            terrainImage = ImageIO.read((this.getClass().getResourceAsStream(terrainMapLocation)));
+            terrainImage = ImageIO.read(new File(terrainMapLocation));
             height = terrainImage.getHeight();
             width = terrainImage.getWidth();
             System.out.println("height: " + height + " width: " + width);
@@ -59,7 +70,7 @@ public class MapHandlerAdvanced {
         }
 
         try {
-            displayableImage = ImageIO.read((this.getClass().getResourceAsStream(displayableMapLocation)));
+            displayableImage = ImageIO.read(new File(displayableMapLocation));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -228,4 +239,13 @@ public class MapHandlerAdvanced {
     public static BufferedImage getDisplayableImage() {
         return displayableImage;
     }
+
+    public static int getDisplayableImageHeight() {
+        return displayableImageHeight;
+    }
+
+    public static int getDisplayableImageWidth() {
+        return displayableImageWidth;
+    }
+
 }

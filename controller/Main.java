@@ -2,6 +2,7 @@ package controller;
 
 import mapUtils.MapHandlerAdvanced;
 import model.Preserve;
+import util.IOUtil;
 import util.SimulationConfig;
 import view.ConfigPane;
 import view.MainView;
@@ -27,14 +28,13 @@ public class Main {
     /// Run new GUI.. TODO move these to static block?
     public static void main(String[] args) {
 
-
+        IOUtil.loadConfig();
         mapHandler = new MapHandlerAdvanced(); /// Create map
 
         createPreserve();
 
 
         mainView = new MainView((ArrayList<model.Animal>) preserve.getAnimals());
-
 
 
     }
@@ -54,7 +54,6 @@ public class Main {
         timer.cancel();
 
     }
-
 
 
     public static void stopThemThreads() {
