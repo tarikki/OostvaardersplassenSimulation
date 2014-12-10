@@ -64,6 +64,7 @@ public class IOUtil {
 
             Config.setStartingDate(formatter.parseDateTime(configLoader.getStartingDate()));
             Config.setEndingDate(formatter.parseDateTime(configLoader.getEndingDate()));
+            Config.setScale(configLoader.getScale());
 
 
 

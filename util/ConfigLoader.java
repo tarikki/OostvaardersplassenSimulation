@@ -16,6 +16,8 @@ public class ConfigLoader {
     private String displayableMapName;
     private String animalsFileName;
 
+    private int scale;
+
     private int numberOfAnimals;
     private int speedOfSimulation;
 
@@ -93,6 +95,14 @@ public class ConfigLoader {
 
     public void setEndingDate(String endingDate) {
         this.endingDate = endingDate;
+    }
+
+    public int getScale() {
+        return scale;
+    }
+
+    public void setScale(int scale) {
+        this.scale = scale;
     }
 
     @Override

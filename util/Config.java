@@ -15,6 +15,8 @@ public class Config {
     private static String displayableMapPath;
     private static String animalsFilePath;
 
+    private static int scale;
+
     private static int numberOfAnimals;
     private static int speedOfSimulation;
 
@@ -94,7 +96,13 @@ public class Config {
         Config.endingDate = endingDate;
     }
 
+    public static int getScale() {
+        return scale;
+    }
 
+    public static void setScale(int scale) {
+        Config.scale = scale;
+    }
 
     public static String print() {
         return "Config{" +
@@ -107,6 +115,7 @@ public class Config {
                 ", speedOfSimulation=" + speedOfSimulation +
                 ", startingDate=" + startingDate +
                 ", endingDate=" + endingDate +
+                ", scale=" + scale +
                 '}';
     }
 
