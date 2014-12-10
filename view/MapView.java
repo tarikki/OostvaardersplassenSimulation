@@ -2,7 +2,6 @@ package view;
 
 import mapUtils.MapHandlerAdvanced;
 import model.Animal;
-import mapUtils.MapHandlerAdvanced;
 import util.ButtonUtils;
 
 import javax.swing.*;
@@ -12,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -59,7 +59,7 @@ public class MapView extends JPanel {
         this.add(briefStatistics, BorderLayout.EAST);
 
         // Create the drawing surface
-        drawingSurface = new BufferedImage(MapHandlerAdvanced.getWidth(), MapHandlerAdvanced.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        drawingSurface = new BufferedImage(MapHandlerAdvanced.getDisplayableImage().getWidth(), MapHandlerAdvanced.getDisplayableImage().getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         /// Set map as the background
         backgroundImage = MapHandlerAdvanced.getDisplayableImage();
@@ -161,12 +161,15 @@ public class MapView extends JPanel {
 
 
     public void animalstoRectangles(ArrayList<Animal> animals) {
-
+        int scale = 10; //// Add this as final somewhere
 
         for (int i = 0; i < animals.size(); i++) {
 
+            int newX = animals.get(i).getxPos() / scale;
+            int newY = animals.get(i).getyPos() / scale;
 
-            rectangles.add(new AnimalRectangle(animals.get(i).getxPos(), animals.get(i).getyPos(), 10, 10, animals.get(i))); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
+            rectangles.add(new AnimalRectangle(newX, newY, 5, 5, animals.get(i))); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
+
 
 
         }
@@ -178,12 +181,18 @@ public class MapView extends JPanel {
 
         g2d.setColor(Color.red);
 
+        AffineTransform original = g2d.getTransform();
 
         super.paintComponent(g2d);
 
 
+
+
         for (AnimalRectangle animalRectangle : rectangles) {
+
+
             g2d.fill(animalRectangle);
+
 
 
         }

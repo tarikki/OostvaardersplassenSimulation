@@ -22,7 +22,7 @@ import java.io.FileReader;
  */
 public class ConfigPane extends JPanel {
 
-    private static final String simulationConfig = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/Simulation.json";
+    private static final String simulationConfig = "C:/Workspace BU/Simulation-project/src/Simulation.json";
     private JLabel title;
     private JPanel configButtons;
     private JPanel itsame;

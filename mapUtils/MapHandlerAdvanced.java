@@ -15,8 +15,8 @@ import java.util.HashMap;
  */
 public class MapHandlerAdvanced {
     private String terrainMapLocation = "/FinalTerrainScaled2x2m.png";
-    private String plantsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/Plants.json";
-    private String terrainsLocation = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/terrainTypes.json";
+    private String plantsLocation = "C:/Workspace BU/Simulation-project/src/Plants.json";
+    private String terrainsLocation = "C:/Workspace BU/Simulation-project/src/terrainTypes.json";
     private String displayableMapLocation = "/displayableMapScale10.png";
     private static int height;
     private static int width;
