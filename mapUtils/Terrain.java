@@ -79,6 +79,7 @@ public class Terrain {
         boolean sameColor = false;
         if ((red <= r+colorTolerance) && (red >= r-colorTolerance) && (green <= g+colorTolerance) && (green >= g-colorTolerance) && (blue <= b+colorTolerance) && (blue >= b-colorTolerance)) {
             sameColor = true;
+            //asdf
         }
 
         return sameColor;
