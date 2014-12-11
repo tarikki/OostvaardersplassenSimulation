@@ -75,8 +75,11 @@ public class Preserve {
         List<Callable<Object>> todo = new ArrayList<Callable<Object>>(animals.size());
         // TODO shuffle the animals first so they don't always move in order of creation
         for (Animal animal : animals) {
-            todo.add(Executors.callable(animal));
+            if (!checkDeath(animal)) {
+                todo.add(Executors.callable(animal));
+            }
         }
+        System.out.println(animals.size());
         List<Future<Object>> dikke = executor.invokeAll(todo);
         System.out.println("Now turn: " + turn++);
         currentDate = currentDate.plusMinutes(1);
@@ -91,6 +94,13 @@ public class Preserve {
         }
     }
 
+    public boolean checkDeath(Animal animal) {
+        if (animal.isDead()) {
+            animals.remove(animal.getId());
+            return false;
+        } else return true;
+    }
+
     public boolean isNewDay() {
         boolean newDay = false;
         if (!currentDaySpan.contains(currentDate)) {
@@ -102,8 +112,8 @@ public class Preserve {
 
     public void setSunriseAndSunset(double lengthOfDay) {
         System.out.println(lengthOfDay);
-        long halfLightHoursDuration = (Hours.hours((int) Math.floor(lengthOfDay)).toStandardDuration().getMillis()/2);
-        long halfLightMinutesDuration = (Minutes.minutes((int) ((lengthOfDay - Math.floor(lengthOfDay))*60)).toStandardDuration().getMillis()/2);
+        long halfLightHoursDuration = (Hours.hours((int) Math.floor(lengthOfDay)).toStandardDuration().getMillis() / 2);
+        long halfLightMinutesDuration = (Minutes.minutes((int) ((lengthOfDay - Math.floor(lengthOfDay)) * 60)).toStandardDuration().getMillis() / 2);
         System.out.println((lengthOfDay - Math.floor(lengthOfDay)));
 //        System.out.println(halfLightHoursDuration.toStandardHours());
 //        System.out.println(halfLightMinutesDuration.toStandardMinutes());

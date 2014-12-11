@@ -31,6 +31,15 @@ public class Animal implements Runnable {
         yPos = y;
     }
 
+    public boolean isDead() {
+        if (this.energy <= 0) {
+            this.living = false;
+        }
+        return this.living;
+    }
+
+
+
     public int getId() {
         return id;
     }
@@ -54,8 +63,9 @@ public class Animal implements Runnable {
     /**
      * a method for finding the way to a color code the animal might want to go to
      * so to find a way to some food would look like this animal.makeItDijkstra(MapHandler.ColorCode.GREEN);
-     *
+     * <p/>
      * the color code in the map that we want to find
+     *
      * @return foundIt
      */
    /* public boolean makeItDijkstra(MapHandlerAdvanced.ColorCode lookingFor) { // looking for is the color of the item we're looking for
@@ -116,7 +126,6 @@ public class Animal implements Runnable {
         }
         return foundIt;
     }*/
-
     private void dijkstraPrinter() {
         for (int h = 0; h < movementCostArray.length; h++) {
             for (int w = 0; w < movementCostArray.length; w++) {
@@ -236,9 +245,13 @@ public class Animal implements Runnable {
     }
 
     public void eat() {
-        if (MapHandlerAdvanced.eatFromSquare(xPos, yPos))
+        if (MapHandlerAdvanced.eatFromSquare(xPos, yPos) && hunger == 0) {
             this.energy += 10;
-        reduceHunger(3);
+            if (this.energy >= 100){
+                this.energy = 100;
+            }
+            reduceHunger(3);
+        }
 //        System.out.println("Food left: " + MapHandlerAdvanced.getValue(xPos, yPos));
 
     }
@@ -335,6 +348,7 @@ public class Animal implements Runnable {
         //useBrain();
         hunger++;
         thirst++;
+        energy--;
 
     }
 

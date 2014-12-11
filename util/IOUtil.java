@@ -74,6 +74,7 @@ public class IOUtil {
 
 
 
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -84,10 +85,9 @@ public class IOUtil {
 
             configLoader.setNumberOfAnimals(Config.getNumberOfAnimals());
             configLoader.setSpeedOfSimulation(Config.getSpeedOfSimulation());
-            configLoader.setStartingDate(Config.getStartingDate().toString("dd/MM/yyyy"));
-            configLoader.setEndingDate(Config.getEndingDate().toString("dd/MM/yyyy"));
+            configLoader.setStartingDate(Config.getStartingDate().toString("dd/mm"));
 
-
+            System.out.println(configLoader.getStartingDate());
 
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             FileWriter writer = new FileWriter(DEFAULT_CONFIG_PATH);
