@@ -4,8 +4,6 @@ import mapUtils.MapHandlerAdvanced;
 import model.Preserve;
 import util.Config;
 import util.IOUtil;
-import util.SimulationConfig;
-import view.ConfigPane;
 import view.MainView;
 import view.MapView;
 import view.StartScreen;
@@ -43,12 +41,9 @@ public class Main {
     /// Just initializing
     public static void createPreserve() {
 
-        ConfigPane.readConfigFiles(); //// Read info from config
 
-        /// Create preserve according to configs
         preserve = new Preserve(Config.getLatitude(), Config.getNumberOfAnimals(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
-        System.out.println("Start on: " + SimulationConfig.startDate);
-        System.out.println("End date on: " + SimulationConfig.endDate);
+
     }
 
     public static void stopMovement() {

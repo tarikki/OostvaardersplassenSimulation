@@ -194,9 +194,11 @@ public class MainView {
 
                     if (counter[0]) {
                         tabbedPane.mapView.legend.setVisible(false);
+                        gui.pack();
 
                     } else {
                         tabbedPane.mapView.legend.setVisible(true);
+                        gui.pack();
 
                     }
                 }

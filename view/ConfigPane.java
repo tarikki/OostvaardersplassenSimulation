@@ -104,33 +104,7 @@ public class ConfigPane extends JPanel {
 
     }
 
-    /// Testing reading from JSON file
-    public static void readConfigFiles() {
-        JsonObject jsonObject = new JsonObject();
-        try {
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(new FileReader(simulationConfig));
-            jsonObject = jsonElement.getAsJsonObject();
 
-
-            int numberofAnimals = jsonObject.get("numberofAnimals").getAsInt();
-            int speedofSimulation = jsonObject.get("speedofSimulation").getAsInt();
-            String startingDate = jsonObject.get("startingDate").getAsString();
-            String endingDate = jsonObject.get("endingDate").getAsString();
-
-            System.out.println("Animals: " + numberofAnimals);
-            System.out.println("Speed: " + speedofSimulation);
-            System.out.println("Starting date " + startingDate);
-            System.out.println("Ending date " + endingDate);
-
-            /// Read values from config and initialize the variables
-            SimulationConfig.startDate = (new DateTime(DateTime.parse(startingDate, DateVerifier.formatter)));
-            SimulationConfig.endDate = (new DateTime(DateTime.parse(endingDate, DateVerifier.formatter)));
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void createButtons() {
         createOpenMapButton();
@@ -155,7 +129,7 @@ public class ConfigPane extends JPanel {
         ButtonUtils.addButton(configButtons, "Exit Application", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                readConfigFiles();
+
                 System.exit(0);
             }
         });
