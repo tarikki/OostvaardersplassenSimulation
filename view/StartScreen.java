@@ -46,6 +46,7 @@ public class StartScreen extends JPanel {
                 gui.getMenuBarHandler().setVisible(true);
                 gui.add(gui.tabbedPane);
                 gui.tabbedPane.setVisible(true);
+                gui.pack();
 
 
 
@@ -62,6 +63,7 @@ public class StartScreen extends JPanel {
                 itsame.setVisible(false);
                 gui.add(configPane);
                 configPane.setVisible(true);
+                gui.pack();
 
             }
         });

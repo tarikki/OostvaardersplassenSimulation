@@ -49,7 +49,7 @@ public class MainView {
                 gui = new GUI(animals);
 
                 gui.setVisible(true);
-                //gui.pack(); Can be uncommented again
+                gui.pack();
 
             }
         });

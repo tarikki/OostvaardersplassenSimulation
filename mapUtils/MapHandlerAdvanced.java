@@ -32,7 +32,7 @@ public class MapHandlerAdvanced {
     private int brokenPixels = 0;
     private static BufferedImage terrainImage;
     private static BufferedImage displayableImage;
-    private int scale = 10;
+    //private int scale = 10;
 
     // Init block
     {
@@ -71,6 +71,8 @@ public class MapHandlerAdvanced {
 
         try {
             displayableImage = ImageIO.read(new File(displayableMapLocation));
+            displayableImageHeight = displayableImage.getHeight();
+            displayableImageWidth = displayableImage.getWidth();
         } catch (IOException e) {
             e.printStackTrace();
         }

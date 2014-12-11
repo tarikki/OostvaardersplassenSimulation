@@ -2,6 +2,7 @@ package controller;
 
 import mapUtils.MapHandlerAdvanced;
 import model.Preserve;
+import util.Config;
 import util.IOUtil;
 import util.SimulationConfig;
 import view.ConfigPane;
@@ -45,7 +46,7 @@ public class Main {
         ConfigPane.readConfigFiles(); //// Read info from config
 
         /// Create preserve according to configs
-        preserve = new Preserve(52.3667, 100, SimulationConfig.startDate, SimulationConfig.endDate); /// Create preserve with X amount of animals
+        preserve = new Preserve(Config.getLatitude(), Config.getNumberOfAnimals(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
         System.out.println("Start on: " + SimulationConfig.startDate);
         System.out.println("End date on: " + SimulationConfig.endDate);
     }
@@ -79,7 +80,7 @@ public class Main {
                     e.printStackTrace();
                 }
             }
-        }, 50, 50);
+        }, 0, 1000/Config.getSpeedOfSimulation());
 
     }
 }

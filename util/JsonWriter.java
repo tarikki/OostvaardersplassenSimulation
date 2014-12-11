@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class JsonWriter {
         /// TODO add methods for plants, terrain and animals
-    public static void writeSimulationConfig(SimulationConfig simulationConfig, String filepath)
+    public static void writeSimulationConfig(ConfigLoader dikke, String filepath)
     {
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -20,7 +20,7 @@ public class JsonWriter {
             FileWriter writer = new FileWriter(filepath);
 
 
-                    writer.write(gson.toJson(simulationConfig));
+                    writer.write(gson.toJson(dikke));
 
 
 

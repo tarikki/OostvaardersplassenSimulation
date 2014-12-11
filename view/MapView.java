@@ -3,6 +3,7 @@ package view;
 import mapUtils.MapHandlerAdvanced;
 import model.Animal;
 import util.ButtonUtils;
+import util.Config;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -59,7 +60,7 @@ public class MapView extends JPanel {
         this.add(briefStatistics, BorderLayout.EAST);
 
         // Create the drawing surface
-        drawingSurface = new BufferedImage(MapHandlerAdvanced.getDisplayableImage().getWidth(), MapHandlerAdvanced.getDisplayableImage().getHeight(), BufferedImage.TYPE_INT_ARGB);
+        drawingSurface = new BufferedImage(MapHandlerAdvanced.getDisplayableImageWidth(), MapHandlerAdvanced.getDisplayableImageHeight(), BufferedImage.TYPE_INT_ARGB);
 
         /// Set map as the background
         backgroundImage = MapHandlerAdvanced.getDisplayableImage();
@@ -161,7 +162,7 @@ public class MapView extends JPanel {
 
 
     public void animalstoRectangles(ArrayList<Animal> animals) {
-        int scale = 10; //// Add this as final somewhere
+        int scale = Config.getScale(); //// Add this as final somewhere
 
         for (int i = 0; i < animals.size(); i++) {
 

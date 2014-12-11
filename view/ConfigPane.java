@@ -6,9 +6,7 @@ import com.google.gson.JsonParser;
 import controller.Main;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import util.ButtonUtils;
-import util.DateVerifier;
-import util.SimulationConfig;
+import util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,7 +73,6 @@ public class ConfigPane extends JPanel {
         createTextFields();
 
 
-
         createConfigPanel();
 
         this.add(configButtons, BorderLayout.SOUTH);
@@ -97,8 +94,13 @@ public class ConfigPane extends JPanel {
 
         /// Simulation config
 
-        util.JsonWriter.writeSimulationConfig(new util.SimulationConfig(this), simulationConfig); // OUTPUT ---- filepath
+        Config.setNumberOfAnimals(Integer.parseInt(getNumAnimals().getValue().toString()));
+        Config.setSpeedOfSimulation(Integer.parseInt(getSpeed().getValue().toString()));
+        Config.setStartingDate(DateVerifier.formatter.parseDateTime(getStartTime().getText()));
+        Config.setEndingDate(DateVerifier.formatter.parseDateTime(getEndTime().getText()));
 
+//        util.JsonWriter.writeSimulationConfig(IOUtil.configLoader, IOUtil.DEFAULT_CONFIG_PATH); // OUTPUT ---- filepath
+        IOUtil.saveConfig();
 
     }
 
@@ -143,6 +145,7 @@ public class ConfigPane extends JPanel {
                 gui.getMenuBarHandler().setVisible(true);
                 gui.add(gui.tabbedPane);
                 gui.tabbedPane.setVisible(true);
+                gui.pack();
 
 
             }
@@ -173,7 +176,6 @@ public class ConfigPane extends JPanel {
     private void createTextFields() {
 
 
-
         String defaultStart = new LocalDate().toString("dd/MM/yyyy");
         String defaultEnd = new LocalDate().plusDays(1).toString("dd/MM/yyyy");
 
@@ -192,11 +194,11 @@ public class ConfigPane extends JPanel {
         endTime.setVisible(true);
 
 
-        numAnimals = new JFormattedTextField(1000); //// Get default num of animals
+        numAnimals = new JFormattedTextField(Config.getNumberOfAnimals()); //// Get default num of animals
         numAnimals.setToolTipText("Enter the number of animals");
         numAnimals.setVisible(true);
 
-        speed = new JFormattedTextField("10");     /// Get default speed
+        speed = new JFormattedTextField(Config.getSpeedOfSimulation());     /// Get default speed
         speed.setToolTipText("Enter the speed of simulation");
         speed.setVisible(true);
 

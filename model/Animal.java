@@ -17,7 +17,7 @@ public class Animal implements Runnable {
     private int energy;
     private boolean living = true;
     private boolean tired = false;
-    private int lineOfSight = 239; //how far the animal can see around it
+    private int lineOfSight = 39; //how far the animal can see around it
     private byte[][] fieldOfVision = new byte[lineOfSight + 2][lineOfSight + 2];
     private DijkstraNode[][] movementCostArray = new DijkstraNode[lineOfSight][lineOfSight]; // a temp array for calculating the optimal path to a desired location
     private int xPos;

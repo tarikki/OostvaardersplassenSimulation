@@ -1,6 +1,11 @@
 package util;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.DateTimeParser;
 
 /**
  * Created by extradikke on 10/12/14.
@@ -15,13 +20,21 @@ public class Config {
     private static String displayableMapPath;
     private static String animalsFilePath;
 
+    private static double latitude;
     private static int scale;
+    private static String dateTimeZone;
 
     private static int numberOfAnimals;
     private static int speedOfSimulation;
 
     private static DateTime startingDate;
     private static DateTime endingDate;
+
+    public static DateTimeParser[] parsers = {
+            DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
+            DateTimeFormat.forPattern("dd/MM/yyyy").getParser(),
+            DateTimeFormat.forPattern("dd.MM.yyyy").getParser()};
+    public static DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(null, parsers).toFormatter();
 
 
     public static String getTerrainMapPath() {
@@ -102,6 +115,22 @@ public class Config {
 
     public static void setScale(int scale) {
         Config.scale = scale;
+    }
+
+    public static double getLatitude() {
+        return latitude;
+    }
+
+    public static void setLatitude(double latitude) {
+        Config.latitude = latitude;
+    }
+
+    public static String getDateTimeZone() {
+        return dateTimeZone;
+    }
+
+    public static void setDateTimeZone(String dateTimeZone) {
+        Config.dateTimeZone = dateTimeZone;
     }
 
     public static String print() {

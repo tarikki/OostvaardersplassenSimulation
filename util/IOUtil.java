@@ -1,6 +1,7 @@
 package util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -19,12 +20,12 @@ import java.util.regex.Pattern;
 public class IOUtil {
 
     private static String CONFIG_FILE_NAME = "config.json";
-    private static String DEFAULT_CONFIG_PATH;
+    public static String DEFAULT_CONFIG_PATH;
     private static String CONFIG_DIRECTORY;
     private static String WORKING_DIRECTORY;
     private static String DEFAULT_DIRECTORY_NAME = "config";
 
-    private static ConfigLoader configLoader;
+    public static ConfigLoader configLoader;
 
     public static DateTimeParser[] parsers = {
             DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
@@ -61,16 +62,44 @@ public class IOUtil {
             Config.setNumberOfAnimals(configLoader.getNumberOfAnimals());
             Config.setSpeedOfSimulation(configLoader.getSpeedOfSimulation());
 
+            Config.setScale(configLoader.getScale());
+            Config.setLatitude(configLoader.getLatitude());
+            Config.setDateTimeZone(configLoader.getDateTimeZone());
 
             Config.setStartingDate(formatter.parseDateTime(configLoader.getStartingDate()));
             Config.setEndingDate(formatter.parseDateTime(configLoader.getEndingDate()));
-            Config.setScale(configLoader.getScale());
+
 
 
 
 
 
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveConfig(){
+        try {
+
+            configLoader.setNumberOfAnimals(Config.getNumberOfAnimals());
+            configLoader.setSpeedOfSimulation(Config.getSpeedOfSimulation());
+            configLoader.setStartingDate(Config.getStartingDate().toString("dd/MM/yyyy"));
+            configLoader.setEndingDate(Config.getEndingDate().toString("dd/MM/yyyy"));
+
+
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            FileWriter writer = new FileWriter(DEFAULT_CONFIG_PATH);
+
+
+            writer.write(gson.toJson(configLoader));
+
+
+
+            writer.close();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

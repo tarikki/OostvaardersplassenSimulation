@@ -1,8 +1,9 @@
 package model;
 
 import mapUtils.MapHandlerAdvanced;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
+import org.joda.time.*;
+import util.Config;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +26,14 @@ public class Preserve {
     private DateTime startDate;
     private DateTime endDate;
     private DateTime currentDate;
+    private boolean isNight;
+    private DateTimeZone timeZone = DateTimeZone.forID(Config.getDateTimeZone());
+    private Interval currentDaySpan;
+    private DateTime sunrise;
+    private DateTime sunset;
+
 
     private double latitude;
-
 
 
     private List<Animal> animals = new ArrayList<>();
@@ -40,6 +46,9 @@ public class Preserve {
         this.latitude = latitude;
         this.currentDate = this.startDate = startDate;
         this.endDate = endDate;
+        this.currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
+        setSunriseAndSunset(calculateDaylight());
+
 
         turn = 0;
         Random r = new Random();
@@ -69,20 +78,52 @@ public class Preserve {
             todo.add(Executors.callable(animal));
         }
         List<Future<Object>> dikke = executor.invokeAll(todo);
-        System.out.println("Now turn: "+turn++);
+        System.out.println("Now turn: " + turn++);
         currentDate = currentDate.plusMinutes(1);
-        System.out.println(currentDate.toString());
-        if (currentDate.isAfter(endDate)){
+//        System.out.println(currentDate.toString());
+        if (currentDate.isAfter(endDate)) {
             simulationComplete = true;
+        }
+
+        if (isNewDay()) {
+            System.out.println("Bitchesss!");
+
         }
     }
 
-    public void calculateDaylight(){
+    public boolean isNewDay() {
+        boolean newDay = false;
+        if (!currentDaySpan.contains(currentDate)) {
+            currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
+            newDay = true;
+        }
+        return newDay;
+    }
+
+    public void setSunriseAndSunset(double lengthOfDay) {
+        System.out.println(lengthOfDay);
+        long halfLightHoursDuration = (Hours.hours((int) Math.floor(lengthOfDay)).toStandardDuration().getMillis()/2);
+        long halfLightMinutesDuration = (Minutes.minutes((int) ((lengthOfDay - Math.floor(lengthOfDay))*60)).toStandardDuration().getMillis()/2);
+        System.out.println((lengthOfDay - Math.floor(lengthOfDay)));
+//        System.out.println(halfLightHoursDuration.toStandardHours());
+//        System.out.println(halfLightMinutesDuration.toStandardMinutes());
+        Duration halfLightduration = new Duration(halfLightHoursDuration + halfLightMinutesDuration);
+        sunrise = currentDate.withHourOfDay(12).minus(halfLightduration);
+        sunset = currentDate.withHourOfDay(12).plus(halfLightduration);
+        System.out.println(sunrise);
+        System.out.println(sunset);
+
+    }
+
+    public double calculateDaylight() {
         DateTime startOfYear = new DateTime(currentDate.getYear(), 1, 1, 0, 0);
-        double helper = Math.asin(.39795*Math.cos(.2163108 + 2*Math.atan(.9671396*Math.tan(.00860*(Days.daysBetween(startOfYear, currentDate).getDays()-186)))));
-        double daylight = 24 - (24/Math.PI) *Math.acos(((Math.sin(0.8333 * Math.PI / 180)) + Math.sin(latitude * Math.PI / 180)
+        double helper = Math.asin(.39795 * Math.cos(.2163108 + 2 * Math.atan(.9671396 * Math.tan(.00860 *
+                (Days.daysBetween(startOfYear, currentDate).getDays() - 186)))));
+        double daylight = 24 - (24 / Math.PI) * Math.acos(((Math.sin(0.8333 * Math.PI / 180))
+                + Math.sin(latitude * Math.PI / 180)
                 * Math.sin(helper)) / (Math.cos(latitude * Math.PI / 180) * Math.cos(helper)));
         System.out.println("daylight: " + daylight);
+        return daylight;
     }
 
 

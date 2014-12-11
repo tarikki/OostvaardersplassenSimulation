@@ -16,7 +16,9 @@ public class ConfigLoader {
     private String displayableMapName;
     private String animalsFileName;
 
+    private double latitude;
     private int scale;
+    private String dateTimeZone;
 
     private int numberOfAnimals;
     private int speedOfSimulation;
@@ -103,6 +105,22 @@ public class ConfigLoader {
 
     public void setScale(int scale) {
         this.scale = scale;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getDateTimeZone() {
+        return dateTimeZone;
+    }
+
+    public void setDateTimeZone(String dateTimeZone) {
+        this.dateTimeZone = dateTimeZone;
     }
 
     @Override
