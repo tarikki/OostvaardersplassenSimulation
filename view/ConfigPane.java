@@ -34,7 +34,7 @@ public class ConfigPane extends JPanel {
         return numAnimals;
     }
 
-    public JFormattedTextField getSpeed() {
+    public JComboBox getSpeed() {
         return speed;
     }
 
@@ -44,7 +44,7 @@ public class ConfigPane extends JPanel {
 
     private JFormattedTextField endTime;
     private JFormattedTextField numAnimals;
-    private JFormattedTextField speed;
+    private JComboBox speed;
     private JPanel holder;
     private JLabel configLabels;
     private DateVerifier dateVerifier;
@@ -95,7 +95,7 @@ public class ConfigPane extends JPanel {
         /// Simulation config
 
         Config.setNumberOfAnimals(Integer.parseInt(getNumAnimals().getValue().toString()));
-        Config.setSpeedOfSimulation(Integer.parseInt(getSpeed().getValue().toString()));
+        Config.setSpeedOfSimulation(Integer.parseInt(getSpeed().getSelectedItem().toString()));
         Config.setStartingDate(DateVerifier.formatter.parseDateTime(getStartTime().getText()));
         Config.setEndingDate(DateVerifier.formatter.parseDateTime(getEndTime().getText()));
 
@@ -174,8 +174,10 @@ public class ConfigPane extends JPanel {
         numAnimals.setToolTipText("Enter the number of animals");
         numAnimals.setVisible(true);
 
-        speed = new JFormattedTextField(Config.getSpeedOfSimulation());     /// Get default speed
-        speed.setToolTipText("Enter the speed of simulation");
+        String [] speedValues = {String.valueOf(1),String.valueOf(2),String.valueOf(5),String.valueOf(10)};
+        speed = new JComboBox(speedValues);     /// Get default speed
+        speed.setToolTipText("Select the speed of simulation");
+        speed.setBackground(Color.WHITE);
         speed.setVisible(true);
 
     }
