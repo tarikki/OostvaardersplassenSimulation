@@ -1,5 +1,6 @@
 package view;
 
+import controller.Main;
 import util.ButtonUtils;
 
 import javax.swing.*;
@@ -42,6 +43,8 @@ public class StartScreen extends JPanel {
         ButtonUtils.addButton(startButtons, "Start Simulation", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Main.createPreserve();
+                gui.tabbedPane.mapView.init();
                 itsame.setVisible(false);
                 gui.getMenuBarHandler().setVisible(true);
                 gui.add(gui.tabbedPane);

@@ -2,6 +2,7 @@ package view;
 
 import mapUtils.MapHandlerAdvanced;
 import model.Animal;
+import model.Preserve;
 import util.ButtonUtils;
 import util.Config;
 
@@ -35,7 +36,7 @@ public class MapView extends JPanel {
     private ArrayList<AnimalRectangle> rectangles;
     private BriefStatistics briefStatistics;
 
-    public MapView(ArrayList<Animal> animals) {
+    public MapView() {
         this.setLayout(new BorderLayout());
         rectangles = new ArrayList<AnimalRectangle>();
 
@@ -56,7 +57,7 @@ public class MapView extends JPanel {
         this.add(legend, BorderLayout.NORTH);
 
         /// Add brief statistics
-        briefStatistics = new BriefStatistics(animals);
+       briefStatistics = new BriefStatistics(Preserve.getAnimals());
         this.add(briefStatistics, BorderLayout.EAST);
 
         // Create the drawing surface
@@ -81,7 +82,7 @@ public class MapView extends JPanel {
         bgImageHolder.add(drawHolder);                    /// attach the drawingSurface to the background holder so we can have them on top of each other
 
 
-        animalstoRectangles(animals);
+        animalstoRectangles();
         drawAnimals();
 
         tooltipTest();
@@ -160,16 +161,20 @@ public class MapView extends JPanel {
         resume();
     }
 
+    public void init(){
+        animalstoRectangles();
+        drawAnimals();
+    }
 
-    public void animalstoRectangles(ArrayList<Animal> animals) {
+    public void animalstoRectangles() {
         int scale = Config.getScale(); //// Add this as final somewhere
 
-        for (int i = 0; i < animals.size(); i++) {
+        for (int i = 0; i < Preserve.getAnimals().size(); i++) {
 
-            int newX = animals.get(i).getxPos() / scale;
-            int newY = animals.get(i).getyPos() / scale;
+            int newX = Preserve.getAnimals().get(i).getxPos() / scale;
+            int newY = Preserve.getAnimals().get(i).getyPos() / scale;
 
-            rectangles.add(new AnimalRectangle(newX, newY, 5, 5, animals.get(i))); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
+            rectangles.add(new AnimalRectangle(newX, newY, 5, 5, Preserve.getAnimals().get(i))); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
 
 
 
@@ -218,9 +223,9 @@ public class MapView extends JPanel {
         g2d.dispose();
     }
 
-    public void refresh(ArrayList<Animal> animals) {
+    public void refresh() {
         clearAnimals();
-        animalstoRectangles(animals);
+        animalstoRectangles();
         drawAnimals();
 
 

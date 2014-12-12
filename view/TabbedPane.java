@@ -13,7 +13,7 @@ private JPanel dikkeHolder;
 public  MapView mapView;
 private StatisticsView statisticsView;
 
-    public TabbedPane(ArrayList<Animal> animals) {
+    public TabbedPane() {
 
 
         /// Holds mapHolder so ToolTips wont be retarded
@@ -21,7 +21,7 @@ private StatisticsView statisticsView;
 
 
         /// Create the mapHolder
-        mapView = new MapView(animals);
+        mapView = new MapView();
         statisticsView = new StatisticsView();
 
 

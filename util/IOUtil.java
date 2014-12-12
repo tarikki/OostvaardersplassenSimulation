@@ -85,7 +85,8 @@ public class IOUtil {
 
             configLoader.setNumberOfAnimals(Config.getNumberOfAnimals());
             configLoader.setSpeedOfSimulation(Config.getSpeedOfSimulation());
-            configLoader.setStartingDate(Config.getStartingDate().toString("dd/mm"));
+            configLoader.setStartingDate(Config.getStartingDate().toString("dd/MM/yyyy"));
+            configLoader.setEndingDate(Config.getEndingDate().toString("dd/MM/yyyy"));
 
             System.out.println(configLoader.getStartingDate());
 

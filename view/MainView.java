@@ -35,8 +35,7 @@ public class MainView {
 
 
     // Constructor for creating the GUI
-    public MainView(final ArrayList<Animal> animals
-    ) {
+    public MainView() {
 
 
         EventQueue.invokeLater(new Runnable() {
@@ -46,7 +45,7 @@ public class MainView {
 
 
 
-                gui = new GUI(animals);
+                gui = new GUI();
 
                 gui.setVisible(true);
                 gui.pack();
@@ -63,7 +62,7 @@ public class MainView {
         private static final long serialVersionUID = 1L;
 
 
-        public GUI(ArrayList<Animal> animals) {
+        public GUI() {
 
             /// Create the main frame for the application.
 
@@ -88,7 +87,7 @@ public class MainView {
 
 
             /// Create the tabbed pane
-            tabbedPane = new TabbedPane(animals);
+            tabbedPane = new TabbedPane();
 //            tabbedPane.setVisible(true);
             startScreen = new StartScreen(this);
 

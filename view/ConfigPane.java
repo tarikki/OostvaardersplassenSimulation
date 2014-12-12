@@ -116,6 +116,7 @@ public class ConfigPane extends JPanel {
 
                 /// IF user edited the configs, call a new preserve.
                 Main.createPreserve();
+                gui.tabbedPane.mapView.init();
                 itsame.setVisible(false);
                 gui.getMenuBarHandler().setVisible(true);
                 gui.add(gui.tabbedPane);

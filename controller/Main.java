@@ -30,10 +30,10 @@ public class Main {
         IOUtil.loadConfig();
         mapHandler = new MapHandlerAdvanced(); /// Create map
 
-        createPreserve();
 
 
-        mainView = new MainView((ArrayList<model.Animal>) preserve.getAnimals());
+
+        mainView = new MainView();
 
 
     }
@@ -42,7 +42,7 @@ public class Main {
     public static void createPreserve() {
 
 
-        preserve = new Preserve(Config.getLatitude(), Config.getNumberOfAnimals(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
+        Preserve.setupPreserve(Config.getLatitude(), Config.getNumberOfAnimals(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
 
     }
 
@@ -53,7 +53,7 @@ public class Main {
 
 
     public static void stopThemThreads() {
-        preserve.stopThreads();
+        Preserve.stopThreads();
     }
 
     public static void resume() {
@@ -68,8 +68,8 @@ public class Main {
             @Override
             public void run() {
                 try {
-                    preserve.executeTurn();
-                    mainView.gui.tabbedPane.mapView.refresh((ArrayList<model.Animal>) preserve.getAnimals());
+                    Preserve.executeTurn();
+                    mainView.gui.tabbedPane.mapView.refresh();
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();

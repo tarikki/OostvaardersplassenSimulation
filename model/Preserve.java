@@ -17,42 +17,68 @@ import java.util.concurrent.Future;
  * Created by extradikke on 20-11-14.
  */
 public class Preserve {
-    private int numberOfAnimals;
-    private int turn;
+    private static int numberOfAnimals;
+    private static int turn;
 
-    private boolean simulationComplete = false;
-
-
-    private DateTime startDate;
-    private DateTime endDate;
-    private DateTime currentDate;
-    private boolean isNight;
-    private DateTimeZone timeZone = DateTimeZone.forID(Config.getDateTimeZone());
-    private Interval currentDaySpan;
-    private DateTime sunrise;
-    private DateTime sunset;
+    private static boolean simulationComplete = false;
 
 
-    private double latitude;
+    private static DateTime startDate;
+    private static DateTime endDate;
+    private static DateTime currentDate;
+    private static boolean isNight;
+    private static DateTimeZone timeZone = DateTimeZone.forID(Config.getDateTimeZone());
+    private static Interval currentDaySpan;
+    private static DateTime sunrise;
+    private static DateTime sunset;
 
 
-    private List<Animal> animals = new ArrayList<>();
-    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static double latitude;
 
 
-    public Preserve(double latitude, int numberOfAnimals, DateTime startDate, DateTime endDate) {
+    private static ArrayList<Animal> animals = new ArrayList<>();
+    private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+
+//    public Preserve(double latitude, int numberOfAnimals, DateTime startDate, DateTime endDate) {
+//        //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
+//
+//        this.latitude = latitude;
+//        this.currentDate = this.startDate = startDate;
+//        this.endDate = endDate;
+//        this.currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
+//        setSunriseAndSunset(calculateDaylight());
+//
+//
+//        turn = 0;
+//        Random r = new Random();
+//        this.numberOfAnimals = numberOfAnimals;
+//        for (int id = 0; id < numberOfAnimals; id++) {
+//
+//            int x = r.nextInt(MapHandlerAdvanced.getWidth());
+//            int y = r.nextInt(MapHandlerAdvanced.getHeight());
+//            while (!MapHandlerAdvanced.isValidMove(x, y)) {
+//                x = r.nextInt(MapHandlerAdvanced.getWidth());
+//                y = r.nextInt(MapHandlerAdvanced.getHeight());
+//            }
+//            animals.add(new Animal(id, x, y));
+////           System.out.println("Animal " + id + " x, y: " + x + " " + y);
+//        }
+//    }
+
+    public static void setupPreserve(double latitudeInput, int numberOfAnimalsInput, DateTime startDateInput, DateTime endDateInput) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
 
-        this.latitude = latitude;
-        this.currentDate = this.startDate = startDate;
-        this.endDate = endDate;
-        this.currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
+        latitude = latitudeInput;
+        currentDate = startDate = startDateInput;
+        endDate = endDateInput;
+        currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
         setSunriseAndSunset(calculateDaylight());
 
 
         turn = 0;
         Random r = new Random();
-        this.numberOfAnimals = numberOfAnimals;
+        numberOfAnimals = numberOfAnimalsInput;
         for (int id = 0; id < numberOfAnimals; id++) {
 
             int x = r.nextInt(MapHandlerAdvanced.getWidth());
@@ -66,12 +92,11 @@ public class Preserve {
         }
     }
 
-
-    public int getNumberOfAnimals() {
+    public static int getNumberOfAnimals() {
         return numberOfAnimals;
     }
 
-    public void executeTurn() throws InterruptedException {
+    public static void executeTurn() throws InterruptedException {
         List<Callable<Object>> todo = new ArrayList<Callable<Object>>(animals.size());
         // TODO shuffle the animals first so they don't always move in order of creation
         for (Animal animal : animals) {
@@ -94,14 +119,14 @@ public class Preserve {
         }
     }
 
-    public boolean checkDeath(Animal animal) {
+    public static boolean checkDeath(Animal animal) {
         if (animal.isDead()) {
             animals.remove(animal.getId());
             return false;
         } else return true;
     }
 
-    public boolean isNewDay() {
+    public static boolean isNewDay() {
         boolean newDay = false;
         if (!currentDaySpan.contains(currentDate)) {
             currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
@@ -110,7 +135,7 @@ public class Preserve {
         return newDay;
     }
 
-    public void setSunriseAndSunset(double lengthOfDay) {
+    public static void setSunriseAndSunset(double lengthOfDay) {
         System.out.println(lengthOfDay);
         long halfLightHoursDuration = (Hours.hours((int) Math.floor(lengthOfDay)).toStandardDuration().getMillis() / 2);
         long halfLightMinutesDuration = (Minutes.minutes((int) ((lengthOfDay - Math.floor(lengthOfDay)) * 60)).toStandardDuration().getMillis() / 2);
@@ -125,7 +150,7 @@ public class Preserve {
 
     }
 
-    public double calculateDaylight() {
+    public static double calculateDaylight() {
         DateTime startOfYear = new DateTime(currentDate.getYear(), 1, 1, 0, 0);
         double helper = Math.asin(.39795 * Math.cos(.2163108 + 2 * Math.atan(.9671396 * Math.tan(.00860 *
                 (Days.daysBetween(startOfYear, currentDate).getDays() - 186)))));
@@ -137,35 +162,35 @@ public class Preserve {
     }
 
 
-    public int getAnimalX(int id) {
+    public static int getAnimalX(int id) {
         return animals.get(id).getxPos();
     }
 
-    public int getAnimalY(int id) {
+    public static int getAnimalY(int id) {
         return animals.get(id).getyPos();
     }
 
-    public void stopThreads() {
+    public static void stopThreads() {
         executor.shutdownNow();
     }
 
-    public List<Animal> getAnimals() {
+    public static ArrayList<Animal> getAnimals() {
         return animals;
     }
 
-    public boolean isSimulationComplete() {
+    public static boolean isSimulationComplete() {
         return simulationComplete;
     }
 
-    public DateTime getStartDate() {
+    public static DateTime getStartDate() {
         return startDate;
     }
 
-    public DateTime getEndDate() {
+    public static DateTime getEndDate() {
         return endDate;
     }
 
-    public DateTime getCurrentDate() {
+    public static DateTime getCurrentDate() {
         return currentDate;
     }
 }
