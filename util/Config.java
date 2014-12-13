@@ -20,6 +20,17 @@ public class Config {
     private static String displayableMapPath;
     private static String animalsFilePath;
 
+    //bitshifting ranges
+    public static final int plantHealthBits = 7;
+    public static final int plantRecoveryBits = 4;
+    public static final int plantIdBits = 5;
+    public static final int terrainIdBits = 5;
+
+    public static final int plantRecoveryPosition = plantHealthBits;
+    public static final int plantIdPosition = plantRecoveryPosition + plantRecoveryBits;
+    public static final int terrainIdPostion = plantIdPosition + plantIdBits;
+
+
     private static double latitude;
     private static int scale;
     private static String dateTimeZone;

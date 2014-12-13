@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.zip.DataFormatException;
 
 /**
  * Created by extradikke on 19-11-14.
@@ -108,6 +109,17 @@ public class MapHandlerAdvanced {
             Gson gson = new Gson();
             terrains = gson.fromJson(readerTerrains, Terrains.class);
             plants = gson.fromJson(readerPlants, Plants.class);
+
+            try {
+                terrains.verifyRanges();
+                plants.verifyRanges();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (DataFormatException e) {
+                e.printStackTrace();
+            }
 //            System.out.println(plants);
 //            System.out.println(terrains);
         } catch (FileNotFoundException e) {
@@ -130,14 +142,14 @@ public class MapHandlerAdvanced {
         if (terrainID != -1) {
             int plantInt = 0;
             int plantHealthInt = 0;
-            int terrainInt = terrainID << 16;
+            int terrainInt = terrainID << Config.terrainIdPostion;
 //        System.out.println(terrainID);
             int plantId = terrainHash.get(terrainID).returnRandomPlant();
 //        System.out.println(plantName);
             if (plantId != 0) {
                 Plant plant = plantsHash.get(plantId);
 //            System.out.println(plant.getId());
-                plantInt = plant.getId() << 11;
+                plantInt = plant.getId() << Config.plantIdPosition;
                 plantHealthInt = plant.getMaxHealth();
             }
             result = terrainInt | plantInt | plantHealthInt;
@@ -150,12 +162,12 @@ public class MapHandlerAdvanced {
     }
 
     public static void decreasePlantHealth(int x, int y, int amount) {
-        int plantInt = getPlantId(x, y) << 11;
+        int plantInt = getPlantId(x, y) << Config.plantIdPosition;
         int plantHealthInt = getPlantHealth(x, y);
-        int terrainInt = getTerrainID(x, y) << 16;
+        int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
 
         int newHealth = plantHealthInt - amount;
-        System.out.println(newHealth);
+//        System.out.println(newHealth);
         if (newHealth < 0) newHealth = 0;
 
         int encoded = terrainInt | plantInt | newHealth;
@@ -163,9 +175,9 @@ public class MapHandlerAdvanced {
     }
 
     public void increasePlantHealth(int x, int y, int amount) {
-        int plantInt = getPlantId(x, y) << 11;
+        int plantInt = getPlantId(x, y) << Config.plantIdPosition;
         int plantHealthInt = getPlantHealth(x, y);
-        int terrainInt = getTerrainID(x, y) << 16;
+        int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
 
         int newHealth = plantHealthInt + amount;
         int maxhealth = plantsHash.get(plantInt).getMaxHealth();
@@ -176,7 +188,7 @@ public class MapHandlerAdvanced {
     }
 
     public static int getTerrainID(int x, int y) {
-        return (map[x][y] >>> 16) & 0xff;
+        return (map[x][y] >>> Config.terrainIdPostion) & 0xff;
     }
 
     public static int getPlantHealth(int x, int y) {
@@ -184,7 +196,7 @@ public class MapHandlerAdvanced {
     }
 
     public static int getPlantId(int x, int y) {
-        return (map[x][y] >>> 11) & 0x1f;
+        return (map[x][y] >>> Config.plantIdPosition) & 0x1f;
     }
 
     private int recognizeTerrain(int pixel) {
