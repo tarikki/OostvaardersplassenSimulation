@@ -31,6 +31,9 @@ public class Preserve {
     private static Interval currentDaySpan;
     private static DateTime sunrise;
     private static DateTime sunset;
+    private static double maxLengthOfDay;
+    private static double currentDayLength;
+    private static double temperature;
 
 
     private static double latitude;
@@ -69,11 +72,15 @@ public class Preserve {
     public static void setupPreserve(double latitudeInput, int numberOfAnimalsInput, DateTime startDateInput, DateTime endDateInput) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
 
+        currentDate = new DateTime(2014,6,21,0,0,0);
+        maxLengthOfDay = calculateDaylight();
+
         latitude = latitudeInput;
         currentDate = startDate = startDateInput;
         endDate = endDateInput;
         currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
-        setSunriseAndSunset(calculateDaylight());
+        currentDayLength = calculateDaylight();
+        setSunriseAndSunset(currentDayLength);
 
 
         turn = 0;
@@ -114,7 +121,9 @@ public class Preserve {
         }
 
         if (isNewDay()) {
+
             System.out.println("Bitchesss!");
+            setupNewDay();
 
         }
     }
@@ -129,10 +138,14 @@ public class Preserve {
     public static boolean isNewDay() {
         boolean newDay = false;
         if (!currentDaySpan.contains(currentDate)) {
-            currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
             newDay = true;
         }
         return newDay;
+    }
+
+    public static void setupNewDay(){
+        currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
+        currentDayLength = calculateDaylight();
     }
 
     public static void setSunriseAndSunset(double lengthOfDay) {
@@ -192,5 +205,29 @@ public class Preserve {
 
     public static DateTime getCurrentDate() {
         return currentDate;
+    }
+
+    public static double getMaxLengthOfDay() {
+        return maxLengthOfDay;
+    }
+
+    public static void setMaxLengthOfDay(double maxLengthOfDay) {
+        Preserve.maxLengthOfDay = maxLengthOfDay;
+    }
+
+    public static double getTemperature() {
+        return temperature;
+    }
+
+    public static void setTemperature(double temperature) {
+        Preserve.temperature = temperature;
+    }
+
+    public static double getCurrentDayLength() {
+        return currentDayLength;
+    }
+
+    public static void setCurrentDayLength(double currentDayLength) {
+        Preserve.currentDayLength = currentDayLength;
     }
 }

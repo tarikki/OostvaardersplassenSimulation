@@ -9,6 +9,9 @@ public class Plant {
     private int recoveryDays;
     private int nutrition;
     private int id;
+    private float growthRate;
+    private float growthWhenDamaged;
+    private int temperatureThreshold;
 
     public String getName() {
         return name;
@@ -50,15 +53,28 @@ public class Plant {
         this.id = id;
     }
 
-    @Override
-    public String toString() {
-        return "Plant{" +
-                "name='" + name + '\'' +
-                ", maxHealth=" + maxHealth +
-                ", recoveryDays=" + recoveryDays +
-                ", nutrition=" + nutrition +
-                ", id=" + id +
-                '}';
+    public float getGrowthRate() {
+        return growthRate;
+    }
+
+    public void setGrowthRate(float growthRate) {
+        this.growthRate = growthRate;
+    }
+
+    public float getGrowthWhenDamaged() {
+        return growthWhenDamaged;
+    }
+
+    public void setGrowthWhenDamaged(float growthWhenDamaged) {
+        this.growthWhenDamaged = growthWhenDamaged;
+    }
+
+    public int getTemperatureThreshold() {
+        return temperatureThreshold;
+    }
+
+    public void setTemperatureThreshold(int temperatureThreshold) {
+        this.temperatureThreshold = temperatureThreshold;
     }
 
     @Override
@@ -76,5 +92,19 @@ public class Plant {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Plant{" +
+                "growthRate=" + growthRate +
+                ", name='" + name + '\'' +
+                ", maxHealth=" + maxHealth +
+                ", recoveryDays=" + recoveryDays +
+                ", nutrition=" + nutrition +
+                ", id=" + id +
+                ", growthWhenDamaged=" + growthWhenDamaged +
+                ", temperatureThreshold=" + temperatureThreshold +
+                '}';
     }
 }

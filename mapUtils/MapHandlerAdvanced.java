@@ -2,6 +2,7 @@ package mapUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import model.Preserve;
 import util.Config;
 
 import javax.imageio.ImageIO;
@@ -174,14 +175,34 @@ public class MapHandlerAdvanced {
         map[x][y] = encoded;
     }
 
-    public void increasePlantHealth(int x, int y, int amount) {
-        int plantInt = getPlantId(x, y) << Config.plantIdPosition;
-        int plantHealthInt = getPlantHealth(x, y);
+    public static void increasePlantHealth(int x, int y, int amount) {
+
+        int plantId = getPlantId(x, y);
+        int plantRecoveryTime = getPlantRecoveryDays(x, y);
+        int plantHealth = getPlantHealth(x, y);
+        int plantInt = plantId << Config.plantIdPosition;
         int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
 
-        int newHealth = plantHealthInt + amount;
-        int maxhealth = plantsHash.get(plantInt).getMaxHealth();
-        if (newHealth > maxhealth) newHealth = maxhealth;
+        Plant plant = plantsHash.get(plantId);
+        System.out.println(plant);
+
+
+        int growth = 0;
+        float currentGrowthRate = 0;
+        if (plantRecoveryTime == 0) {
+            currentGrowthRate = plant.getGrowthRate();
+        } else {
+            currentGrowthRate = plant.getGrowthWhenDamaged();
+        }
+
+        if (Preserve.getTemperature() < plant.getTemperatureThreshold()) {
+            growth = (int) Math.ceil(plantHealth * currentGrowthRate * Preserve.getCurrentDayLength() / Preserve.getMaxLengthOfDay());
+        }
+
+
+        int newHealth = plantHealth + growth;
+        int maxHealth = plant.getMaxHealth();
+        if (newHealth > maxHealth) newHealth = maxHealth;
 
         int encoded = terrainInt | plantInt | newHealth;
         map[x][y] = encoded;
@@ -198,6 +219,12 @@ public class MapHandlerAdvanced {
     public static int getPlantId(int x, int y) {
         return (map[x][y] >>> Config.plantIdPosition) & 0x1f;
     }
+
+    public static int getPlantRecoveryDays(int x, int y) {
+        return (map[x][y] >>> Config.plantRecoveryPosition) & 7;
+    }
+
+
 
     private int recognizeTerrain(int pixel) {
         int id = -1;
