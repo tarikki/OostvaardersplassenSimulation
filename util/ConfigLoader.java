@@ -15,6 +15,7 @@ public class ConfigLoader {
     private String terrainsName;
     private String displayableMapName;
     private String animalsFileName;
+    private String weatherFileName;
 
     private double latitude;
     private int scale;
@@ -121,6 +122,14 @@ public class ConfigLoader {
 
     public void setDateTimeZone(String dateTimeZone) {
         this.dateTimeZone = dateTimeZone;
+    }
+
+    public String getWeatherFileName() {
+        return weatherFileName;
+    }
+
+    public void setWeatherFileName(String weatherFileName) {
+        this.weatherFileName = weatherFileName;
     }
 
     @Override

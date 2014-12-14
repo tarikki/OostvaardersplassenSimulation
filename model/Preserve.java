@@ -1,11 +1,13 @@
 package model;
 
 import mapUtils.MapHandlerAdvanced;
+import mapUtils.MonthlyWeather;
 import org.joda.time.*;
 import util.Config;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -29,11 +31,27 @@ public class Preserve {
     private static boolean isNight;
     private static DateTimeZone timeZone = DateTimeZone.forID(Config.getDateTimeZone());
     private static Interval currentDaySpan;
+    private static Interval currentHourSpan;
+    private static Interval currentTempMonthSpan;
     private static DateTime sunrise;
     private static DateTime sunset;
     private static double maxLengthOfDay;
     private static double currentDayLength;
-    private static double temperature;
+    private static double currentTemperature;
+
+    private static int startMaxTemp;
+    private static int endMaxTemp;
+    private static int startMinTemp;
+    private static int endMinTemp;
+
+    private static double todayMaxTemp;
+    private static double todayMinTemp;
+
+    private static double currentDailyMaxTempIncrement;
+    private static double currentDailyMinTempIncrement;
+    private static double currentHourlyMaxTempIncrement;
+    private static double currentHourlyMinTempIncrement;
+    private static HashMap<Integer, MonthlyWeather> weatherHashMap = new HashMap<>();
 
 
     private static double latitude;
@@ -42,45 +60,33 @@ public class Preserve {
     private static ArrayList<Animal> animals = new ArrayList<>();
     private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-
-//    public Preserve(double latitude, int numberOfAnimals, DateTime startDate, DateTime endDate) {
-//        //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
-//
-//        this.latitude = latitude;
-//        this.currentDate = this.startDate = startDate;
-//        this.endDate = endDate;
-//        this.currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
-//        setSunriseAndSunset(calculateDaylight());
-//
-//
-//        turn = 0;
-//        Random r = new Random();
-//        this.numberOfAnimals = numberOfAnimals;
-//        for (int id = 0; id < numberOfAnimals; id++) {
-//
-//            int x = r.nextInt(MapHandlerAdvanced.getWidth());
-//            int y = r.nextInt(MapHandlerAdvanced.getHeight());
-//            while (!MapHandlerAdvanced.isValidMove(x, y)) {
-//                x = r.nextInt(MapHandlerAdvanced.getWidth());
-//                y = r.nextInt(MapHandlerAdvanced.getHeight());
-//            }
-//            animals.add(new Animal(id, x, y));
-////           System.out.println("Animal " + id + " x, y: " + x + " " + y);
-//        }
-//    }
-
-    public static void setupPreserve(double latitudeInput, int numberOfAnimalsInput, DateTime startDateInput, DateTime endDateInput) {
+    public static void setupPreserve(double latitudeInput, int numberOfAnimalsInput, DateTime startDateInput,
+                                     DateTime endDateInput) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
 
-        currentDate = new DateTime(2014,6,21,0,0,0);
+        currentDate = new DateTime(2014, 6, 21, 0, 0, 0);
         maxLengthOfDay = calculateDaylight();
+        weatherHashMap = MapHandlerAdvanced.getWeatherHashMap();
+
 
         latitude = latitudeInput;
         currentDate = startDate = startDateInput;
         endDate = endDateInput;
         currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
+        currentHourSpan = new Interval(currentDate, currentDate.plusHours(1));
         currentDayLength = calculateDaylight();
         setSunriseAndSunset(currentDayLength);
+        if (currentDate.dayOfMonth().get() > 15) {
+            DateTime start = currentDate.dayOfMonth().setCopy(15);
+            currentTempMonthSpan = new Interval(start, start.monthOfYear().addToCopy(1));
+        } else {
+            DateTime start = currentDate.monthOfYear().addToCopy(-1).dayOfMonth().setCopy(15);
+            currentTempMonthSpan = new Interval(start, start.monthOfYear().addToCopy(1));
+
+        }
+        System.out.println("tempmonth " + currentTempMonthSpan.toString());
+        setupTempIncrements();
+        calculateDailyTemperatures();
 
 
         turn = 0;
@@ -120,11 +126,18 @@ public class Preserve {
             simulationComplete = true;
         }
 
+        if (isNewHour()) {
+            setupNewHour();
+        }
+
         if (isNewDay()) {
 
             System.out.println("Bitchesss!");
             setupNewDay();
+        }
 
+        if (isNewTempMonth()) {
+            setupNewTempMonth();
         }
     }
 
@@ -143,9 +156,64 @@ public class Preserve {
         return newDay;
     }
 
-    public static void setupNewDay(){
-        currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
+    public static boolean isNewHour() {
+        boolean newHour = false;
+        if (!currentHourSpan.contains(currentDate)) {
+            newHour = true;
+        }
+        return newHour;
+
+    }
+
+    public static boolean isNewTempMonth() {
+        boolean newTempMonth = false;
+        if (!currentTempMonthSpan.contains(currentDate)) {
+            newTempMonth = true;
+        }
+        return newTempMonth;
+    }
+
+
+    public static void setupNewHour() {
+        currentHourSpan = new Interval(currentDate, currentDate.hourOfDay().addToCopy(1));
+        System.out.println("Mega Bithces!");
+    }
+
+    public static void setupNewTempMonth() {
+        currentTempMonthSpan = new Interval(currentDate, currentDate.monthOfYear().addToCopy(1));
+    }
+
+    public static void setupTempIncrements() {
+        startMaxTemp = MapHandlerAdvanced.getWeatherHashMap().get(currentTempMonthSpan.getStart().getMonthOfYear()).getAvMaxTemp();
+        endMaxTemp = MapHandlerAdvanced.getWeatherHashMap().get(currentTempMonthSpan.getEnd().getMonthOfYear()).getAvMaxTemp();
+        startMinTemp = MapHandlerAdvanced.getWeatherHashMap().get(currentTempMonthSpan.getStart().getMonthOfYear()).getAvMinTemp();
+        endMinTemp = MapHandlerAdvanced.getWeatherHashMap().get(currentTempMonthSpan.getEnd().getMonthOfYear()).getAvMinTemp();
+        todayMaxTemp = startMaxTemp;
+        todayMinTemp = startMinTemp;
+        System.out.println(currentTempMonthSpan.toDuration().getStandardDays());
+        currentDailyMaxTempIncrement = (endMaxTemp - startMaxTemp) / ((double) currentTempMonthSpan.toDuration().getStandardDays());
+        currentDailyMinTempIncrement = (endMinTemp - startMinTemp) / ((double) currentTempMonthSpan.toDuration().getStandardDays());
+        System.out.println(startMinTemp - endMinTemp);
+        System.out.println("startTemp: " + startMaxTemp + ", endTemp: " + endMaxTemp + ", increment: " + currentDailyMaxTempIncrement);
+        System.out.println("startTemp: " + startMinTemp + ", endTemp: " + endMinTemp + ", increment: " + currentDailyMinTempIncrement);
+
+    }
+
+    public static void calculateDailyTemperatures() {
+        todayMaxTemp = startMaxTemp + currentDailyMaxTempIncrement * (new Duration(currentTempMonthSpan.getStart(), currentDate)).getStandardDays();
+        todayMinTemp = startMinTemp + currentDailyMinTempIncrement * (new Duration(currentTempMonthSpan.getStart(), currentDate)).getStandardDays();
+        System.out.println("max today: " + todayMaxTemp);
+        System.out.println("min today: " + todayMinTemp);
+    }
+
+    public static void calculateHourlyTemperature() {
+
+    }
+
+    public static void setupNewDay() {
+        currentDaySpan = new Interval(currentDate, currentDate.dayOfMonth().addToCopy(1).withTimeAtStartOfDay());
         currentDayLength = calculateDaylight();
+        calculateDailyTemperatures();
     }
 
     public static void setSunriseAndSunset(double lengthOfDay) {
@@ -215,12 +283,12 @@ public class Preserve {
         Preserve.maxLengthOfDay = maxLengthOfDay;
     }
 
-    public static double getTemperature() {
-        return temperature;
+    public static double getCurrentTemperature() {
+        return currentTemperature;
     }
 
-    public static void setTemperature(double temperature) {
-        Preserve.temperature = temperature;
+    public static void setCurrentTemperature(double currentTemperature) {
+        Preserve.currentTemperature = currentTemperature;
     }
 
     public static double getCurrentDayLength() {

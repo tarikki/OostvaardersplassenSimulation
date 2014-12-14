@@ -48,6 +48,7 @@ public class IOUtil {
 
 
     public static void loadConfig() {
+        //TODO make sure ending date after start
         try {
             JsonReader configReader = new JsonReader(new FileReader(DEFAULT_CONFIG_PATH));
             Gson gson = new Gson();
@@ -58,6 +59,7 @@ public class IOUtil {
             Config.setTerrainsPath(CONFIG_DIRECTORY+configLoader.getTerrainsName());
             Config.setDisplayableMapPath(CONFIG_DIRECTORY+configLoader.getDisplayableMapName());
             Config.setAnimalsFilePath(CONFIG_DIRECTORY+configLoader.getAnimalsFileName());
+            Config.setWeatherFilePath(CONFIG_DIRECTORY+configLoader.getWeatherFileName());
 
             Config.setNumberOfAnimals(configLoader.getNumberOfAnimals());
             Config.setSpeedOfSimulation(configLoader.getSpeedOfSimulation());
@@ -68,6 +70,7 @@ public class IOUtil {
 
             Config.setStartingDate(formatter.parseDateTime(configLoader.getStartingDate()));
             Config.setEndingDate(formatter.parseDateTime(configLoader.getEndingDate()));
+
 
 
 

@@ -7,6 +7,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
+import java.util.Arrays;
+
 /**
  * Created by extradikke on 10/12/14.
  */
@@ -19,10 +21,11 @@ public class Config {
     private static String terrainsPath;
     private static String displayableMapPath;
     private static String animalsFilePath;
+    private static String weatherFilePath;
 
     //bitshifting ranges
     public static final int plantHealthBits = 7;
-    public static final int plantRecoveryBits = 4;
+    public static final int plantRecoveryBits = 3;
     public static final int plantIdBits = 5;
     public static final int terrainIdBits = 5;
 
@@ -144,20 +147,44 @@ public class Config {
         Config.dateTimeZone = dateTimeZone;
     }
 
+    public static String getWeatherFilePath() {
+        return weatherFilePath;
+    }
+
+    public static void setWeatherFilePath(String weatherFilePath) {
+        Config.weatherFilePath = weatherFilePath;
+    }
+
+
+
+
+
+
+
     public static String print() {
         return "Config{" +
-                "terrainMapPath='" + terrainMapPath + '\'' +
+                "animalsFilePath='" + animalsFilePath + '\'' +
+                ", terrainMapPath='" + terrainMapPath + '\'' +
                 ", plantsPath='" + plantsPath + '\'' +
                 ", terrainsPath='" + terrainsPath + '\'' +
                 ", displayableMapPath='" + displayableMapPath + '\'' +
-                ", animalsFilePath='" + animalsFilePath + '\'' +
+                ", weatherFilePath='" + weatherFilePath + '\'' +
+                ", plantHealthBits=" + plantHealthBits +
+                ", plantRecoveryBits=" + plantRecoveryBits +
+                ", plantIdBits=" + plantIdBits +
+                ", terrainIdBits=" + terrainIdBits +
+                ", plantRecoveryPosition=" + plantRecoveryPosition +
+                ", plantIdPosition=" + plantIdPosition +
+                ", terrainIdPostion=" + terrainIdPostion +
+                ", latitude=" + latitude +
+                ", scale=" + scale +
+                ", dateTimeZone='" + dateTimeZone + '\'' +
                 ", numberOfAnimals=" + numberOfAnimals +
                 ", speedOfSimulation=" + speedOfSimulation +
                 ", startingDate=" + startingDate +
                 ", endingDate=" + endingDate +
-                ", scale=" + scale +
+                ", parsers=" + Arrays.toString(parsers) +
+                ", formatter=" + formatter +
                 '}';
     }
-
-
 }

@@ -22,6 +22,8 @@ public class MapHandlerAdvanced {
     private String plantsLocation;
     private String terrainsLocation;
     private String displayableMapLocation;
+    private String weatherFileLocation;
+
     private static int height;
     private static int width;
     private static int displayableImageHeight;
@@ -31,6 +33,8 @@ public class MapHandlerAdvanced {
     private static HashMap<Integer, Terrain> terrainHash = new HashMap<>();
     private Plants plants;
     private static HashMap<Integer, Plant> plantsHash = new HashMap<>();
+    private Months months;
+    private static HashMap<Integer, MonthlyWeather> weatherHashMap = new HashMap<>();
     private int brokenPixels = 0;
     private static BufferedImage terrainImage;
     private static BufferedImage displayableImage;
@@ -59,6 +63,7 @@ public class MapHandlerAdvanced {
         plantsLocation = Config.getPlantsPath();
         terrainsLocation = Config.getTerrainsPath();
         displayableMapLocation = Config.getDisplayableMapPath();
+        weatherFileLocation = Config.getWeatherFilePath();
     }
 
     public void loadImages() {
@@ -103,17 +108,22 @@ public class MapHandlerAdvanced {
     }
 
     private void loadJsons() {
+        //TODO move these to config, they don't belong here
         try {
             JsonReader readerTerrains = new JsonReader(new FileReader(terrainsLocation));
             JsonReader readerPlants = new JsonReader(new FileReader(plantsLocation));
+            JsonReader readerMonths = new JsonReader(new FileReader(weatherFileLocation));
 
             Gson gson = new Gson();
             terrains = gson.fromJson(readerTerrains, Terrains.class);
             plants = gson.fromJson(readerPlants, Plants.class);
+            months = gson.fromJson(readerMonths, Months.class);
+
 
             try {
                 terrains.verifyRanges();
                 plants.verifyRanges();
+                months.verifyRanges();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (NoSuchFieldException e) {
@@ -135,6 +145,10 @@ public class MapHandlerAdvanced {
 
         for (Terrain terrain : terrains.getTerrains()) {
             terrainHash.put(terrain.getId(), terrain);
+        }
+
+        for (MonthlyWeather month : months.getMonthlyWeathers()) {
+            weatherHashMap.put(month.getMonth(), month);
         }
     }
 
@@ -166,16 +180,26 @@ public class MapHandlerAdvanced {
         int plantInt = getPlantId(x, y) << Config.plantIdPosition;
         int plantHealthInt = getPlantHealth(x, y);
         int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
+        int plantRecoveryTime = getPlantRecoveryDays(x, y);
+        int recoveryTime = plantRecoveryTime + 3;
+        int maxRecoveryTime = (int)Math.pow(2,Config.plantRecoveryBits)-1;
+        System.out.println(maxRecoveryTime);
+
+        if (recoveryTime > maxRecoveryTime){
+            recoveryTime = maxRecoveryTime;
+        }
+
+        int recoveryInt = recoveryTime << Config.plantRecoveryPosition;
 
         int newHealth = plantHealthInt - amount;
 //        System.out.println(newHealth);
         if (newHealth < 0) newHealth = 0;
 
-        int encoded = terrainInt | plantInt | newHealth;
+        int encoded = terrainInt | plantInt | recoveryInt | newHealth;
         map[x][y] = encoded;
     }
 
-    public static void increasePlantHealth(int x, int y, int amount) {
+    public static void increasePlantHealth(int x, int y) {
 
         int plantId = getPlantId(x, y);
         int plantRecoveryTime = getPlantRecoveryDays(x, y);
@@ -195,7 +219,7 @@ public class MapHandlerAdvanced {
             currentGrowthRate = plant.getGrowthWhenDamaged();
         }
 
-        if (Preserve.getTemperature() < plant.getTemperatureThreshold()) {
+        if (Preserve.getCurrentTemperature() < plant.getTemperatureThreshold()) {
             growth = (int) Math.ceil(plantHealth * currentGrowthRate * Preserve.getCurrentDayLength() / Preserve.getMaxLengthOfDay());
         }
 
@@ -289,4 +313,7 @@ public class MapHandlerAdvanced {
         return displayableImageWidth;
     }
 
+    public static HashMap<Integer, MonthlyWeather> getWeatherHashMap() {
+        return weatherHashMap;
+    }
 }
