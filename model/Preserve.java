@@ -87,6 +87,7 @@ public class Preserve {
         System.out.println("tempmonth " + currentTempMonthSpan.toString());
         setupTempIncrements();
         calculateDailyTemperatures();
+        calculateHourlyTemperature();
 
 
         turn = 0;
@@ -117,9 +118,9 @@ public class Preserve {
                 todo.add(Executors.callable(animal));
             }
         }
-        System.out.println(animals.size());
+//        System.out.println(animals.size());
         List<Future<Object>> dikke = executor.invokeAll(todo);
-        System.out.println("Now turn: " + turn++);
+//        System.out.println("Now turn: " + turn++);
         currentDate = currentDate.plusMinutes(1);
 //        System.out.println(currentDate.toString());
         if (currentDate.isAfter(endDate)) {
@@ -176,11 +177,13 @@ public class Preserve {
 
     public static void setupNewHour() {
         currentHourSpan = new Interval(currentDate, currentDate.hourOfDay().addToCopy(1));
-        System.out.println("Mega Bithces!");
+        calculateHourlyTemperature();
+
     }
 
     public static void setupNewTempMonth() {
         currentTempMonthSpan = new Interval(currentDate, currentDate.monthOfYear().addToCopy(1));
+        setupTempIncrements();
     }
 
     public static void setupTempIncrements() {
@@ -207,7 +210,20 @@ public class Preserve {
     }
 
     public static void calculateHourlyTemperature() {
+        double tempMultiplyer = 0;
+        if ((new Interval(currentDate.withTimeAtStartOfDay().withHourOfDay(6), currentDate.withTimeAtStartOfDay().withHourOfDay(18))).contains(currentDate)) {
+            tempMultiplyer = todayMaxTemp;
+        } else{
+            tempMultiplyer = todayMinTemp;
+        }
 
+        tempMultiplyer = todayMaxTemp - todayMinTemp;
+//        System.out.println(tempMultiplyer);
+        currentTemperature = Math.cos(2*Math.PI * ((Config.lengthOfDayInMinutes/2 + (double)new Duration(currentDate.withTimeAtStartOfDay(),
+                currentDate).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer/2 +todayMinTemp+tempMultiplyer/2;
+//        System.out.println(((double)new Duration(currentDate.withTimeAtStartOfDay(),
+//                currentDate).getStandardMinutes() / Config.lengthOfDayInMinutes));
+        System.out.println(currentDate.getHourOfDay() + " "+currentTemperature);
     }
 
     public static void setupNewDay() {

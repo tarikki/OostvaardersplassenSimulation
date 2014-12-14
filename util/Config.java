@@ -34,6 +34,8 @@ public class Config {
     public static final int terrainIdPostion = plantIdPosition + plantIdBits;
 
 
+    public static final int lengthOfDayInMinutes = 24 * 60;
+
     private static double latitude;
     private static int scale;
     private static String dateTimeZone;
