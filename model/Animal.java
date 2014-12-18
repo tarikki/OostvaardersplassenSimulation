@@ -11,15 +11,15 @@ import java.util.Deque;
  */
 public class Animal implements Runnable {
     private int id;
-    private int sleepiness = 0;
+    private boolean sleepy = false;
     private int hunger = 0;
     private int thirst = 0;
     private int energy;
     private boolean living = true;
     private boolean tired = false;
-    private int lineOfSight = 39; //how far the animal can see around it
+    private int lineOfSight = 100; //how far the animal can see around it
     private byte[][] fieldOfVision = new byte[lineOfSight + 2][lineOfSight + 2];
-    private DijkstraNode[][] movementCostArray = new DijkstraNode[lineOfSight][lineOfSight]; // a temp array for calculating the optimal path to a desired location
+    private DijkstraNode[][] movementCostArray; // a temp array for calculating the optimal path to a desired location
     private int xPos;
     private int yPos;
     private Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>(); // the path expressed in DjikstraNodes
@@ -68,7 +68,7 @@ public class Animal implements Runnable {
      *
      * @return foundIt
      */
-   /* public boolean makeItDijkstra(MapHandlerAdvanced.ColorCode lookingFor) { // looking for is the color of the item we're looking for
+    public boolean makeItDijkstra() { // lookingfor is the color of the item we're looking for
         //TODO make this private once testing done
         //TODO still error in algorithm, animals don't take shortest path
 
@@ -124,8 +124,11 @@ public class Animal implements Runnable {
         for (DijkstraNode wayPoint : wayPoints) {
             System.out.println(wayPoint);
         }
+
+        // empty the array, otherwise takes an incredible amount of memory
+        movementCostArray = new DijkstraNode[0][0];
         return foundIt;
-    }*/
+    }
     private void dijkstraPrinter() {
         for (int h = 0; h < movementCostArray.length; h++) {
             for (int w = 0; w < movementCostArray.length; w++) {
