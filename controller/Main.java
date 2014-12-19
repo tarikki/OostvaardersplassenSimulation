@@ -8,7 +8,6 @@ import view.MainView;
 import view.MapView;
 import view.StartScreen;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,11 +16,13 @@ import java.util.TimerTask;
  */
 public class Main {
     public static Timer timer;
+    public static Timer statsTimer;
     private static Preserve preserve;
     private static MapHandlerAdvanced mapHandler;
     private static MapView mapView;
     private static MainView mainView;
     private static StartScreen startScreen;
+
 
 
     /// Run new GUI.. TODO move these to static block?
@@ -48,6 +49,7 @@ public class Main {
 
     public static void stopMovement() {
         timer.cancel();
+        statsTimer.cancel();
 
     }
 
@@ -58,6 +60,7 @@ public class Main {
 
     public static void resume() {
         moveTester();
+        statsUpdater();
     }
 
     /// Acts as our start method
@@ -76,6 +79,23 @@ public class Main {
                 }
             }
         }, 0, 1000/Config.getSpeedOfSimulation());
+
+    }
+
+
+    // Running every 10 seconds now
+    public static void statsUpdater() {
+        statsTimer = new Timer();
+        //MapView.BriefStatistics briefStatistics = new MapView().new BriefStatistics();
+
+        statsTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                mainView.gui.tabbedPane.mapView.briefStatistics.updateStats();
+
+            }
+        }, 0, 10000);
 
     }
 }
