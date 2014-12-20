@@ -3,17 +3,10 @@ package util;
 import model.Preserve;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.Marker;
-import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.data.time.Day;
-import org.jfree.data.time.Hour;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.xy.XYDataset;
-import org.joda.time.Days;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.joda.time.Hours;
 
 import java.awt.*;
 
@@ -22,93 +15,100 @@ import java.awt.*;
  */
 public class TemperatureChart {
 
-    public JFreeChart getChart() {
-        return chart;
-    }
+
 
     public JFreeChart chart;
-    public  XYDataset dataset;
+    public DefaultCategoryDataset dataset;
 
     /**
      * Created by extradikke on 14/12/14.
      */
 
 
+    /**
+     * Creates a new demo.
+     *
+     * @param title the frame title.
+     */
+    public TemperatureChart(final String title) {
 
 
-        /**
-         * Creates a new demo.
-         *
-         * @param title  the frame title.
-         */
-        public TemperatureChart(final String title) {
+        dataset = createDataset();
+        chart = createChart(dataset);
 
 
+    }
 
-            dataset = createDataset();
-            chart = createChart(dataset);
+    /// FIX LOGIC AND TIE TO PRESERVE
+    private DefaultCategoryDataset createDataset() {
 
-
-        }
-
-        /// FIX LOGIC AND TIE TO PRESERVE
-        private XYDataset createDataset() {
+        Hours hours = Hours.hoursBetween(Preserve.getCurrentDate().toLocalTime(), Preserve.getCurrentDate().plusHours(1).toLocalTime());
+        int hours2 = hours.getHours();
 
 
+        dataset = new DefaultCategoryDataset();
+
+      for (int i = 0; i<hours2; i++)
+        {
+            dataset.addValue(null, "Temperature", i);
 
 
-
-           TimeSeries timeSeries =  new TimeSeries("Random Data", Hour.class);
-            final Day today = new Day();
-            for (int i = 0; i <= Days.daysBetween(Preserve.getStartDate().toLocalDate(), Preserve.getCurrentDate().toLocalDate()).getDays(); i++)
-            {
-
-                timeSeries.add(new Hour(i, today), Preserve.getCurrentTemperature());
-
-
-            }
-
-            final TimeSeriesCollection dataset = new TimeSeriesCollection();
-            dataset.addSeries(timeSeries);
-
-            return dataset;
 
         }
 
 
-        /// HOURLY TEMPERATURE
-        private JFreeChart createChart(final XYDataset dataset) {
-            final String chartTitle = "Hourly temperature";
-            final JFreeChart chart = ChartFactory.createTimeSeriesChart(
-                    chartTitle,
-                    "Time",
-                    "Temperature",
-                    dataset,
-                    true,
-                    true,
-                    false
-            );
 
-            final XYPlot plot = chart.getXYPlot();
-            //      plot.setInsets(new Insets(0, 0, 0, 20));
-            final Marker marker = new ValueMarker(700.0);
-            marker.setPaint(Color.blue);
-            marker.setAlpha(0.8f);
-            plot.addRangeMarker(marker);
-            plot.setBackgroundPaint(null);
+        return dataset;
 
-            final XYItemRenderer renderer = plot.getRenderer();
-            if (renderer instanceof StandardXYItemRenderer) {
-                final StandardXYItemRenderer r = (StandardXYItemRenderer) renderer;
-                r.setShapesFilled(true);
-            }
+    }
 
 
-            return chart;
+    /// HOURLY TEMPERATURE
+    private JFreeChart createChart(final DefaultCategoryDataset dataset) {
+        final String chartTitle = "Hourly temperature for " + Preserve.getCurrentDate().toString("dd/MM/yyyy");
+        this.chart = ChartFactory.createLineChart(chartTitle, "Hour of day", "Temperature in celsius", dataset, PlotOrientation.VERTICAL,
+                true,
+                true,
+                false);
+
+
+
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        plot.setDataset(dataset);
+        if (chart != null)
+        {
+            chart.fireChartChanged();
+        }
+        plot.setBackgroundPaint(Color.white);
+        plot.setRangeGridlinePaint(Color.black);
+
+
+
+
+
+        return chart;
+
+
+    }
+
+    public JFreeChart getChart() {
+        return chart;
+    }
+
+
+    // Works somehow. TODO fix chance of eternal loop plus updating in StatsView
+    // TODO make save chart button work. Create more charts!
+    public void updatestats()
+    {
+        while (!Preserve.isNewDay())
+        {
+            dataset.addValue(Preserve.getCurrentTemperature(), "Temperature", Preserve.getCurrentDate().getHourOfDay() + ":00");
+
 
 
         }
     }
+}
 
 
 

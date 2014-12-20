@@ -1,5 +1,6 @@
 package view;
 
+import org.jfree.chart.ChartPanel;
 import util.ButtonUtils;
 import util.TemperatureChart;
 
@@ -22,7 +23,7 @@ public class StatisticsView extends JPanel {
     private JPanel chartHolder;
     private TemperatureChart temperatureChart;
     private MainView.GUI gui;
-
+public ChartPanel chartPanel;
     public BufferedImage image;
 
     private JLabel test;
@@ -50,7 +51,6 @@ public class StatisticsView extends JPanel {
         this.add(chartHolder, BorderLayout.CENTER);
 
 
-        chartHolder.add(test);
         mouseListeners();
 
 
@@ -62,7 +62,10 @@ public class StatisticsView extends JPanel {
 
     public void createCharts()
     {
-        temperatureChart = new TemperatureChart("Temps");
+        temperatureChart = new TemperatureChart("Temperatures");
+
+        chartHolder.add(test);
+        image = temperatureChart.getChart().createBufferedImage(chartHolder.getWidth(), chartHolder.getHeight());
     }
 
     public void createStatisticButtons() {
@@ -113,10 +116,16 @@ public class StatisticsView extends JPanel {
                     switch (chartList.getSelectedIndex()) {
                         case 0:
                             // the user selected the 1st item in the list; display the appropriate chart
+
+                            test.setIcon(null);
                             createCharts();
+
+                            temperatureChart.updatestats();
                             image = temperatureChart.getChart().createBufferedImage(chartHolder.getWidth(), chartHolder.getHeight());
+                            chartHolder.repaint();
 
                             test.setIcon(new ImageIcon(image));
+                            chartHolder.repaint();
                             gui.pack();
 
 
@@ -124,10 +133,11 @@ public class StatisticsView extends JPanel {
                         case 1:
                             // the user selected the 2nd item in the list; display the appropriate chart
                             test.setIcon(null);
+                            gui.pack();
                             break;
                         default:
                             /// Do something here if nothing is selected. Maybe display the 1st one by default??
-
+gui.pack();
                             break;
                     }
                 } else {
