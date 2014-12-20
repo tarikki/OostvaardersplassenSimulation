@@ -38,6 +38,9 @@ public class MapHandlerAdvanced {
     private int brokenPixels = 0;
     private static BufferedImage terrainImage;
     private static BufferedImage displayableImage;
+
+    public final static int water = 1;
+    public final static int shallowWater = 2;
     //private int scale = 10;
 
     // Init block
