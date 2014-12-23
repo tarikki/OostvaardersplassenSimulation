@@ -113,10 +113,11 @@ public class Preserve {
     public static void executeTurn() throws InterruptedException {
         List<Callable<Object>> todo = new ArrayList<Callable<Object>>(animals.size());
         // TODO shuffle the animals first so they don't always move in order of creation
+        // TODO using the checkdeath results in concurrentmodification exception, fix it
         for (Animal animal : animals) {
-            if (!checkDeath(animal)) {
+//            if (!checkDeath(animal)) {
                 todo.add(Executors.callable(animal));
-            }
+//            }
         }
 //        System.out.println(animals.size());
         List<Future<Object>> dikke = executor.invokeAll(todo);

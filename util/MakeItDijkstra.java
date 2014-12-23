@@ -3,7 +3,6 @@ package util;
 import mapUtils.MapHandlerAdvanced;
 
 import java.util.ArrayDeque;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 
@@ -13,7 +12,7 @@ import java.util.HashMap;
 public class MakeItDijkstra {
 
     private static HashMap<DijkstraNode, DijkstraNode> borderNodes;
-    private static HashMap<DijkstraNode, DijkstraNode> borderBuffer;
+    private static HashMap<DijkstraNode, DijkstraNode> bufferNodes;
     private static HashMap<DijkstraNode, DijkstraNode> innerNodes;
     private static Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>();
     private static HashMap<DijkstraNode, DijkstraNode> allNodes;
@@ -23,7 +22,7 @@ public class MakeItDijkstra {
 
 
         borderNodes = new HashMap<>();
-        borderBuffer = new HashMap<>();
+        bufferNodes = new HashMap<>();
         innerNodes = new HashMap<>();
         allNodes = new HashMap<>();
 
@@ -36,8 +35,8 @@ public class MakeItDijkstra {
         DijkstraNode winnerNode = homeNode;
 
         while (!loopingDone) {
-            innerNodes.putAll(borderBuffer);
-            borderBuffer.clear();
+            innerNodes.putAll(bufferNodes);
+            bufferNodes.clear();
 
             for (DijkstraNode borderNode : borderNodes.values()) {
                 if (lookingFor.equals("food")) {
@@ -59,12 +58,13 @@ public class MakeItDijkstra {
                 }
             }
 
-            borderBuffer.putAll(borderNodes);
+            bufferNodes.putAll(borderNodes);
             borderNodes.clear();
 
-            for (DijkstraNode borderBufferNode : borderBuffer.values()) {
+            for (DijkstraNode bufferNode : bufferNodes.values()) {
                 for (int y = -1; y < 2; y++) {
                     for (int x = -1; x < 2; x++) {                   // check all squares surrounding this square
+                        int terrainID = MapHandlerAdvanced.getTerrainID(bufferNode.getCurrentX() + x, bufferNode.getCurrentY() + y);
                         DijkstraNode newNode;
                         double additionalCost = 0;
                         if (Math.abs(y) + Math.abs(x) == 2) {
@@ -72,12 +72,30 @@ public class MakeItDijkstra {
                         } else {
                             additionalCost = 1;
                         }
-                        if (y != 0 && x != 0) { // don't add self
-                            newNode = new DijkstraNode(borderBufferNode.getCurrentX() + x, borderBufferNode.getCurrentY() + y, x, y, borderBufferNode.getCost() + additionalCost);
 
-                            if (!borderBuffer.containsValue(newNode) && !innerNodes.containsValue(newNode)) { // don't add duplicates
+                        if (terrainID == MapHandlerAdvanced.water){
+                            additionalCost = 1000;
+                        }
+
+
+                        if (y != 0 && x != 0 && terrainID != MapHandlerAdvanced.border) { // don't add self, don't add border
+                            int currentXPos = bufferNode.getCurrentX() + x;
+                            int currentYPos = bufferNode.getCurrentY() + y;
+                            if (currentXPos > lineOfSight || currentYPos > lineOfSight ){
+                                loopingDone = true;
+                            }
+
+                            newNode = new DijkstraNode(bufferNode.getCurrentX() + x, bufferNode.getCurrentY() + y, x, y,
+                                    bufferNode.getCost() + additionalCost);
+                            if (borderNodes.containsValue(newNode)) {
+                                if (newNode.getCost() < borderNodes.get(newNode).getCost()) {
+                                    borderNodes.put(newNode, newNode);
+                                }
+                            }
+                            if (!bufferNodes.containsValue(newNode) && !innerNodes.containsValue(newNode)) { // don't add duplicates
                                 borderNodes.put(newNode, newNode);
                             }
+
                         }
 
                     }

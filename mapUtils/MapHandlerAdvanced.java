@@ -39,6 +39,7 @@ public class MapHandlerAdvanced {
     private static BufferedImage terrainImage;
     private static BufferedImage displayableImage;
 
+    public final static int border = 0;
     public final static int water = 1;
     public final static int shallowWater = 2;
     //private int scale = 10;
