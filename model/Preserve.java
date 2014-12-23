@@ -104,6 +104,9 @@ public class Preserve {
             animals.add(new Animal(id, x, y));
 //           System.out.println("Animal " + id + " x, y: " + x + " " + y);
         }
+
+//        animals.get(0).setxPos(75);
+//        animals.get(0).setyPos(45);
     }
 
     public static int getNumberOfAnimals() {
@@ -121,7 +124,7 @@ public class Preserve {
         }
 //        System.out.println(animals.size());
         List<Future<Object>> dikke = executor.invokeAll(todo);
-//        System.out.println("Now turn: " + turn++);
+        System.out.println("Now turn: " + turn++);
         currentDate = currentDate.plusMinutes(1);
 //        System.out.println(currentDate.toString());
         if (currentDate.isAfter(endDate)) {

@@ -62,4 +62,15 @@ public class DijkstraNode {
         result = 31 * result + currentY;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "DijkstraNode{" +
+                "currentX=" + currentX +
+                ", currentY=" + currentY +
+                ", xDirection=" + xDirection +
+                ", yDirection=" + yDirection +
+                ", cost=" + cost +
+                '}';
+    }
 }

@@ -23,7 +23,7 @@ public class IOUtil {
     public static String DEFAULT_CONFIG_PATH;
     private static String CONFIG_DIRECTORY;
     private static String WORKING_DIRECTORY;
-    private static String DEFAULT_DIRECTORY_NAME = "testerConfig";
+    private static String DEFAULT_DIRECTORY_NAME = "config";
 
     public static ConfigLoader configLoader;
 
