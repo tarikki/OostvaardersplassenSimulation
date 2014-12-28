@@ -102,7 +102,7 @@ public class Preserve {
                 x = r.nextInt(MapHandlerAdvanced.getWidth());
                 y = r.nextInt(MapHandlerAdvanced.getHeight());
             }
-            animals.add(new Animal(id, x, y));
+            animals.add(new Animal(id, x, y, 200));
 //           System.out.println("Animal " + id + " x, y: " + x + " " + y);
         }
 
@@ -238,6 +238,7 @@ public class Preserve {
         currentDayLength = calculateDaylight();
         calculateDailyTemperatures();
         setSunriseAndSunset(currentDayLength);
+
 
     }
 

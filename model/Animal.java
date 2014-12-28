@@ -19,6 +19,7 @@ public class Animal implements Runnable {
     private int energy = 100;
     private boolean living = true;
     private boolean tired = false;
+    private int age;
     private int lineOfSight = 50; //how far the animal can see around it
     private int xPos;
     private int yPos;
@@ -32,10 +33,12 @@ public class Animal implements Runnable {
 
 
 
-    public Animal(int id, int x, int y) {
+    public Animal(int id, int x, int y, int initialAge) {
         this.id = id;
-        xPos = x;
-        yPos = y;
+        this.xPos = x;
+        this.yPos = y;
+        this.age = initialAge;
+
     }
 
     public boolean isDead() {
@@ -184,23 +187,6 @@ public class Animal implements Runnable {
     public int getId() {
         return id;
     }
-
-/*    public void scanSurroundings() {
-        for (int w = 0; w < lineOfSight; w++) {
-            for (int h = 0; h < lineOfSight; h++) {
-                fieldOfVision[w][h] = MapHandlerAdvanced.getValue(xPos - lineOfSight / 2 + w, yPos - lineOfSight / 2 + h);
-//                System.out.println(xPos-lineOfSight/2+w);
-                System.out.print(fieldOfVision[w][h]);
-
-            }
-            System.out.println();
-        }
-    }*/
-
-
-
-
-
 
 //    public boolean findClosestStraight(MapHandler.ColorCode lookingFor) {
 //        int closestX = 0;
@@ -399,4 +385,11 @@ public class Animal implements Runnable {
     public void setyPos(int yPos) {
         this.yPos = yPos;
     }
+
+    public void dailyCheckUp(){
+        //TODO check for death, weight gain and everything else here
+        age++;
+    }
+
+
 }
