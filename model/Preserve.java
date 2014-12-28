@@ -28,7 +28,7 @@ public class Preserve {
     private static DateTime startDate;
     private static DateTime endDate;
     private static DateTime currentDate;
-    private static boolean isNight;
+    private static boolean night;
     private static DateTimeZone timeZone = DateTimeZone.forID(Config.getDateTimeZone());
     private static Interval currentDaySpan;
     private static Interval currentHourSpan;
@@ -76,6 +76,7 @@ public class Preserve {
         currentHourSpan = new Interval(currentDate, currentDate.plusHours(1));
         currentDayLength = calculateDaylight();
         setSunriseAndSunset(currentDayLength);
+        checkForNight();
         if (currentDate.dayOfMonth().get() > 15) {
             DateTime start = currentDate.dayOfMonth().setCopy(15);
             currentTempMonthSpan = new Interval(start, start.monthOfYear().addToCopy(1));
@@ -114,12 +115,14 @@ public class Preserve {
     }
 
     public static void executeTurn() throws InterruptedException {
+
+        checkForNight();
         List<Callable<Object>> todo = new ArrayList<Callable<Object>>(animals.size());
         // TODO shuffle the animals first so they don't always move in order of creation
         // TODO using the checkdeath results in concurrentmodification exception, fix it
         for (Animal animal : animals) {
 //            if (!checkDeath(animal)) {
-                todo.add(Executors.callable(animal));
+            todo.add(Executors.callable(animal));
 //            }
         }
 //        System.out.println(animals.size());
@@ -136,8 +139,8 @@ public class Preserve {
         }
 
         if (isNewDay()) {
-
-            System.out.println("Bitchesss!");
+            MapHandlerAdvanced.growAllPlants();
+            System.out.println("mycket growth");
             setupNewDay();
         }
 
@@ -217,23 +220,25 @@ public class Preserve {
         double tempMultiplyer = 0;
         if ((new Interval(currentDate.withTimeAtStartOfDay().withHourOfDay(6), currentDate.withTimeAtStartOfDay().withHourOfDay(18))).contains(currentDate)) {
             tempMultiplyer = todayMaxTemp;
-        } else{
+        } else {
             tempMultiplyer = todayMinTemp;
         }
 
         tempMultiplyer = todayMaxTemp - todayMinTemp;
 //        System.out.println(tempMultiplyer);
-        currentTemperature = Math.cos(2*Math.PI * ((Config.lengthOfDayInMinutes/2 + (double)new Duration(currentDate.withTimeAtStartOfDay(),
-                currentDate).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer/2 +todayMinTemp+tempMultiplyer/2;
+        currentTemperature = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
+                currentDate).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
 //        System.out.println(((double)new Duration(currentDate.withTimeAtStartOfDay(),
 //                currentDate).getStandardMinutes() / Config.lengthOfDayInMinutes));
-        System.out.println(currentDate.getHourOfDay() + " "+currentTemperature);
+        System.out.println(currentDate.getHourOfDay() + " " + currentTemperature);
     }
 
     public static void setupNewDay() {
         currentDaySpan = new Interval(currentDate, currentDate.dayOfMonth().addToCopy(1).withTimeAtStartOfDay());
         currentDayLength = calculateDaylight();
         calculateDailyTemperatures();
+        setSunriseAndSunset(currentDayLength);
+
     }
 
     public static void setSunriseAndSunset(double lengthOfDay) {
@@ -249,6 +254,15 @@ public class Preserve {
         System.out.println(sunrise);
         System.out.println(sunset);
 
+    }
+
+    public static void checkForNight(){
+        //TODO this is not working, must be able to check for times only, not dates
+        if (currentDate.isAfter(sunset) && currentDate.isBefore(sunrise)){
+            night = true;
+        } else {
+            night = false;
+        }
     }
 
     public static double calculateDaylight() {
@@ -317,5 +331,9 @@ public class Preserve {
 
     public static void setCurrentDayLength(double currentDayLength) {
         Preserve.currentDayLength = currentDayLength;
+    }
+
+    public static boolean isNight() {
+        return night;
     }
 }

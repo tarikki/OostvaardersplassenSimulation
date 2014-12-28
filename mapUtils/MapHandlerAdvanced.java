@@ -186,10 +186,10 @@ public class MapHandlerAdvanced {
         int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
         int plantRecoveryTime = getPlantRecoveryDays(x, y);
         int recoveryTime = plantRecoveryTime + 3;
-        int maxRecoveryTime = (int)Math.pow(2,Config.plantRecoveryBits)-1;
+        int maxRecoveryTime = (int) Math.pow(2, Config.plantRecoveryBits) - 1;
         System.out.println(maxRecoveryTime);
 
-        if (recoveryTime > maxRecoveryTime){
+        if (recoveryTime > maxRecoveryTime) {
             recoveryTime = maxRecoveryTime;
         }
 
@@ -206,34 +206,36 @@ public class MapHandlerAdvanced {
     public static void increasePlantHealth(int x, int y) {
 
         int plantId = getPlantId(x, y);
-        int plantRecoveryTime = getPlantRecoveryDays(x, y);
-        int plantHealth = getPlantHealth(x, y);
-        int plantInt = plantId << Config.plantIdPosition;
-        int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
+        if (plantId != 0) {
+            int plantRecoveryTime = getPlantRecoveryDays(x, y);
+            int plantHealth = getPlantHealth(x, y);
+            int plantInt = plantId << Config.plantIdPosition;
+            int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
 
-        Plant plant = plantsHash.get(plantId);
-        System.out.println(plant);
+            Plant plant = plantsHash.get(plantId);
+//        System.out.println(plant);
 
 
-        int growth = 0;
-        float currentGrowthRate = 0;
-        if (plantRecoveryTime == 0) {
-            currentGrowthRate = plant.getGrowthRate();
-        } else {
-            currentGrowthRate = plant.getGrowthWhenDamaged();
+            int growth = 0;
+            float currentGrowthRate = 0;
+            if (plantRecoveryTime == 0) {
+                currentGrowthRate = plant.getGrowthRate();
+            } else {
+                currentGrowthRate = plant.getGrowthWhenDamaged();
+            }
+
+            if (Preserve.getCurrentTemperature() < plant.getTemperatureThreshold()) {
+                growth = (int) Math.ceil(plantHealth * currentGrowthRate * Preserve.getCurrentDayLength() / Preserve.getMaxLengthOfDay());
+            }
+
+
+            int newHealth = plantHealth + growth;
+            int maxHealth = plant.getMaxHealth();
+            if (newHealth > maxHealth) newHealth = maxHealth;
+
+            int encoded = terrainInt | plantInt | newHealth;
+            map[x][y] = encoded;
         }
-
-        if (Preserve.getCurrentTemperature() < plant.getTemperatureThreshold()) {
-            growth = (int) Math.ceil(plantHealth * currentGrowthRate * Preserve.getCurrentDayLength() / Preserve.getMaxLengthOfDay());
-        }
-
-
-        int newHealth = plantHealth + growth;
-        int maxHealth = plant.getMaxHealth();
-        if (newHealth > maxHealth) newHealth = maxHealth;
-
-        int encoded = terrainInt | plantInt | newHealth;
-        map[x][y] = encoded;
     }
 
     public static int getTerrainID(int x, int y) {
@@ -252,7 +254,15 @@ public class MapHandlerAdvanced {
         return (map[x][y] >>> Config.plantRecoveryPosition) & 7;
     }
 
+    public static void growAllPlants() {
+        for (int h = 0; h < height; h++) {
+            for (int w = 0; w < width; w++) {
+                increasePlantHealth(w, h);
+            }
+        }
 
+
+    }
 
     private int recognizeTerrain(int pixel) {
         int id = -1;

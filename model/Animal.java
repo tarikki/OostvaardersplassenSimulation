@@ -6,6 +6,7 @@ import util.DijkstraNode;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Created by extradikke on 20-11-14.
@@ -18,18 +19,17 @@ public class Animal implements Runnable {
     private int energy = 100;
     private boolean living = true;
     private boolean tired = false;
-    private int lineOfSight = 100; //how far the animal can see around it
-    private byte[][] fieldOfVision = new byte[lineOfSight + 2][lineOfSight + 2];
-    private DijkstraNode[][] movementCostArray; // a temp array for calculating the optimal path to a desired location
+    private int lineOfSight = 50; //how far the animal can see around it
     private int xPos;
     private int yPos;
+    private boolean dijkstraScanned = false;
+    private boolean moved = true;
     private Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>(); // the path expressed in DjikstraNodes
 
     private HashMap<DijkstraNode, DijkstraNode> borderNodes;
     private HashMap<DijkstraNode, DijkstraNode> bufferNodes;
     private HashMap<DijkstraNode, DijkstraNode> innerNodes;
 
-    private static HashMap<DijkstraNode, DijkstraNode> allNodes;
 
 
     public Animal(int id, int x, int y) {
@@ -51,7 +51,6 @@ public class Animal implements Runnable {
         borderNodes = new HashMap<>();
         bufferNodes = new HashMap<>();
         innerNodes = new HashMap<>();
-        allNodes = new HashMap<>();
 
 
         DijkstraNode homeNode = new DijkstraNode(xPos, yPos, 0, 0, 0);
@@ -64,7 +63,7 @@ public class Animal implements Runnable {
         while (!loopingDone) {
             innerNodes.putAll(bufferNodes);
             bufferNodes.clear();
-//            System.out.println("in the loop");
+// TODO if no new borderNodes, then stop looping because no place to go
 
             for (DijkstraNode borderNode : borderNodes.values()) {
                 double lowestCost = 100000;
@@ -75,7 +74,7 @@ public class Animal implements Runnable {
                         winnerNode = borderNode;
                         loopingDone = true;
                         lowestCost = borderNode.getCost();
-                        System.out.println("found food with cost:"  + lowestCost);
+                        System.out.println("found food with cost:" + lowestCost);
                     }
                 }
 
@@ -87,7 +86,13 @@ public class Animal implements Runnable {
                         loopingDone = true;
                     }
                 }
+
+                if (!MapHandlerAdvanced.isValidMove(borderNode.getCurrentX(), borderNode.getCurrentY())) {
+                    borderNodes.remove(borderNode);
+                }
             }
+
+            // TODO implement removal of non-traversable nodes so this will not return impossible paths
 
             bufferNodes.putAll(borderNodes);
             borderNodes.clear();
@@ -106,16 +111,17 @@ public class Animal implements Runnable {
                             additionalCost = 1;
                         }
 
-                        if (terrainID == MapHandlerAdvanced.water){
+                        if (terrainID == MapHandlerAdvanced.water) {
                             additionalCost = 1000;
                         }
 
-
-                        if ((y != 0  || x != 0) && terrainID != MapHandlerAdvanced.border) { // don't add self, don't add border
+//TODO check the logic behind this
+                        if ((y != 0 || x != 0) && terrainID != MapHandlerAdvanced.border) { // don't add self, don't add border
                             int currentXPos = bufferNode.getCurrentX() + x;
                             int currentYPos = bufferNode.getCurrentY() + y;
 
-                            if (Math.abs(currentXPos-xPos) > lineOfSight || Math.abs(currentYPos - yPos) > lineOfSight ){
+                            if (Math.abs(currentXPos - xPos) > lineOfSight || Math.abs(currentYPos - yPos) > lineOfSight) {
+                                System.out.println("too far");
                                 loopingDone = true;
                             }
 
@@ -141,22 +147,29 @@ public class Animal implements Runnable {
 //            System.out.println("innerNodes: " + innerNodes.size());
 
 
+            // TODO
+
         }
 
         if (foundIt) {
-            allNodes.putAll(innerNodes);
+
             stackDijkstra(winnerNode);
         }
 
+        // clean up
+        innerNodes.clear();
+        bufferNodes.clear();
 
+        dijkstraScanned = true;
+        moved = false;
 
     }
 
     private boolean stackDijkstra(DijkstraNode targetAcquired) {
 
 //        System.out.println(targetAcquired);
-        DijkstraNode next = allNodes.get(new DijkstraNode(
-                targetAcquired.getCurrentX() + -targetAcquired.getXDirection(), targetAcquired.getCurrentY() + -targetAcquired.getYDirection(), 0,0,1));            // next node is where the current is pointing att
+        DijkstraNode next = innerNodes.get(new DijkstraNode(
+                targetAcquired.getCurrentX() + -targetAcquired.getXDirection(), targetAcquired.getCurrentY() + -targetAcquired.getYDirection(), 0, 0, 1));            // next node is where the current is pointing att
 //        System.out.println("Cost: " + next.getCost() + " nextX: " + next.getXDirection() + " nextY" + next.getYDirection());
 //        System.out.println("nextNode "+next);
         wayPoints.add(new DijkstraNode(targetAcquired.getCurrentX(), targetAcquired.getCurrentY(), targetAcquired.getXDirection(), targetAcquired.getYDirection(), targetAcquired.getCost()));                     // and make it point the way to the next node
@@ -166,7 +179,6 @@ public class Animal implements Runnable {
 
         return true;
     }
-
 
 
     public int getId() {
@@ -188,50 +200,7 @@ public class Animal implements Runnable {
 
 
 
-    private void dijkstraPrinter() {
-        for (int h = 0; h < movementCostArray.length; h++) {
-            for (int w = 0; w < movementCostArray.length; w++) {
-                if (movementCostArray[w][h] != null) {
-                    System.out.print(" " + movementCostArray[w][h].getXDirection() + " " + movementCostArray[w][h].getYDirection() + " ");
-                } else {
-                    System.out.print(" X X ");
-                }
 
-            }
-            System.out.println();
-        }
-    }
-
-    private void dijkstraDirectionPrinter() {
-        for (int h = 0; h < movementCostArray.length; h++) {
-            for (int w = 0; w < movementCostArray.length; w++) {
-                String arrows = "";
-                if (movementCostArray[w][h] != null) {
-                    if (movementCostArray[w][h].getXDirection() == -1) {
-                        arrows += " U";
-                    } else if (movementCostArray[w][h].getXDirection() == 1) {
-                        arrows += " D";
-                    } else {
-                        arrows += " o";
-                    }
-
-                    if (movementCostArray[w][h].getYDirection() == -1) {
-                        arrows += "L ";
-                    } else if (movementCostArray[w][h].getYDirection() == 1) {
-                        arrows += "R ";
-                    } else {
-                        arrows += "o ";
-                    }
-
-                    System.out.print(arrows);
-                } else {
-                    System.out.print(" XX ");
-                }
-
-            }
-            System.out.println();
-        }
-    }
 
 //    public boolean findClosestStraight(MapHandler.ColorCode lookingFor) {
 //        int closestX = 0;
@@ -264,9 +233,6 @@ public class Animal implements Runnable {
 //    }
 
 
-
-
-
     public boolean checkForWayPoints() {
         boolean result = false;
         if (!wayPoints.isEmpty()) {
@@ -292,15 +258,15 @@ public class Animal implements Runnable {
     public void eat() {
 //        System.out.println("eating");
         if (MapHandlerAdvanced.eatFromSquare(xPos, yPos) && hunger == 0) {
-            MapHandlerAdvanced.decreasePlantHealth(xPos,yPos,50);
+            MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 50);
             this.energy += 10;
-            if (this.energy >= 100){
+            if (this.energy >= 100) {
                 this.energy = 100;
             }
 
 //            reduceHunger(3);
         }
-        MapHandlerAdvanced.decreasePlantHealth(xPos,yPos,50);
+        MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 50);
         System.out.println("Food left: " + MapHandlerAdvanced.getPlantHealth(xPos, yPos));
 
     }
@@ -330,23 +296,7 @@ public class Animal implements Runnable {
 //        System.out.println("Number of waypoints: " + wayPoints.size());
 //    }
 
-    /*public void useBrain2() {
-        if (wayPoints.isEmpty()) {
-            if (thirst > 1) {
 
-                if (standingNextToWater(xPos, yPos)) {
-                    drink();
-
-                } else {
-                    makeItDijkstra(MapHandlerAdvanced.ColorCode.BLUE);
-
-                }
-
-            }
-        }
-        checkForWayPoints();
-//        System.out.println("Number of waypoints: " + wayPoints.size());
-    }*/
 
 //    public void drink() {
 //        if (standingNextToWater(xPos, yPos)) {
@@ -379,6 +329,7 @@ public class Animal implements Runnable {
         //TODO make this first check if mapSquare valid, then make sure no other animals there
         xPos += x;
         yPos += y;
+        moved = true;
     }
 
 
@@ -393,14 +344,14 @@ public class Animal implements Runnable {
     }
 
     public void useBrain() {
-        System.out.println("waypoints size "+ wayPoints.size());
+//        System.out.println("waypoints size " + wayPoints.size());
         if (wayPoints.isEmpty()) {
             if (hunger > 1) {
 
-                if (MapHandlerAdvanced.getPlantHealth(xPos,yPos) > 0) {
+                if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 0) {
                     eat();
 
-                } else {
+                } else if (moved) {
                     findFoodOrWater("food", 20);
 
                 }
@@ -414,7 +365,10 @@ public class Animal implements Runnable {
     @Override
     public void run() {
 //        System.out.println("running");
+//        if (!Preserve.isNight()){
+        System.out.println("animal id:" + id);
         useBrain();
+//    }
         hunger++;
         thirst++;
         energy--;
