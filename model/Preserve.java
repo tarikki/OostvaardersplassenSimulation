@@ -1,11 +1,15 @@
 package model;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import mapUtils.MapHandlerAdvanced;
 import mapUtils.MonthlyWeather;
 import org.joda.time.*;
 import util.Config;
 
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +56,7 @@ public class Preserve {
     private static double currentHourlyMaxTempIncrement;
     private static double currentHourlyMinTempIncrement;
     private static HashMap<Integer, MonthlyWeather> weatherHashMap = new HashMap<>();
+    private static Populations initialPopulations;
 
 
     private static double latitude;
@@ -67,6 +72,8 @@ public class Preserve {
         currentDate = new DateTime(2014, 6, 21, 0, 0, 0);
         maxLengthOfDay = calculateDaylight();
         weatherHashMap = MapHandlerAdvanced.getWeatherHashMap();
+
+
 
 
         latitude = latitudeInput;
@@ -94,6 +101,19 @@ public class Preserve {
         turn = 0;
         Random r = new Random();
         numberOfAnimals = numberOfAnimalsInput;
+        loadInitialPopulations();
+//        int id = 0;
+//        for (Population population : initialPopulations.getPopulations()) {
+//
+//            int x = r.nextInt(MapHandlerAdvanced.getWidth());
+//            int y = r.nextInt(MapHandlerAdvanced.getHeight());
+//            while (!MapHandlerAdvanced.isValidMove(x, y)) {
+//                x = r.nextInt(MapHandlerAdvanced.getWidth());
+//                y = r.nextInt(MapHandlerAdvanced.getHeight());
+//            }
+//            animals.add(new Animal(id, x, y, 200));
+//        }
+
         for (int id = 0; id < numberOfAnimals; id++) {
 
             int x = r.nextInt(MapHandlerAdvanced.getWidth());
@@ -257,9 +277,9 @@ public class Preserve {
 
     }
 
-    public static void checkForNight(){
+    public static void checkForNight() {
         //TODO this is not working, must be able to check for times only, not dates
-        if (currentDate.isAfter(sunset) && currentDate.isBefore(sunrise)){
+        if (currentDate.isAfter(sunset) && currentDate.isBefore(sunrise)) {
             night = true;
         } else {
             night = false;
@@ -337,4 +357,19 @@ public class Preserve {
     public static boolean isNight() {
         return night;
     }
+
+    public static void loadInitialPopulations() {
+        JsonReader populationsLoader = null;
+        try {
+            populationsLoader = new JsonReader(new FileReader(Config.getPopulationsFilePath()));
+            Gson gson = new Gson();
+            initialPopulations = gson.fromJson(populationsLoader, Populations.class);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(initialPopulations);
+    }
+
+    public void returnValidCoordinates(){}
 }

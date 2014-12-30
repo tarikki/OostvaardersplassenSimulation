@@ -16,6 +16,7 @@ public class ConfigLoader {
     private String displayableMapName;
     private String animalsFileName;
     private String weatherFileName;
+    private String populationsFileName;
 
     private double latitude;
     private int scale;
@@ -130,6 +131,14 @@ public class ConfigLoader {
 
     public void setWeatherFileName(String weatherFileName) {
         this.weatherFileName = weatherFileName;
+    }
+
+    public String getPopulationsFileName() {
+        return populationsFileName;
+    }
+
+    public void setPopulationsFileName(String populationsFileName) {
+        this.populationsFileName = populationsFileName;
     }
 
     @Override

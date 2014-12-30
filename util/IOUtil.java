@@ -60,6 +60,7 @@ public class IOUtil {
             Config.setDisplayableMapPath(CONFIG_DIRECTORY+configLoader.getDisplayableMapName());
             Config.setAnimalsFilePath(CONFIG_DIRECTORY+configLoader.getAnimalsFileName());
             Config.setWeatherFilePath(CONFIG_DIRECTORY+configLoader.getWeatherFileName());
+            Config.setPopulationsFilePath(CONFIG_DIRECTORY+configLoader.getPopulationsFileName());
 
             Config.setNumberOfAnimals(configLoader.getNumberOfAnimals());
             Config.setSpeedOfSimulation(configLoader.getSpeedOfSimulation());

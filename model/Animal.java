@@ -13,24 +13,25 @@ import java.util.Iterator;
  */
 public class Animal implements Runnable {
     private int id;
-    private boolean sleepy = false;
     private int hunger = 0;
     private int thirst = 0;
     private int energy = 100;
     private boolean living = true;
-    private boolean tired = false;
     private int age;
-    private int lineOfSight = 50; //how far the animal can see around it
+    private int ageGroup;
+    private int animalType;
+
+    private int lineOfSight = 100; //how far the animal can see around it
     private int xPos;
     private int yPos;
     private boolean dijkstraScanned = false;
+    private int maxDijkstraLoops = lineOfSight * lineOfSight;
     private boolean moved = true;
     private Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>(); // the path expressed in DjikstraNodes
 
     private HashMap<DijkstraNode, DijkstraNode> borderNodes;
     private HashMap<DijkstraNode, DijkstraNode> bufferNodes;
     private HashMap<DijkstraNode, DijkstraNode> innerNodes;
-
 
 
     public Animal(int id, int x, int y, int initialAge) {
@@ -62,6 +63,8 @@ public class Animal implements Runnable {
         boolean foundIt = false;
         boolean loopingDone = false;
         DijkstraNode winnerNode = homeNode;
+
+        int currentLoops = 0;
 
         while (!loopingDone) {
             innerNodes.putAll(bufferNodes);
@@ -118,15 +121,15 @@ public class Animal implements Runnable {
                             additionalCost = 1000;
                         }
 
-//TODO check the logic behind this
-                        if ((y != 0 || x != 0) && terrainID != MapHandlerAdvanced.border) { // don't add self, don't add border
+
+                        if ((y != 0 ^ x != 0) && terrainID != MapHandlerAdvanced.border) { // don't add self, don't add border
                             int currentXPos = bufferNode.getCurrentX() + x;
                             int currentYPos = bufferNode.getCurrentY() + y;
 
-                            if (Math.abs(currentXPos - xPos) > lineOfSight || Math.abs(currentYPos - yPos) > lineOfSight) {
-                                System.out.println("too far");
-                                loopingDone = true;
-                            }
+//                            if (Math.abs(currentXPos - xPos) > lineOfSight || Math.abs(currentYPos - yPos) > lineOfSight) {
+//                                System.out.println("too far");
+//                                loopingDone = true;
+//                            }
 
                             newNode = new DijkstraNode(currentXPos, currentYPos, x, y,
                                     bufferNode.getCost() + additionalCost);
@@ -150,8 +153,10 @@ public class Animal implements Runnable {
 //            System.out.println("innerNodes: " + innerNodes.size());
 
 
-            // TODO
-
+currentLoops++;
+            if (currentLoops>maxDijkstraLoops) {
+                loopingDone = true;
+            }
         }
 
         if (foundIt) {
@@ -283,7 +288,6 @@ public class Animal implements Runnable {
 //    }
 
 
-
 //    public void drink() {
 //        if (standingNextToWater(xPos, yPos)) {
 //            reduceThirst(1);
@@ -386,7 +390,7 @@ public class Animal implements Runnable {
         this.yPos = yPos;
     }
 
-    public void dailyCheckUp(){
+    public void dailyCheckUp() {
         //TODO check for death, weight gain and everything else here
         age++;
     }

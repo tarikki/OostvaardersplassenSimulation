@@ -22,6 +22,7 @@ public class Config {
     private static String displayableMapPath;
     private static String animalsFilePath;
     private static String weatherFilePath;
+    private static String populationsFilePath;
 
     //bitshifting ranges
     public static final int plantHealthBits = 7;
@@ -157,11 +158,13 @@ public class Config {
         Config.weatherFilePath = weatherFilePath;
     }
 
+    public static String getPopulationsFilePath() {
+        return populationsFilePath;
+    }
 
-
-
-
-
+    public static void setPopulationsFilePath(String populationsFilePath) {
+        Config.populationsFilePath = populationsFilePath;
+    }
 
     public static String print() {
         return "Config{" +
