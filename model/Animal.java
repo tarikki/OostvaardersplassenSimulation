@@ -21,12 +21,13 @@ public class Animal implements Runnable {
     private int ageGroup;
     private int animalType;
 
-    private int lineOfSight = 100; //how far the animal can see around it
+    private int lineOfSight = 50; //how far the animal can see around it
     private int xPos;
     private int yPos;
     private boolean dijkstraScanned = false;
-    private int maxDijkstraLoops = lineOfSight * lineOfSight;
+    private int maxDijkstraLoops = lineOfSight;
     private boolean moved = true;
+    private boolean stuck = false;
     private Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>(); // the path expressed in DjikstraNodes
 
     private HashMap<DijkstraNode, DijkstraNode> borderNodes;
@@ -80,7 +81,7 @@ public class Animal implements Runnable {
                         winnerNode = borderNode;
                         loopingDone = true;
                         lowestCost = borderNode.getCost();
-                        System.out.println("found food with cost:" + lowestCost);
+//                        System.out.println("found food with cost:" + lowestCost);
                     }
                 }
 
@@ -93,14 +94,23 @@ public class Animal implements Runnable {
                     }
                 }
 
-                if (!MapHandlerAdvanced.isValidMove(borderNode.getCurrentX(), borderNode.getCurrentY())) {
-                    borderNodes.remove(borderNode);
-                }
+//                if (!MapHandlerAdvanced.isValidMove(borderNode.getCurrentX(), borderNode.getCurrentY())) {
+//                    borderNodes.remove(borderNode);
+//                }
             }
 
             // TODO implement removal of non-traversable nodes so this will not return impossible paths
-
-            bufferNodes.putAll(borderNodes);
+            for (DijkstraNode borderNode : borderNodes.values()) {
+                if (MapHandlerAdvanced.isValidMove(borderNode.getCurrentX(), borderNode.getCurrentY())) {
+                    bufferNodes.put(borderNode, borderNode);
+                }
+            }
+//            System.out.println("buffernodes size " + bufferNodes.size());
+            if (bufferNodes.isEmpty()) {
+//                System.out.println("stuck");
+                stuck = true;
+                loopingDone = true;
+            }
             borderNodes.clear();
 
             for (DijkstraNode bufferNode : bufferNodes.values()) {
@@ -153,9 +163,10 @@ public class Animal implements Runnable {
 //            System.out.println("innerNodes: " + innerNodes.size());
 
 
-currentLoops++;
-            if (currentLoops>maxDijkstraLoops) {
+            currentLoops++;
+            if (currentLoops > maxDijkstraLoops) {
                 loopingDone = true;
+//                System.out.println("max dijkstra");
             }
         }
 
@@ -258,7 +269,7 @@ currentLoops++;
 //            reduceHunger(3);
         }
         MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 50);
-        System.out.println("Food left: " + MapHandlerAdvanced.getPlantHealth(xPos, yPos));
+//        System.out.println("Food left: " + MapHandlerAdvanced.getPlantHealth(xPos, yPos));
 
     }
 
@@ -340,8 +351,8 @@ currentLoops++;
 
                 if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 0) {
                     eat();
-
-                } else if (moved) {
+//if (moved)
+                } else if (!stuck){
                     findFoodOrWater("food", 20);
 
                 }
@@ -356,12 +367,14 @@ currentLoops++;
     public void run() {
 //        System.out.println("running");
 //        if (!Preserve.isNight()){
-        System.out.println("animal id:" + id);
+//        System.out.println("animal id:" + id);
         useBrain();
 //    }
         hunger++;
         thirst++;
         energy--;
+//        System.out.println(id + " " + energy);
+        Preserve.latch.countDown();
 
     }
 

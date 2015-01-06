@@ -187,7 +187,7 @@ public class MapHandlerAdvanced {
         int plantRecoveryTime = getPlantRecoveryDays(x, y);
         int recoveryTime = plantRecoveryTime + 3;
         int maxRecoveryTime = (int) Math.pow(2, Config.plantRecoveryBits) - 1;
-        System.out.println(maxRecoveryTime);
+//        System.out.println(maxRecoveryTime);
 
         if (recoveryTime > maxRecoveryTime) {
             recoveryTime = maxRecoveryTime;

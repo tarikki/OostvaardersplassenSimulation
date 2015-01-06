@@ -68,7 +68,7 @@ public class Main {
             @Override
             public void run() {
                 try {
-                    Preserve.executeTurn();
+                    Preserve.executeTurn2();
                     mainView.gui.tabbedPane.mapView.refresh();
 
                 } catch (InterruptedException e) {

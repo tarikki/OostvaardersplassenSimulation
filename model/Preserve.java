@@ -14,10 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Created by extradikke on 20-11-14.
@@ -64,6 +61,7 @@ public class Preserve {
 
     private static ArrayList<Animal> animals = new ArrayList<>();
     private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    public static CountDownLatch latch;
 
     public static void setupPreserve(double latitudeInput, int numberOfAnimalsInput, DateTime startDateInput,
                                      DateTime endDateInput) {
@@ -147,6 +145,53 @@ public class Preserve {
         }
 //        System.out.println(animals.size());
         List<Future<Object>> dikke = executor.invokeAll(todo);
+todo.clear();
+        System.out.println("Now turn: " + turn++);
+        currentDate = currentDate.plusMinutes(1);
+//        System.out.println(currentDate.toString());
+        if (currentDate.isAfter(endDate)) {
+            simulationComplete = true;
+        }
+
+        if (isNewHour()) {
+            setupNewHour();
+        }
+
+        if (isNewDay()) {
+            MapHandlerAdvanced.growAllPlants();
+            System.out.println("mycket growth");
+            setupNewDay();
+        }
+
+        if (isNewTempMonth()) {
+            setupNewTempMonth();
+        }
+    }
+
+    public static void executeTurn2() throws InterruptedException {
+
+        checkForNight();
+//        List<Callable<Object>> todo = new ArrayList<Callable<Object>>(animals.size());
+//        // TODO shuffle the animals first so they don't always move in order of creation
+//        // TODO using the checkdeath results in concurrentmodification exception, fix it
+//        for (Animal animal : animals) {
+////            if (!checkDeath(animal)) {
+//            todo.add(Executors.callable(animal));
+////            }
+//        }
+////        System.out.println(animals.size());
+//        List<Future<Object>> dikke = executor.invokeAll(todo);
+//todo.clear();
+latch = new CountDownLatch(animals.size());
+        for (Animal animal : animals) {
+            executor.execute(animal);
+        }
+        try{
+            latch.await();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
         System.out.println("Now turn: " + turn++);
         currentDate = currentDate.plusMinutes(1);
 //        System.out.println(currentDate.toString());
