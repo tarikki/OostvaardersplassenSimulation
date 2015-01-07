@@ -1,27 +1,32 @@
 package model;
 
+import animalUtils.AgeGroup;
+import animalUtils.AgeGroups;
 import mapUtils.MapHandlerAdvanced;
 import util.DijkstraNode;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Created by extradikke on 20-11-14.
  */
 public class Animal implements Runnable {
+
+
     private int id;
     private int hunger = 0;
     private int thirst = 0;
     private int energy = 100;
     private boolean living = true;
     private int age;
-    private int ageGroup;
-    private int animalType;
+    private int ageGroupNumerical;
 
-    private int lineOfSight = 50; //how far the animal can see around it
+
+    //loadable traits
+    private String name;
+    private AgeGroup[] ageGroups;
+
+    private int lineOfSight; //how far the animal can see around it
     private int xPos;
     private int yPos;
     private boolean dijkstraScanned = false;
@@ -30,8 +35,7 @@ public class Animal implements Runnable {
     private boolean stuck = false;
     private Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>(); // the path expressed in DjikstraNodes
 
-    private HashMap<DijkstraNode, DijkstraNode> borderNodes;
-    private HashMap<DijkstraNode, DijkstraNode> bufferNodes;
+
     private HashMap<DijkstraNode, DijkstraNode> innerNodes;
 
 
@@ -41,6 +45,15 @@ public class Animal implements Runnable {
         this.yPos = y;
         this.age = initialAge;
 
+    }
+
+    public void setupAnimal(){
+        hunger = thirst = 0;
+        energy = 100;
+        wayPoints = new ArrayDeque<>();
+        moved = true;
+        stuck = false;
+        maxDijkstraLoops = lineOfSight;
     }
 
     public boolean isDead() {
@@ -53,8 +66,8 @@ public class Animal implements Runnable {
     public void findFoodOrWater(String lookingFor, int threshHold) {
 
 
-        borderNodes = new HashMap<>();
-        bufferNodes = new HashMap<>();
+        HashMap<DijkstraNode, DijkstraNode> borderNodes = new HashMap<>();
+        HashMap<DijkstraNode, DijkstraNode> bufferNodes = new HashMap<>();
         innerNodes = new HashMap<>();
 
 
@@ -97,14 +110,14 @@ public class Animal implements Runnable {
 //                if (!MapHandlerAdvanced.isValidMove(borderNode.getCurrentX(), borderNode.getCurrentY())) {
 //                    borderNodes.remove(borderNode);
 //                }
-            }
 
-            // TODO implement removal of non-traversable nodes so this will not return impossible paths
-            for (DijkstraNode borderNode : borderNodes.values()) {
                 if (MapHandlerAdvanced.isValidMove(borderNode.getCurrentX(), borderNode.getCurrentY())) {
                     bufferNodes.put(borderNode, borderNode);
                 }
             }
+
+            // TODO implement removal of non-traversable nodes so this will not return impossible paths
+
 //            System.out.println("buffernodes size " + bufferNodes.size());
             if (bufferNodes.isEmpty()) {
 //                System.out.println("stuck");
@@ -260,7 +273,7 @@ public class Animal implements Runnable {
     public void eat() {
 //        System.out.println("eating");
         if (MapHandlerAdvanced.eatFromSquare(xPos, yPos) && hunger == 0) {
-            MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 50);
+            MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 10);
             this.energy += 10;
             if (this.energy >= 100) {
                 this.energy = 100;
@@ -331,6 +344,7 @@ public class Animal implements Runnable {
         xPos += x;
         yPos += y;
         moved = true;
+//        System.out.println("moving!");
     }
 
 
@@ -347,6 +361,7 @@ public class Animal implements Runnable {
     public void useBrain() {
 //        System.out.println("waypoints size " + wayPoints.size());
         if (wayPoints.isEmpty()) {
+//            System.out.println("pakee!");
             if (hunger > 1) {
 
                 if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 0) {
@@ -378,14 +393,7 @@ public class Animal implements Runnable {
 
     }
 
-    @Override
-    public String toString() {
-        return "Animal{" +
-                "id=" + id +
-                ", xPos=" + xPos +
-                ", yPos=" + yPos +
-                '}';
-    }
+
 
     public int getxPos() {
         return xPos;
@@ -409,4 +417,49 @@ public class Animal implements Runnable {
     }
 
 
+    public AgeGroup[] getAgeGroups() {
+        return ageGroups;
+    }
+
+    public void setAgeGroups(AgeGroup[] ageGroups) {
+        this.ageGroups = ageGroups;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getLineOfSight() {
+        return lineOfSight;
+    }
+
+    public void setLineOfSight(int lineOfSight) {
+        this.lineOfSight = lineOfSight;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Animal{" +
+                "id=" + id +
+                ", ageGroup=" + ageGroups[ageGroupNumerical].getName() +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

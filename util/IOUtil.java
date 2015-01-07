@@ -167,8 +167,9 @@ public class IOUtil {
     }
 
 
-
-
+    public static String getConfigDirectory() {
+        return CONFIG_DIRECTORY;
+    }
 
     public void createConfig() throws FileNotFoundException, UnsupportedEncodingException {
         if (!checkForConfig()) {

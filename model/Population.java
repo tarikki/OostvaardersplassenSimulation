@@ -50,11 +50,29 @@ public class Population {
         this.old = old;
     }
 
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Population that = (Population) o;
+
+        if (!name.equals(that.name)) return false;
+
+        return true;
+    }
+
+
     @Override
     public String toString() {
         return "Population{" +
-                "id=" + id +
+                "adult=" + adult +
                 ", name='" + name + '\'' +
+                ", id=" + id +
+                ", young=" + young +
+                ", old=" + old +
                 '}';
     }
 }

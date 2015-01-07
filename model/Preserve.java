@@ -6,6 +6,7 @@ import mapUtils.MapHandlerAdvanced;
 import mapUtils.MonthlyWeather;
 import org.joda.time.*;
 import util.Config;
+import util.IOUtil;
 
 
 import java.io.FileNotFoundException;
@@ -60,6 +61,7 @@ public class Preserve {
 
 
     private static ArrayList<Animal> animals = new ArrayList<>();
+    private static int currentMaxId = 0;
     private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     public static CountDownLatch latch;
 
@@ -70,8 +72,6 @@ public class Preserve {
         currentDate = new DateTime(2014, 6, 21, 0, 0, 0);
         maxLengthOfDay = calculateDaylight();
         weatherHashMap = MapHandlerAdvanced.getWeatherHashMap();
-
-
 
 
         latitude = latitudeInput;
@@ -97,9 +97,10 @@ public class Preserve {
 
 
         turn = 0;
-        Random r = new Random();
+//        Random r = new Random();
         numberOfAnimals = numberOfAnimalsInput;
         loadInitialPopulations();
+        loadAnimals();
 //        int id = 0;
 //        for (Population population : initialPopulations.getPopulations()) {
 //
@@ -112,17 +113,17 @@ public class Preserve {
 //            animals.add(new Animal(id, x, y, 200));
 //        }
 
-        for (int id = 0; id < numberOfAnimals; id++) {
-
-            int x = r.nextInt(MapHandlerAdvanced.getWidth());
-            int y = r.nextInt(MapHandlerAdvanced.getHeight());
-            while (!MapHandlerAdvanced.isValidMove(x, y)) {
-                x = r.nextInt(MapHandlerAdvanced.getWidth());
-                y = r.nextInt(MapHandlerAdvanced.getHeight());
-            }
-            animals.add(new Animal(id, x, y, 200));
-//           System.out.println("Animal " + id + " x, y: " + x + " " + y);
-        }
+//        for (int id = 0; id < numberOfAnimals; id++) {
+//
+//            int x = r.nextInt(MapHandlerAdvanced.getWidth());
+//            int y = r.nextInt(MapHandlerAdvanced.getHeight());
+//            while (!MapHandlerAdvanced.isValidMove(x, y)) {
+//                x = r.nextInt(MapHandlerAdvanced.getWidth());
+//                y = r.nextInt(MapHandlerAdvanced.getHeight());
+//            }
+//            animals.add(new Animal(id, x, y, 200));
+////           System.out.println("Animal " + id + " x, y: " + x + " " + y);
+//        }
 
 //        animals.get(0).setxPos(75);
 //        animals.get(0).setyPos(45);
@@ -145,7 +146,7 @@ public class Preserve {
         }
 //        System.out.println(animals.size());
         List<Future<Object>> dikke = executor.invokeAll(todo);
-todo.clear();
+        todo.clear();
         System.out.println("Now turn: " + turn++);
         currentDate = currentDate.plusMinutes(1);
 //        System.out.println(currentDate.toString());
@@ -182,13 +183,13 @@ todo.clear();
 ////        System.out.println(animals.size());
 //        List<Future<Object>> dikke = executor.invokeAll(todo);
 //todo.clear();
-latch = new CountDownLatch(animals.size());
+        latch = new CountDownLatch(animals.size());
         for (Animal animal : animals) {
             executor.execute(animal);
         }
-        try{
+        try {
             latch.await();
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -414,7 +415,115 @@ latch = new CountDownLatch(animals.size());
         }
 
         System.out.println(initialPopulations);
+        System.out.println(initialPopulations);
     }
 
-    public void returnValidCoordinates(){}
+    public static void loadAnimals() {
+        System.out.println("asdfsd " + Animal.class);
+//        System.out.println(Class.forName());
+        Random r = new Random();
+        for (Population population : initialPopulations.getPopulations()) {
+            try {
+                System.out.println(Class.forName("model.Animal"));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            JsonReader animalLoader = null;
+            for (int i = 0; i < population.getYoung(); i++) {
+                try {
+                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory()+population.getName()+".json"));
+                    Gson gson = new Gson();
+                    System.out.println(population.getName());
+                    Animal animal = gson.fromJson(animalLoader, Class.forName("model." + population.getName()));
+                    System.out.println(animal.getClass().getName());
+//                    Animal animal = gson.fromJson(animalLoader, Animal.class);
+
+                    int x = r.nextInt(MapHandlerAdvanced.getWidth());
+                    int y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    while (!MapHandlerAdvanced.isValidMove(x, y)) {
+                        x = r.nextInt(MapHandlerAdvanced.getWidth());
+                        y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    }
+                    animal.setxPos(x);
+                    animal.setyPos(y);
+                    animal.setAge(animal.getAgeGroups()[0].getStartAge());
+                    animal.setId(currentMaxId);
+                    animal.setupAnimal();
+                    currentMaxId++;
+                    animals.add(animal);
+                    System.out.println(animal);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for (int i = 0; i < population.getAdult(); i++) {
+                try {
+                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory()+population.getName()+".json"));
+                    Gson gson = new Gson();
+                    System.out.println(population.getName());
+                    Animal animal = gson.fromJson(animalLoader, Class.forName("model." + population.getName()));
+                    System.out.println(animal.getClass().getName());
+//                    Animal animal = gson.fromJson(animalLoader, Animal.class);
+
+                    int x = r.nextInt(MapHandlerAdvanced.getWidth());
+                    int y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    while (!MapHandlerAdvanced.isValidMove(x, y)) {
+                        x = r.nextInt(MapHandlerAdvanced.getWidth());
+                        y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    }
+                    animal.setxPos(x);
+                    animal.setyPos(y);
+                    animal.setAge(animal.getAgeGroups()[0].getStartAge());
+                    animal.setId(currentMaxId);
+                    animal.setupAnimal();
+                    currentMaxId++;
+                    animals.add(animal);
+                    System.out.println(animal);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for (int i = 0; i < population.getOld(); i++) {
+                try {
+                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory()+population.getName()+".json"));
+                    Gson gson = new Gson();
+                    System.out.println(population.getName());
+                    Animal animal = gson.fromJson(animalLoader, Class.forName("model." + population.getName()));
+                    System.out.println(animal.getClass().getName());
+//                    Animal animal = gson.fromJson(animalLoader, Animal.class);
+
+                    int x = r.nextInt(MapHandlerAdvanced.getWidth());
+                    int y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    while (!MapHandlerAdvanced.isValidMove(x, y)) {
+                        x = r.nextInt(MapHandlerAdvanced.getWidth());
+                        y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    }
+                    animal.setxPos(x);
+                    animal.setyPos(y);
+                    animal.setAge(animal.getAgeGroups()[0].getStartAge());
+                    animal.setId(currentMaxId);
+                    animal.setupAnimal();
+                    currentMaxId++;
+                    animals.add(animal);
+                    System.out.println(animal);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void returnValidCoordinates() {
+    }
 }

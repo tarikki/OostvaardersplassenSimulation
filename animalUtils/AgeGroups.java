@@ -16,4 +16,12 @@ public class AgeGroups {
     public void setAgeGroups(List<AgeGroup> ageGroups) {
         this.ageGroups = ageGroups;
     }
+
+
+    @Override
+    public String toString() {
+        return "AgeGroups{" +
+                "ageGroups=" + ageGroups +
+                '}';
+    }
 }
