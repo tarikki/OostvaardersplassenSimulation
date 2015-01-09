@@ -24,6 +24,9 @@ public class Animal implements Runnable {
     private boolean dead;
     private int age;
     private int ageGroupNumerical;
+    private double weight;
+    private double energyNeededPerDay;
+
 
 
     //loadable traits
