@@ -11,10 +11,7 @@ import util.IOUtil;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -56,6 +53,7 @@ public class Preserve {
     private static HashMap<Integer, MonthlyWeather> weatherHashMap = new HashMap<>();
     private static Populations initialPopulations;
 
+    private static int deaths = 0;
 
     private static double latitude;
 
@@ -304,6 +302,16 @@ public class Preserve {
         currentDayLength = calculateDaylight();
         calculateDailyTemperatures();
         setSunriseAndSunset(currentDayLength);
+        Iterator<Animal> animalsIterator = animals.iterator();
+        while (animalsIterator.hasNext()){
+            Animal animal = animalsIterator.next();
+            animal.dailyCheckUp();
+            if (animal.isDead()){
+                animalsIterator.remove();
+                deaths++;
+                System.out.println("Deaths: "+deaths);
+            }
+        }
 
 
     }
@@ -479,8 +487,9 @@ public class Preserve {
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
-                    animal.setAge(animal.getAgeGroups()[0].getStartAge());
+                    animal.setAge(animal.getAgeGroups()[1].getStartAge());
                     animal.setId(currentMaxId);
+                    animal.setAgeGroupNumerical(1);
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
@@ -510,8 +519,9 @@ public class Preserve {
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
-                    animal.setAge(animal.getAgeGroups()[0].getStartAge());
+                    animal.setAge(animal.getAgeGroups()[2].getStartAge());
                     animal.setId(currentMaxId);
+                    animal.setAgeGroupNumerical(2);
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);

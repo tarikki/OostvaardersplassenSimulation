@@ -3,6 +3,10 @@ package model;
 import animalUtils.AgeGroup;
 import animalUtils.AgeGroups;
 import mapUtils.MapHandlerAdvanced;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
 import util.DijkstraNode;
 
 import java.util.*;
@@ -17,14 +21,19 @@ public class Animal implements Runnable {
     private int hunger = 0;
     private int thirst = 0;
     private int energy = 100;
-    private boolean living = true;
+    private boolean dead;
     private int age;
     private int ageGroupNumerical;
+    private double weight;
+    private double energyNeededPerDay;
+
 
 
     //loadable traits
     private String name;
     private AgeGroup[] ageGroups;
+    private DateTime birthDay;
+    private String birthDayString;
 
     private int lineOfSight; //how far the animal can see around it
     private int xPos;
@@ -47,20 +56,21 @@ public class Animal implements Runnable {
 
     }
 
-    public void setupAnimal(){
+    public void setupAnimal() {
         hunger = thirst = 0;
         energy = 100;
+        dead = false;
         wayPoints = new ArrayDeque<>();
         moved = true;
         stuck = false;
         maxDijkstraLoops = lineOfSight;
-    }
+        birthDay = DateTime.parse(birthDayString, DateTimeFormat.forPattern("dd.MM.YYYY")).withYear(Preserve.getStartDate().getYear());
+//        if (Preserve.getStartDate().isBefore(birthDay)){
+        int daysDifference = Days.daysBetween(birthDay, Preserve.getStartDate()).getDays();
+        System.out.println(daysDifference);
+        age = age + daysDifference;
 
-    public boolean isDead() {
-        if (this.energy <= 0) {
-            this.living = false;
-        }
-        return this.living;
+        System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age);
     }
 
     public void findFoodOrWater(String lookingFor, int threshHold) {
@@ -355,7 +365,7 @@ public class Animal implements Runnable {
 
     public String report() {
 
-        return "Animal [id = " + this.id + ", Energy = " + this.energy + ", Living = " + this.living + "]";
+        return "Animal [id = " + this.id + ", Energy = " + this.energy + ", Dead = " + this.dead+ "]";
     }
 
     public void useBrain() {
@@ -367,7 +377,7 @@ public class Animal implements Runnable {
                 if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 0) {
                     eat();
 
-                } else if (!stuck){
+                } else if (!stuck) {
                     findFoodOrWater("food", 20);
 
                 }
@@ -381,9 +391,9 @@ public class Animal implements Runnable {
     @Override
     public void run() {
 //        System.out.println("running");
-        if (!Preserve.isNight()){
+        if (!Preserve.isNight()) {
 //        System.out.println("animal id:" + id);
-        useBrain();
+            useBrain();
 
         }
         hunger++;
@@ -393,7 +403,6 @@ public class Animal implements Runnable {
         Preserve.latch.countDown();
 
     }
-
 
 
     public int getxPos() {
@@ -415,6 +424,31 @@ public class Animal implements Runnable {
     public void dailyCheckUp() {
         //TODO check for death, weight gain and everything else here
         age++;
+        checkForAgeGroup();
+        dailyDeathLottery();
+
+    }
+
+    private void checkForAgeGroup(){
+        if (age > ageGroups[ageGroupNumerical].getEndAge()){
+            if (ageGroupNumerical < 2){
+                ageGroupNumerical++;
+            } else {
+                dead = true;
+            }
+
+        }
+    }
+
+    private void dailyDeathLottery(){
+        System.out.println("Dying?");
+        Random random = new Random();
+        double ticket = random.nextDouble();
+        double chanceOfDeath = ageGroups[ageGroupNumerical].getChanceOfDeath();
+        System.out.println("chance of death: " +chanceOfDeath + " ticket number: " +ticket);
+        if (ticket<chanceOfDeath){
+            dead = true;
+        }
     }
 
 
@@ -460,6 +494,23 @@ public class Animal implements Runnable {
 
     public void setAgeGroupNumerical(int ageGroupNumerical) {
         this.ageGroupNumerical = ageGroupNumerical;
+    }
+
+
+    public String getBirthDayString() {
+        return birthDayString;
+    }
+
+    public void setBirthDayString(String birthDayString) {
+        this.birthDayString = birthDayString;
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
     }
 
     @Override
