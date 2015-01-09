@@ -190,11 +190,16 @@ public class MainView {
                     counter[0] = !counter[0];
 
                     if (counter[0]) {
-                        tabbedPane.mapView.legend.setVisible(false);
+                        tabbedPane.mapView.briefStatistics.cow.setVisible(false);
+                        tabbedPane.mapView.briefStatistics.deer.setVisible(false);
+                        tabbedPane.mapView.briefStatistics.horse.setVisible(false);
+
                         gui.pack();
 
                     } else {
-                        tabbedPane.mapView.legend.setVisible(true);
+                        tabbedPane.mapView.briefStatistics.cow.setVisible(true);
+                        tabbedPane.mapView.briefStatistics.deer.setVisible(true);
+                        tabbedPane.mapView.briefStatistics.horse.setVisible(true);
                         gui.pack();
 
                     }

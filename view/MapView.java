@@ -5,6 +5,7 @@ import model.Animal;
 import model.Preserve;
 import org.joda.time.Days;
 import util.ButtonUtils;
+import util.ColorIcon;
 import util.Config;
 
 import javax.swing.*;
@@ -25,7 +26,7 @@ import static controller.Main.*;
  */
 public class MapView extends JPanel {
 
-    public Legend legend;
+
     public BriefStatistics briefStatistics;
     private JPanel mapButtons;
     public JLabel drawHolder;
@@ -39,6 +40,7 @@ public class MapView extends JPanel {
 
 
     public MapView() {
+
         this.setLayout(new BorderLayout());
         rectangles = new ArrayList<AnimalRectangle>();
 
@@ -54,12 +56,9 @@ public class MapView extends JPanel {
 
         this.add(mapButtons, BorderLayout.SOUTH);
 
-        /// Add legend
-        legend = new Legend();
-        this.add(legend, BorderLayout.NORTH);
 
         /// Add brief statistics
-       briefStatistics = new BriefStatistics(Preserve.getAnimals());
+        briefStatistics = new BriefStatistics(Preserve.getAnimals());
         this.add(briefStatistics, BorderLayout.EAST);
 
         // Create the drawing surface
@@ -167,7 +166,7 @@ public class MapView extends JPanel {
         resume();
     }
 
-    public void init(){
+    public void init() {
         animalstoRectangles();
         drawAnimals();
         briefStatistics.updateStats();
@@ -181,8 +180,7 @@ public class MapView extends JPanel {
             int newX = Preserve.getAnimals().get(i).getxPos() / scale;
             int newY = Preserve.getAnimals().get(i).getyPos() / scale;
 
-            rectangles.add(new AnimalRectangle(newX, newY, 5, 5, Preserve.getAnimals().get(i))); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
-
+            rectangles.add(new AnimalRectangle(newX, newY, 5, 5, Preserve.getAnimals().get(i), Preserve.getAnimals().get(i).getName())); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
 
 
         }
@@ -199,16 +197,27 @@ public class MapView extends JPanel {
         super.paintComponent(g2d);
 
 
-
-
         for (AnimalRectangle animalRectangle : rectangles) {
 
+            switch (animalRectangle.getName()) {
+                case "Cow":
+                    g2d.setColor(Color.red);
+                    break;
+                case "Deer":
+                    g2d.setColor(Color.blue);
+                    break;
+                case "Horse":
+                    g2d.setColor(Color.orange);
+                    break;
+                default:
+            }
 
             g2d.fill(animalRectangle);
 
 
-
         }
+
+
         repaint();
         g2d.dispose(); /// Remove graphics after drawing
     }
@@ -269,33 +278,6 @@ public class MapView extends JPanel {
     }
 
 
-
-    class Legend extends JLabel {
-        public Legend() {
-            super();
-            this.setPreferredSize(new Dimension(100, 100));
-            this.setVisible(true);
-
-
-        }
-
-
-        //// Very preliminary version of legend. TODO implement as a icon instead so we can position it better.
-        @Override
-        public void paintComponent(Graphics g) {
-
-            super.paintComponent(g);
-
-            g.setColor(Color.red); //// Add animal color with getColor
-            g.fillRect(this.getWidth() / 2, this.getHeight() / 2, 10, 10);
-            g.drawString("Dikke deer", this.getWidth() / 2 + 15, this.getHeight() / 2 + 10);
-            g.setColor(Color.blue);
-            g.fillRect(this.getWidth() / 2, this.getHeight() / 2 + 15, 10, 10);
-            g.drawString("Tarikki", this.getWidth() / 2 + 15, this.getHeight() / 2 + 25);
-        }
-
-    }
-
     public class BriefStatistics extends JPanel {
         private JLabel currentDate;
         private JLabel currentTime;
@@ -306,7 +288,13 @@ public class MapView extends JPanel {
         private JLabel birthDeathRatio;
         private JLabel temperature;
         private JLabel nightOrDay;
-        final String DEGREE  = "\u00b0";
+
+        protected JLabel cow;
+        protected JLabel deer;
+        protected JLabel horse;
+
+
+        final String DEGREE = "\u00b0";
 
 
         public BriefStatistics(ArrayList<Animal> animals) {
@@ -335,11 +323,7 @@ public class MapView extends JPanel {
 */
 
 
-
-
-
             createStats();
-
 
 
             this.add(currentDate);
@@ -348,7 +332,6 @@ public class MapView extends JPanel {
             this.add(Box.createVerticalStrut(10));
             this.add(timeElapsed);
             this.add(Box.createVerticalStrut(30));
-
 
 
             this.add(temperature);
@@ -365,15 +348,25 @@ public class MapView extends JPanel {
             this.add(Box.createVerticalStrut(10));
             this.add(birthDeathRatio);
 
+            this.add(Box.createVerticalStrut(10));
 
 
-
+            // TODO try to add these to a single JLabel
+            this.add(cow);
+            this.add(deer);
+            this.add(horse);
 
 
         }
 
-        public void createStats()
-        {
+        public void createStats() {
+            cow = new JLabel(new ColorIcon(Color.blue));
+            deer = new JLabel(new ColorIcon(Color.red));
+            horse = new JLabel(new ColorIcon(Color.orange));
+
+            cow.setForeground(Color.blue);
+            deer.setForeground(Color.red);
+            horse.setForeground(Color.orange);
 
             numberofAnimals = new JLabel();
             births = new JLabel();
@@ -381,31 +374,30 @@ public class MapView extends JPanel {
             birthDeathRatio = new JLabel();
             currentDate = new JLabel();
             timeElapsed = new JLabel();
-            nightOrDay = new JLabel( );
+            nightOrDay = new JLabel();
             temperature = new JLabel();
             currentTime = new JLabel();
         }
 
-        public void updateStats()
-        {
+        public void updateStats() {
 
 
-
-
+            cow.setText("Cow");
+            deer.setText("Deer");
+            horse.setText("Horse");
 
             numberofAnimals.setText("# of animals:  " + Preserve.getAnimals().size());
             births.setText("# of births:");
             deaths.setText("# of deaths:");
             birthDeathRatio.setText("Births / deaths:");
             currentDate.setText("Current date: " + Preserve.getCurrentDate().toString("dd/MM/yyyy"));
-            currentTime.setText("Current time: " + Preserve.getCurrentDate().toLocalTime().toString().substring(0,5));
+            currentTime.setText("Current time: " + Preserve.getCurrentDate().toLocalTime().toString().substring(0, 5));
             timeElapsed.setText("Time elapsed: " + Days.daysBetween(Preserve.getStartDate().toLocalDate(), Preserve.getCurrentDate().toLocalDate()).getDays() + " days");
             nightOrDay.setText("It is currently: ");
-            temperature.setText("Temperature: " + String.valueOf(Preserve.getCurrentTemperature()).substring(0,3) + " " + DEGREE + "C");
+            temperature.setText("Temperature: " + String.valueOf(Preserve.getCurrentTemperature()).substring(0, 3) + " " + DEGREE + "C");
         }
 
     }
-
 
 
 }
