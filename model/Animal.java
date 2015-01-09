@@ -454,6 +454,13 @@ public class Animal implements Runnable {
         this.lineOfSight = lineOfSight;
     }
 
+    public int getAgeGroupNumerical() {
+        return ageGroupNumerical;
+    }
+
+    public void setAgeGroupNumerical(int ageGroupNumerical) {
+        this.ageGroupNumerical = ageGroupNumerical;
+    }
 
     @Override
     public String toString() {

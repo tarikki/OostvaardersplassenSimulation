@@ -448,6 +448,8 @@ public class Preserve {
                     animal.setyPos(y);
                     animal.setAge(animal.getAgeGroups()[0].getStartAge());
                     animal.setId(currentMaxId);
+                    animal.setAgeGroupNumerical(0);
+
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
