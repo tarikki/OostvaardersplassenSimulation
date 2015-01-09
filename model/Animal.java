@@ -359,14 +359,14 @@ public class Animal implements Runnable {
     }
 
     public void useBrain() {
-//        System.out.println("waypoints size " + wayPoints.size());
+
         if (wayPoints.isEmpty()) {
-//            System.out.println("pakee!");
+
             if (hunger > 1) {
 
                 if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 0) {
                     eat();
-//if (moved)
+
                 } else if (!stuck){
                     findFoodOrWater("food", 20);
 
@@ -381,10 +381,11 @@ public class Animal implements Runnable {
     @Override
     public void run() {
 //        System.out.println("running");
-//        if (!Preserve.isNight()){
+        if (!Preserve.isNight()){
 //        System.out.println("animal id:" + id);
         useBrain();
-//    }
+
+        }
         hunger++;
         thirst++;
         energy--;

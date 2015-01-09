@@ -325,7 +325,7 @@ public class Preserve {
 
     public static void checkForNight() {
         //TODO this is not working, must be able to check for times only, not dates
-        if (currentDate.isAfter(sunset) && currentDate.isBefore(sunrise)) {
+        if (currentDate.isAfter(sunset) || currentDate.isBefore(sunrise)) {
             night = true;
         } else {
             night = false;
