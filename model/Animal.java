@@ -21,7 +21,7 @@ public class Animal implements Runnable {
     private int hunger = 0;
     private int thirst = 0;
     private int energy = 100;
-    private boolean living = true;
+    private boolean dead;
     private int age;
     private int ageGroupNumerical;
 
@@ -56,6 +56,7 @@ public class Animal implements Runnable {
     public void setupAnimal() {
         hunger = thirst = 0;
         energy = 100;
+        dead = false;
         wayPoints = new ArrayDeque<>();
         moved = true;
         stuck = false;
@@ -67,13 +68,6 @@ public class Animal implements Runnable {
         age = age + daysDifference;
 
         System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age);
-    }
-
-    public boolean isDead() {
-        if (this.energy <= 0) {
-            this.living = false;
-        }
-        return this.living;
     }
 
     public void findFoodOrWater(String lookingFor, int threshHold) {
@@ -368,7 +362,7 @@ public class Animal implements Runnable {
 
     public String report() {
 
-        return "Animal [id = " + this.id + ", Energy = " + this.energy + ", Living = " + this.living + "]";
+        return "Animal [id = " + this.id + ", Energy = " + this.energy + ", Dead = " + this.dead+ "]";
     }
 
     public void useBrain() {
@@ -427,6 +421,31 @@ public class Animal implements Runnable {
     public void dailyCheckUp() {
         //TODO check for death, weight gain and everything else here
         age++;
+        checkForAgeGroup();
+        dailyDeathLottery();
+
+    }
+
+    private void checkForAgeGroup(){
+        if (age > ageGroups[ageGroupNumerical].getEndAge()){
+            if (ageGroupNumerical < 2){
+                ageGroupNumerical++;
+            } else {
+                dead = true;
+            }
+
+        }
+    }
+
+    private void dailyDeathLottery(){
+        System.out.println("Dying?");
+        Random random = new Random();
+        double ticket = random.nextDouble();
+        double chanceOfDeath = ageGroups[ageGroupNumerical].getChanceOfDeath();
+        System.out.println("chance of death: " +chanceOfDeath + " ticket number: " +ticket);
+        if (ticket<chanceOfDeath){
+            dead = true;
+        }
     }
 
 
@@ -481,6 +500,14 @@ public class Animal implements Runnable {
 
     public void setBirthDayString(String birthDayString) {
         this.birthDayString = birthDayString;
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
     }
 
     @Override
