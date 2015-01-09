@@ -479,8 +479,9 @@ public class Preserve {
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
-                    animal.setAge(animal.getAgeGroups()[0].getStartAge());
+                    animal.setAge(animal.getAgeGroups()[1].getStartAge());
                     animal.setId(currentMaxId);
+                    animal.setAgeGroupNumerical(1);
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
@@ -510,8 +511,9 @@ public class Preserve {
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
-                    animal.setAge(animal.getAgeGroups()[0].getStartAge());
+                    animal.setAge(animal.getAgeGroups()[2].getStartAge());
                     animal.setId(currentMaxId);
+                    animal.setAgeGroupNumerical(2);
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);

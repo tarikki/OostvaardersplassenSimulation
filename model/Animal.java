@@ -3,6 +3,10 @@ package model;
 import animalUtils.AgeGroup;
 import animalUtils.AgeGroups;
 import mapUtils.MapHandlerAdvanced;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
 import util.DijkstraNode;
 
 import java.util.*;
@@ -25,6 +29,8 @@ public class Animal implements Runnable {
     //loadable traits
     private String name;
     private AgeGroup[] ageGroups;
+    private DateTime birthDay;
+    private String birthDayString;
 
     private int lineOfSight; //how far the animal can see around it
     private int xPos;
@@ -47,13 +53,20 @@ public class Animal implements Runnable {
 
     }
 
-    public void setupAnimal(){
+    public void setupAnimal() {
         hunger = thirst = 0;
         energy = 100;
         wayPoints = new ArrayDeque<>();
         moved = true;
         stuck = false;
         maxDijkstraLoops = lineOfSight;
+        birthDay = DateTime.parse(birthDayString, DateTimeFormat.forPattern("dd.MM.YYYY")).withYear(Preserve.getStartDate().getYear());
+//        if (Preserve.getStartDate().isBefore(birthDay)){
+        int daysDifference = Days.daysBetween(birthDay, Preserve.getStartDate()).getDays();
+        System.out.println(daysDifference);
+        age = age + daysDifference;
+
+        System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age);
     }
 
     public boolean isDead() {
@@ -367,7 +380,7 @@ public class Animal implements Runnable {
                 if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 0) {
                     eat();
 
-                } else if (!stuck){
+                } else if (!stuck) {
                     findFoodOrWater("food", 20);
 
                 }
@@ -381,9 +394,9 @@ public class Animal implements Runnable {
     @Override
     public void run() {
 //        System.out.println("running");
-        if (!Preserve.isNight()){
+        if (!Preserve.isNight()) {
 //        System.out.println("animal id:" + id);
-        useBrain();
+            useBrain();
 
         }
         hunger++;
@@ -393,7 +406,6 @@ public class Animal implements Runnable {
         Preserve.latch.countDown();
 
     }
-
 
 
     public int getxPos() {
@@ -460,6 +472,15 @@ public class Animal implements Runnable {
 
     public void setAgeGroupNumerical(int ageGroupNumerical) {
         this.ageGroupNumerical = ageGroupNumerical;
+    }
+
+
+    public String getBirthDayString() {
+        return birthDayString;
+    }
+
+    public void setBirthDayString(String birthDayString) {
+        this.birthDayString = birthDayString;
     }
 
     @Override
