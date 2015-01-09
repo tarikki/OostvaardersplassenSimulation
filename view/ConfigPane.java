@@ -1,19 +1,16 @@
 package view;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import controller.Main;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import util.*;
+import util.ButtonUtils;
+import util.Config;
+import util.DateVerifier;
+import util.IOUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 
 /**
  * Created by extradikke on 27/11/14.
@@ -116,6 +113,7 @@ public class ConfigPane extends JPanel {
 
                 /// IF user edited the configs, call a new preserve.
                 Main.createPreserve();
+
                 gui.tabbedPane.mapView.init();
                 itsame.setVisible(false);
                 gui.getMenuBarHandler().setVisible(true);
@@ -174,7 +172,7 @@ public class ConfigPane extends JPanel {
         numAnimals.setToolTipText("Enter the number of animals");
         numAnimals.setVisible(true);
 
-        String [] speedValues = {String.valueOf(1),String.valueOf(2),String.valueOf(5),String.valueOf(10)};
+        String [] speedValues = {String.valueOf(10),String.valueOf(50),String.valueOf(100),String.valueOf(200), String.valueOf(500), String.valueOf(1000) + " (MAX)"};
         speed = new JComboBox(speedValues);     /// Get default speed
         speed.setToolTipText("Select the speed of simulation");
         speed.setBackground(Color.WHITE);

@@ -1,13 +1,11 @@
 package view;
 
-import model.Animal;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * Created by Pepe on 19.11.2014.
@@ -87,7 +85,7 @@ public class MainView {
 
 
             /// Create the tabbed pane
-            tabbedPane = new TabbedPane();
+            tabbedPane = new TabbedPane(this);
 //            tabbedPane.setVisible(true);
             startScreen = new StartScreen(this);
 

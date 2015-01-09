@@ -3,6 +3,7 @@ package view;
 import mapUtils.MapHandlerAdvanced;
 import model.Animal;
 import model.Preserve;
+import org.joda.time.Days;
 import util.ButtonUtils;
 import util.Config;
 
@@ -25,6 +26,7 @@ import static controller.Main.*;
 public class MapView extends JPanel {
 
     public Legend legend;
+    public BriefStatistics briefStatistics;
     private JPanel mapButtons;
     public JLabel drawHolder;
     private BufferedImage backgroundImage;
@@ -34,7 +36,7 @@ public class MapView extends JPanel {
     private Graphics2D g2d;
     private BufferedImage drawingSurface;
     private ArrayList<AnimalRectangle> rectangles;
-    private BriefStatistics briefStatistics;
+
 
     public MapView() {
         this.setLayout(new BorderLayout());
@@ -108,6 +110,9 @@ public class MapView extends JPanel {
                     mapButtons.getComponent(1).setEnabled(true);
                     mapButtons.getComponent(2).setEnabled(true);
                     moveTester();
+                    statsUpdater();
+
+
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -155,6 +160,7 @@ public class MapView extends JPanel {
 
     public void reset() {
         timer.cancel();
+
         clearAnimals();
         drawHolder.setVisible(true);
         createPreserve();
@@ -164,6 +170,7 @@ public class MapView extends JPanel {
     public void init(){
         animalstoRectangles();
         drawAnimals();
+        briefStatistics.updateStats();
     }
 
     public void animalstoRectangles() {
@@ -261,6 +268,8 @@ public class MapView extends JPanel {
         });
     }
 
+
+
     class Legend extends JLabel {
         public Legend() {
             super();
@@ -287,13 +296,18 @@ public class MapView extends JPanel {
 
     }
 
-    class BriefStatistics extends JPanel {
+    public class BriefStatistics extends JPanel {
         private JLabel currentDate;
+        private JLabel currentTime;
         private JLabel numberofAnimals;
         private JLabel timeElapsed;
         private JLabel births;
         private JLabel deaths;
         private JLabel birthDeathRatio;
+        private JLabel temperature;
+        private JLabel nightOrDay;
+        final String DEGREE  = "\u00b0";
+
 
         public BriefStatistics(ArrayList<Animal> animals) {
             super();
@@ -323,15 +337,26 @@ public class MapView extends JPanel {
 
 
 
-            numberofAnimals = new JLabel("# of animals:  " + animals.size());
-            births = new JLabel("# of births:");
-            deaths = new JLabel("# of deaths:");
-            birthDeathRatio = new JLabel("Births / deaths:");
-            currentDate = new JLabel("Current date: ");
-            timeElapsed = new JLabel("Time elapsed:");
+
+            createStats();
 
 
+
+            this.add(currentDate);
             this.add(Box.createVerticalStrut(10));
+            this.add(currentTime);
+            this.add(Box.createVerticalStrut(10));
+            this.add(timeElapsed);
+            this.add(Box.createVerticalStrut(30));
+
+
+
+            this.add(temperature);
+            this.add(Box.createVerticalStrut(10));
+            this.add(nightOrDay);
+            this.add(Box.createVerticalStrut(30));
+
+
             this.add(numberofAnimals);
             this.add(Box.createVerticalStrut(10));
             this.add(births);
@@ -339,15 +364,48 @@ public class MapView extends JPanel {
             this.add(deaths);
             this.add(Box.createVerticalStrut(10));
             this.add(birthDeathRatio);
-            this.add(Box.createVerticalStrut(10));
-            this.add(currentDate);
-            this.add(Box.createVerticalStrut(10));
-            this.add(timeElapsed);
+
+
+
 
 
 
         }
+
+        public void createStats()
+        {
+
+            numberofAnimals = new JLabel();
+            births = new JLabel();
+            deaths = new JLabel();
+            birthDeathRatio = new JLabel();
+            currentDate = new JLabel();
+            timeElapsed = new JLabel();
+            nightOrDay = new JLabel( );
+            temperature = new JLabel();
+            currentTime = new JLabel();
+        }
+
+        public void updateStats()
+        {
+
+
+
+
+
+            numberofAnimals.setText("# of animals:  " + Preserve.getAnimals().size());
+            births.setText("# of births:");
+            deaths.setText("# of deaths:");
+            birthDeathRatio.setText("Births / deaths:");
+            currentDate.setText("Current date: " + Preserve.getCurrentDate().toString("dd/MM/yyyy"));
+            currentTime.setText("Current time: " + Preserve.getCurrentDate().toLocalTime().toString().substring(0,5));
+            timeElapsed.setText("Time elapsed: " + Days.daysBetween(Preserve.getStartDate().toLocalDate(), Preserve.getCurrentDate().toLocalDate()).getDays() + " days");
+            nightOrDay.setText("It is currently: ");
+            temperature.setText("Temperature: " + String.valueOf(Preserve.getCurrentTemperature()).substring(0,3) + " " + DEGREE + "C");
+        }
+
     }
+
 
 
 }

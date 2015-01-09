@@ -19,9 +19,14 @@ import java.awt.*;
  * Created by extradikke on 14/12/14.
  */
 public class TemperatureTester extends ApplicationFrame {
+public JFreeChart chart;
+public   XYDataset dataset;
 
+    public JFreeChart getChart() {
+        return chart;
+    }
 
-        /**
+    /**
          * Creates a new demo.
          *
          * @param title  the frame title.
@@ -30,8 +35,8 @@ public class TemperatureTester extends ApplicationFrame {
 
             super(title);
 
-            final XYDataset dataset = createDataset();
-            final JFreeChart chart = createChart(dataset);
+            dataset = createDataset();
+            chart = createChart(dataset);
             final ChartPanel chartPanel = new ChartPanel(chart);
             chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
             setContentPane(chartPanel);

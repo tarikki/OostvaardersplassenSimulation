@@ -1,9 +1,6 @@
 package view;
 
-import model.Animal;
-
 import javax.swing.*;
-import java.util.ArrayList;
 
 /**
  * Created by Pepe on 27.11.2014.
@@ -12,17 +9,18 @@ public class TabbedPane extends JTabbedPane {
 private JPanel dikkeHolder;
 public  MapView mapView;
 private StatisticsView statisticsView;
+    private MainView.GUI gui;
 
-    public TabbedPane() {
+    public TabbedPane(MainView.GUI gui) {
 
-
+this.gui = gui;
         /// Holds mapHolder so ToolTips wont be retarded
 
 
 
         /// Create the mapHolder
         mapView = new MapView();
-        statisticsView = new StatisticsView();
+        statisticsView = new StatisticsView(gui);
 
 
 
