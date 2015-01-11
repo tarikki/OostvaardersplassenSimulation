@@ -16,6 +16,7 @@ import java.util.TimerTask;
  */
 public class Main {
     public static Timer timer;
+    public static Timer timer2;
     public static Timer statsTimer;
     private static Preserve preserve;
     private static MapHandlerAdvanced mapHandler;
@@ -72,13 +73,26 @@ public class Main {
             public void run() {
                 try {
                     Preserve.executeTurn2();
-                    mainView.gui.tabbedPane.mapView.refresh();
+
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }, 0, 1000/Config.getSpeedOfSimulation());
+
+        timer2 = new Timer();
+
+        timer2.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+
+                    mainView.gui.tabbedPane.mapView.refresh();
+
+
+            }
+        }, 0, 500);
 
     }
 
@@ -95,7 +109,7 @@ public class Main {
                 mainView.gui.tabbedPane.mapView.briefStatistics.updateStats();
 
             }
-        }, 0, 10000);
+        }, 0, 1000);
 
     }
 }

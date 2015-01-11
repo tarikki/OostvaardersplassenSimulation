@@ -12,6 +12,7 @@ public class Plant {
     private float growthRate;
     private float growthWhenDamaged;
     private int temperatureThreshold;
+    private int inediblePart;
 
     public String getName() {
         return name;
@@ -75,6 +76,15 @@ public class Plant {
 
     public void setTemperatureThreshold(int temperatureThreshold) {
         this.temperatureThreshold = temperatureThreshold;
+    }
+
+
+    public int getInediblePart() {
+        return inediblePart;
+    }
+
+    public void setInediblePart(int inediblePart) {
+        this.inediblePart = inediblePart;
     }
 
     @Override

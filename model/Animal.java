@@ -25,8 +25,9 @@ public class Animal implements Runnable {
     private int age;
     private int ageGroupNumerical;
     private double weight;
-    private double energyNeededPerDay;
-
+    private double energyNeededForToday;
+    private double energyAcquiredToday;
+    private double lengthOfDayPerMinutes;
 
 
     //loadable traits
@@ -65,17 +66,20 @@ public class Animal implements Runnable {
         stuck = false;
         maxDijkstraLoops = lineOfSight;
         birthDay = DateTime.parse(birthDayString, DateTimeFormat.forPattern("dd.MM.YYYY")).withYear(Preserve.getStartDate().getYear());
-//        if (Preserve.getStartDate().isBefore(birthDay)){
         int daysDifference = Days.daysBetween(birthDay, Preserve.getStartDate()).getDays();
         System.out.println(daysDifference);
         age = age + daysDifference;
+        weight = ageGroups[ageGroupNumerical].getStartWeight() + ageGroups[ageGroupNumerical].getNecessaryWeightIncreasePerDay() * age;
+        calculateDailyFoodIntake();
+        energyAcquiredToday = 0;
+        System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age + " weight:" + weight + "food necessary today:" + energyNeededForToday);
 
-        System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age);
+
     }
 
     public void findFoodOrWater(String lookingFor, int threshHold) {
 
-
+//        System.out.println("looking for food");
         HashMap<DijkstraNode, DijkstraNode> borderNodes = new HashMap<>();
         HashMap<DijkstraNode, DijkstraNode> bufferNodes = new HashMap<>();
         innerNodes = new HashMap<>();
@@ -99,7 +103,7 @@ public class Animal implements Runnable {
                 double lowestCost = 100000;
                 if (lookingFor.equals("food")) {
                     int currentFoodValue = MapHandlerAdvanced.getPlantHealth(borderNode.getCurrentX(), borderNode.getCurrentY());
-                    if (currentFoodValue >= threshHold && borderNode.getCost() < lowestCost) {
+                    if (currentFoodValue > threshHold && borderNode.getCost() < lowestCost) {
                         foundIt = true;
                         winnerNode = borderNode;
                         loopingDone = true;
@@ -281,17 +285,9 @@ public class Animal implements Runnable {
     }
 
     public void eat() {
-//        System.out.println("eating");
-        if (MapHandlerAdvanced.eatFromSquare(xPos, yPos) && hunger == 0) {
-            MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 10);
-            this.energy += 10;
-            if (this.energy >= 100) {
-                this.energy = 100;
-            }
 
-//            reduceHunger(3);
-        }
-        MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 50);
+        int amountEaten = MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 50);
+        energyAcquiredToday = energyAcquiredToday + amountEaten;
 //        System.out.println("Food left: " + MapHandlerAdvanced.getPlantHealth(xPos, yPos));
 
     }
@@ -302,32 +298,7 @@ public class Animal implements Runnable {
         } else hunger = 0;
     }
 
-//    public void useBrain() {
-//        System.out.println(hunger);
-//        if (wayPoints.isEmpty()) {
-//            if (hunger > 1) {
-//
-//                if (MapHandlerAdvanced.getValue(xPos, yPos) > 0) {
-//                    eat();
-//
-//                } else {
-//                    makeItDijkstra(MapHandlerAdvanced.ColorCode.GREEN);
-//
-//                }
-//
-//            }
-//        }
-//        checkForWayPoints();
-//        System.out.println("Number of waypoints: " + wayPoints.size());
-//    }
 
-
-//    public void drink() {
-//        if (standingNextToWater(xPos, yPos)) {
-//            reduceThirst(1);
-//        }
-//
-//    }
 
     public void reduceThirst(int amount) {
         if (thirst - amount > 0) {
@@ -357,25 +328,20 @@ public class Animal implements Runnable {
 //        System.out.println("moving!");
     }
 
-
-    public void sleep() {
-
-    }
-
-
     public String report() {
 
-        return "Animal [id = " + this.id + ", Energy = " + this.energy + ", Dead = " + this.dead+ "]";
+        return "Animal [id = " + this.id + ", Eaten = " + this.energyAcquiredToday + "/" + this.energyNeededForToday + ", Dead = " + this.dead + "]";
     }
 
     public void useBrain() {
 
         if (wayPoints.isEmpty()) {
-
-            if (hunger > 1) {
-
-                if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 0) {
+//            System.out.println("using brain");
+            if (energyAcquiredToday < energyNeededForToday) {
+//                System.out.println("hungry");
+                if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 20) {
                     eat();
+
 
                 } else if (!stuck) {
                     findFoodOrWater("food", 20);
@@ -426,12 +392,13 @@ public class Animal implements Runnable {
         age++;
         checkForAgeGroup();
         dailyDeathLottery();
+        calculateDailyFoodIntake();
 
     }
 
-    private void checkForAgeGroup(){
-        if (age > ageGroups[ageGroupNumerical].getEndAge()){
-            if (ageGroupNumerical < 2){
+    private void checkForAgeGroup() {
+        if (age > ageGroups[ageGroupNumerical].getEndAge()) {
+            if (ageGroupNumerical < 2) {
                 ageGroupNumerical++;
             } else {
                 dead = true;
@@ -440,15 +407,22 @@ public class Animal implements Runnable {
         }
     }
 
-    private void dailyDeathLottery(){
+    private void dailyDeathLottery() {
         System.out.println("Dying?");
         Random random = new Random();
         double ticket = random.nextDouble();
         double chanceOfDeath = ageGroups[ageGroupNumerical].getChanceOfDeath();
-        System.out.println("chance of death: " +chanceOfDeath + " ticket number: " +ticket);
-        if (ticket<chanceOfDeath){
+        System.out.println("chance of death: " + chanceOfDeath + " ticket number: " + ticket);
+        if (ticket < chanceOfDeath) {
             dead = true;
         }
+    }
+
+    private void calculateDailyFoodIntake() {
+        energyAcquiredToday = 0;
+        AgeGroup currentAgeGroup = ageGroups[ageGroupNumerical];
+        energyNeededForToday = weight * currentAgeGroup.getEnergyExpenditurePerKilo()
+                + currentAgeGroup.getNecessaryWeightIncreasePerDay() * currentAgeGroup.getEnergyForKiloIncrease();
     }
 
 

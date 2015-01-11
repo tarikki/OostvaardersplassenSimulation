@@ -9,6 +9,7 @@ public class AgeGroup {
     private String id;
     private int startAge; // days when transition to this age happens
     private int endAge;   // is this necessary?
+    private double startWeight;
     private double chanceOfDeath;
     private double energyForKiloIncrease; // how much energy needed to increase body weight by one kilo
     private double energyExpenditurePerKilo; // how much energy the animal needs to sustain its body weight
@@ -86,6 +87,14 @@ public class AgeGroup {
 
     public void setStartAge(int startAge) {
         this.startAge = startAge;
+    }
+
+    public double getStartWeight() {
+        return startWeight;
+    }
+
+    public void setStartWeight(double startWeight) {
+        this.startWeight = startWeight;
     }
 
     @Override

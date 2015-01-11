@@ -181,13 +181,15 @@ public class MapHandlerAdvanced {
         return result;
     }
 
-    public static void decreasePlantHealth(int x, int y, int amount) {
-        int plantInt = getPlantId(x, y) << Config.plantIdPosition;
+    public static int decreasePlantHealth(int x, int y, int amountEaten) {
+        int plantId = getPlantId(x,y);
+        int plantInt = plantId<< Config.plantIdPosition;
         int plantHealthInt = getPlantHealth(x, y);
         int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
         int plantRecoveryTime = getPlantRecoveryDays(x, y);
         int recoveryTime = plantRecoveryTime + 3;
         int maxRecoveryTime = (int) Math.pow(2, Config.plantRecoveryBits) - 1;
+        Plant plant = plantsHash.get(plantId);
 //        System.out.println(maxRecoveryTime);
 
         if (recoveryTime > maxRecoveryTime) {
@@ -196,12 +198,18 @@ public class MapHandlerAdvanced {
 
         int recoveryInt = recoveryTime << Config.plantRecoveryPosition;
 
-        int newHealth = plantHealthInt - amount;
+
+        int newHealth = plantHealthInt - amountEaten;
+        if (newHealth < plant.getInediblePart()) {
+            newHealth = plant.getInediblePart();
+            amountEaten = plantHealthInt -20;
+        }
 //        System.out.println(newHealth);
-        if (newHealth < 0) newHealth = 0;
+
 
         int encoded = terrainInt | plantInt | recoveryInt | newHealth;
         map[x][y] = encoded;
+        return amountEaten;
     }
 
     public static void increasePlantHealth(int x, int y) {
