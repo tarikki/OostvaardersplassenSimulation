@@ -108,7 +108,7 @@ public class Animal implements Runnable {
                         winnerNode = borderNode;
                         loopingDone = true;
                         lowestCost = borderNode.getCost();
-                        System.out.println("found food with cost:" + lowestCost);
+//                        System.out.println("found food with cost:" + lowestCost);
                     }
                 }
 
@@ -286,9 +286,9 @@ public class Animal implements Runnable {
 
     public void eat() {
 
-        int amountEaten = MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 10);
+        int amountEaten = MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 50);
         energyAcquiredToday = energyAcquiredToday + amountEaten;
-        System.out.println("Food left: " + MapHandlerAdvanced.getPlantHealth(xPos, yPos));
+//        System.out.println("Food left: " + MapHandlerAdvanced.getPlantHealth(xPos, yPos));
 
     }
 
@@ -298,32 +298,7 @@ public class Animal implements Runnable {
         } else hunger = 0;
     }
 
-//    public void useBrain() {
-//        System.out.println(hunger);
-//        if (wayPoints.isEmpty()) {
-//            if (hunger > 1) {
-//
-//                if (MapHandlerAdvanced.getValue(xPos, yPos) > 0) {
-//                    eat();
-//
-//                } else {
-//                    makeItDijkstra(MapHandlerAdvanced.ColorCode.GREEN);
-//
-//                }
-//
-//            }
-//        }
-//        checkForWayPoints();
-//        System.out.println("Number of waypoints: " + wayPoints.size());
-//    }
 
-
-//    public void drink() {
-//        if (standingNextToWater(xPos, yPos)) {
-//            reduceThirst(1);
-//        }
-//
-//    }
 
     public void reduceThirst(int amount) {
         if (thirst - amount > 0) {
