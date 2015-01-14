@@ -9,6 +9,8 @@ import java.util.zip.DataFormatException;
 
 /**
  * Created by extradikke on 06/12/14.
+ *
+ * a wrapper class for containing all the different terrain types
  */
 
 public class Terrains{

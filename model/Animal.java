@@ -39,8 +39,6 @@ public class Animal implements Runnable {
     private int lineOfSight; //how far the animal can see around it
     private int xPos;
     private int yPos;
-    private boolean dijkstraScanned = false;
-    private int maxDijkstraLoops = lineOfSight;
     private boolean moved = true;
     private boolean stuck = false;
     private Deque<DijkstraNode> wayPoints = new ArrayDeque<DijkstraNode>(); // the path expressed in DjikstraNodes
@@ -64,7 +62,6 @@ public class Animal implements Runnable {
         wayPoints = new ArrayDeque<>();
         moved = true;
         stuck = false;
-        maxDijkstraLoops = lineOfSight;
         birthDay = DateTime.parse(birthDayString, DateTimeFormat.forPattern("dd.MM.YYYY")).withYear(Preserve.getStartDate().getYear());
         int daysDifference = Days.daysBetween(birthDay, Preserve.getStartDate()).getDays();
         System.out.println(daysDifference);
@@ -191,7 +188,7 @@ public class Animal implements Runnable {
 
 
             currentLoops++;
-            if (currentLoops > maxDijkstraLoops) {
+            if (currentLoops > lineOfSight) {
                 loopingDone = true;
 //                System.out.println("max dijkstra");
             }
@@ -206,7 +203,7 @@ public class Animal implements Runnable {
         innerNodes.clear();
         bufferNodes.clear();
 
-        dijkstraScanned = true;
+
         moved = false;
 
     }
@@ -485,6 +482,14 @@ public class Animal implements Runnable {
 
     public void setDead(boolean dead) {
         this.dead = dead;
+    }
+
+    public DateTime getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(DateTime birthDay) {
+        this.birthDay = birthDay;
     }
 
     @Override

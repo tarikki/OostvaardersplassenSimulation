@@ -46,7 +46,10 @@ public class IOUtil {
 
     }
 
-
+    /**
+     * converts the config loaded from json to the static Config class
+     *
+     */
     public static void loadConfig() {
         //TODO make sure ending date after start
         try {
@@ -84,6 +87,9 @@ public class IOUtil {
         }
     }
 
+    /**
+     * saves the the modified values to the config file
+     */
     public static void saveConfig(){
         try {
 
@@ -109,6 +115,10 @@ public class IOUtil {
         }
     }
 
+    /**
+     *
+     * @return full, os formatted path to the location of the program
+     */
     public static String getWD() {
         Pattern opSysPattern = Pattern.compile("\\w+");
         String fullPath = "";
@@ -131,6 +141,10 @@ public class IOUtil {
         return fullPath;
     }
 
+    /**
+     *
+     * @return the os correct directory separator
+     */
     public static String osPathCorrection() {
         Pattern opSysPattern = Pattern.compile("\\w+");
         String opSys = System.getProperty("os.name").toLowerCase();
@@ -153,37 +167,12 @@ public class IOUtil {
 
     }
 
-    public boolean checkForConfig() {
-        String path = getWD();
-        File file = new File(path + "config.txt");
-        boolean fileExists = file.exists();
-        if (fileExists) {
-//            System.out.println("yay");
-        } else {
-//            System.out.println("nay");
-        }
-
-        return fileExists;
-    }
-
-
+    /**
+     *
+     * @return the directory where the config files are
+     */
     public static String getConfigDirectory() {
         return CONFIG_DIRECTORY;
     }
-
-    public void createConfig() throws FileNotFoundException, UnsupportedEncodingException {
-        if (!checkForConfig()) {
-
-        }
-
-    }
-
-
-
-    public void readConfig() throws IOException {
-
-
-    }
-
 
 }

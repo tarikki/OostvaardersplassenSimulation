@@ -9,6 +9,8 @@ import java.util.zip.DataFormatException;
 
 /**
  * Created by extradikke on 06/12/14.
+ *
+ *  a wrapper class for containing the several different plants
  */
 public class Plants {
     private List<Plant> plants;

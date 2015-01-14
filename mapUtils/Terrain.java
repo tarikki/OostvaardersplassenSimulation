@@ -5,6 +5,8 @@ import java.util.Random;
 
 /**
  * Created by extradikke on 06/12/14.
+ *
+ * a class for containing the information on a specific terrain type
  */
 public class Terrain {
     private String originalName;

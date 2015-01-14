@@ -53,6 +53,7 @@ public class Preserve {
     private static double currentHourlyMinTempIncrement;
     private static HashMap<Integer, MonthlyWeather> weatherHashMap = new HashMap<>();
     private static Populations initialPopulations;
+    private static Set<DateTime> birthDays = new HashSet<>();
 
     private static int deaths = 0;
 
@@ -100,32 +101,7 @@ public class Preserve {
         numberOfAnimals = numberOfAnimalsInput;
         loadInitialPopulations();
         loadAnimals();
-//        int id = 0;
-//        for (Population population : initialPopulations.getPopulations()) {
-//
-//            int x = r.nextInt(MapHandlerAdvanced.getWidth());
-//            int y = r.nextInt(MapHandlerAdvanced.getHeight());
-//            while (!MapHandlerAdvanced.isValidMove(x, y)) {
-//                x = r.nextInt(MapHandlerAdvanced.getWidth());
-//                y = r.nextInt(MapHandlerAdvanced.getHeight());
-//            }
-//            animals.add(new Animal(id, x, y, 200));
-//        }
 
-//        for (int id = 0; id < numberOfAnimals; id++) {
-//
-//            int x = r.nextInt(MapHandlerAdvanced.getWidth());
-//            int y = r.nextInt(MapHandlerAdvanced.getHeight());
-//            while (!MapHandlerAdvanced.isValidMove(x, y)) {
-//                x = r.nextInt(MapHandlerAdvanced.getWidth());
-//                y = r.nextInt(MapHandlerAdvanced.getHeight());
-//            }
-//            animals.add(new Animal(id, x, y, 200));
-////           System.out.println("Animal " + id + " x, y: " + x + " " + y);
-//        }
-
-//        animals.get(0).setxPos(75);
-//        animals.get(0).setyPos(45);
     }
 
     public static int getNumberOfAnimals() {
@@ -304,18 +280,60 @@ public class Preserve {
         calculateDailyTemperatures();
         setSunriseAndSunset(currentDayLength);
         Iterator<Animal> animalsIterator = animals.iterator();
-        while (animalsIterator.hasNext()){
+        while (animalsIterator.hasNext()) {
             Animal animal = animalsIterator.next();
             animal.dailyCheckUp();
-            if (animal.isDead()){
+            if (animal.isDead()) {
                 animalsIterator.remove();
                 deaths++;
-                System.out.println("Deaths: "+deaths);
+                System.out.println("Deaths: " + deaths);
             }
+        }
+
+        if (birthDays.contains(currentDate)) {
+           reproduce();
         }
 
 
     }
+
+    private static void reproduce() {
+        ArrayList<Animal> youngOnes = new ArrayList<>();
+        Random r = new Random();
+        for (Animal animalBreeding : animals) {
+            if (currentDaySpan.contains(animalBreeding.getBirthDay())) {
+                if (r.nextDouble() < animalBreeding.getAgeGroups()[animalBreeding.getAgeGroupNumerical()].getChanceOfPregnancy()) {
+                    JsonReader animalLoader = null;
+
+                    try {
+                        animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory() + animalBreeding.getName() + ".json"));
+                        Gson gson = new Gson();
+
+                        Animal animal = gson.fromJson(animalLoader, Class.forName("model." + animalBreeding.getName()));
+                        System.out.println(animal.getClass().getName());
+
+                        int x = animalBreeding.getxPos();
+                        int y = animalBreeding.getyPos();
+                        animal.setxPos(x);
+                        animal.setyPos(y);
+                        animal.setAge(animal.getAgeGroups()[0].getStartAge());
+                        animal.setId(currentMaxId);
+                        animal.setAgeGroupNumerical(0);
+                        animal.setupAnimal();
+                        currentMaxId++;
+                        youngOnes.add(animal);
+                        System.out.println(animal);
+                    } catch (FileNotFoundException | ClassNotFoundException e) {
+                        e.printStackTrace();
+
+                    }
+                }
+            }
+        }
+
+        animals.addAll(youngOnes);
+    }
+
 
     public static void setSunriseAndSunset(double lengthOfDay) {
         System.out.println(lengthOfDay);
@@ -440,7 +458,7 @@ public class Preserve {
             JsonReader animalLoader = null;
             for (int i = 0; i < population.getYoung(); i++) {
                 try {
-                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory()+population.getName()+".json"));
+                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory() + population.getName() + ".json"));
                     Gson gson = new Gson();
                     System.out.println(population.getName());
                     Animal animal = gson.fromJson(animalLoader, Class.forName("model." + population.getName()));
@@ -462,6 +480,7 @@ public class Preserve {
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
+                    birthDays.add(animal.getBirthDay());
                     System.out.println(animal);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -474,7 +493,7 @@ public class Preserve {
 
             for (int i = 0; i < population.getAdult(); i++) {
                 try {
-                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory()+population.getName()+".json"));
+                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory() + population.getName() + ".json"));
                     Gson gson = new Gson();
                     System.out.println(population.getName());
                     Animal animal = gson.fromJson(animalLoader, Class.forName("model." + population.getName()));
@@ -495,6 +514,7 @@ public class Preserve {
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
+                    birthDays.add(animal.getBirthDay());
                     System.out.println(animal);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -506,7 +526,7 @@ public class Preserve {
 
             for (int i = 0; i < population.getOld(); i++) {
                 try {
-                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory()+population.getName()+".json"));
+                    animalLoader = new JsonReader(new FileReader(IOUtil.getConfigDirectory() + population.getName() + ".json"));
                     Gson gson = new Gson();
                     System.out.println(population.getName());
                     Animal animal = gson.fromJson(animalLoader, Class.forName("model." + population.getName()));
@@ -528,6 +548,7 @@ public class Preserve {
                     currentMaxId++;
                     animals.add(animal);
                     System.out.println(animal);
+                    birthDays.add(animal.getBirthDay());
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
 

@@ -2,6 +2,8 @@ package mapUtils;
 
 /**
  * Created by extradikke on 06/12/14.
+ *
+ * a class for containing all the information on a specific plant
  */
 public class Plant {
     private String name;

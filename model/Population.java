@@ -10,6 +10,7 @@ public class Population {
     private int adult;
     private int old;
 
+
     public String getName() {
         return name;
     }

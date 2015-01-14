@@ -5,6 +5,9 @@ import java.util.List;
 
 /**
  * Created by extradikke on 22-11-14.
+ *
+ * A class to represent the directions the animal can move to
+ * This class is also used to build the way points the animal will take
  */
 public class DijkstraNode {
 
