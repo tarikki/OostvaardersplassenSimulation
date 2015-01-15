@@ -581,11 +581,9 @@ public class Preserve {
                     animals.add(animal);
                     System.out.println(animal);
                     birthDays.add(animal.getBirthDay());
-                } catch (FileNotFoundException e) {
+                } catch (FileNotFoundException | ClassNotFoundException e) {
                     e.printStackTrace();
 
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
                 }
             }
         }

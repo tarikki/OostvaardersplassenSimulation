@@ -52,6 +52,9 @@ public class MapHandlerAdvanced {
 
     }
 
+    /**
+     * This method is just a wrapper for all the others that should be run in the init block
+     */
     public void starters() {
         setPaths();
         loadImages();
@@ -63,6 +66,9 @@ public class MapHandlerAdvanced {
 
     }
 
+    /**
+     * Copy necessary file paths from config
+     */
     public void setPaths() {
         terrainMapLocation = Config.getTerrainMapPath();
         plantsLocation = Config.getPlantsPath();
@@ -71,6 +77,9 @@ public class MapHandlerAdvanced {
         weatherFileLocation = Config.getWeatherFilePath();
     }
 
+    /**
+     * Load the terrain map and the displayable map
+     */
     public void loadImages() {
         try {
             terrainImage = ImageIO.read(new File(terrainMapLocation));
@@ -90,7 +99,9 @@ public class MapHandlerAdvanced {
         }
     }
 
-
+    /**
+     * Scan the terrain map and store it into an int map according to a certain encoding
+     */
     private void scanImage() {
         for (int h = 0; h < height; h++) {
             for (int w = 0; w < width; w++) {
@@ -112,6 +123,10 @@ public class MapHandlerAdvanced {
         System.out.println("Broken pixels: " + brokenPixels);
     }
 
+    /**
+     * load terrain types, plant types and monthly weather types from jsons
+     */
+
     private void loadJsons() {
         //TODO move these to config, they don't belong here
         try {
@@ -129,11 +144,7 @@ public class MapHandlerAdvanced {
                 terrains.verifyRanges();
                 plants.verifyRanges();
                 months.verifyRanges();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (DataFormatException e) {
+            } catch (IllegalAccessException | NoSuchFieldException | DataFormatException e) {
                 e.printStackTrace();
             }
 //            System.out.println(plants);
@@ -142,6 +153,10 @@ public class MapHandlerAdvanced {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Convert the plant, terrain and weather type lists into hashmaps
+     */
 
     private void jsonToHash() {
         for (Plant plant : plants.getPlants()) {
@@ -156,6 +171,13 @@ public class MapHandlerAdvanced {
             weatherHashMap.put(month.getMonth(), month);
         }
     }
+
+    /**
+     *
+     * @param terrainID the type of terrain in question
+     * @return  int that has been bitshifted to hold information on
+     *          the type of terrain, the type of plant and the health of the plant
+     */
 
     private int encodeMap(int terrainID) {
         int result = 0;
@@ -181,6 +203,15 @@ public class MapHandlerAdvanced {
         return result;
     }
 
+
+    /**
+     * Decrease the plant health, usually as a result of an animal eating it
+     *
+     * @param  x the x position on the map
+     * @param  y the y position on the map
+     * @param  amountEaten how much should be reduced from the plant's health
+     * @return return the actual amount of plant consumed
+     */
     public static int decreasePlantHealth(int x, int y, int amountEaten) {
         int plantId = getPlantId(x,y);
         int plantInt = plantId<< Config.plantIdPosition;
@@ -212,6 +243,11 @@ public class MapHandlerAdvanced {
         return amountEaten;
     }
 
+    /**
+     * Increase the health of the plant at this position as a result of natural growth
+     * @param x the x position
+     * @param y the y position
+     */
     public static void increasePlantHealth(int x, int y) {
 
         int plantId = getPlantId(x, y);
@@ -263,19 +299,26 @@ public class MapHandlerAdvanced {
         return (map[x][y] >>> Config.plantRecoveryPosition) & 7;
     }
 
+    /**
+     * go through the map and make all existing plants grow
+     */
     public static void growAllPlants() {
         for (int h = 0; h < height; h++) {
             for (int w = 0; w < width; w++) {
                 increasePlantHealth(w, h);
             }
         }
-
-
     }
 
+    /**
+     *
+     * @param pixel int value from the scanned image
+     * @return  terrain id value between 0 and 31
+     *          or return -1 if pixel not recognized
+     */
     private int recognizeTerrain(int pixel) {
         int id = -1;
-        int alpha = (pixel >> 24) & 0xff;
+//        int alpha = (pixel >> 24) & 0xff;
         int red = (pixel >> 16) & 0xff;
         int green = (pixel >> 8) & 0xff;
         int blue = (pixel) & 0xff;
@@ -285,8 +328,6 @@ public class MapHandlerAdvanced {
                 id = terrain.getId();
             }
         }
-
-
         return id;
     }
 
@@ -298,30 +339,22 @@ public class MapHandlerAdvanced {
         return width;
     }
 
-//    public synchronized static byte getValue(int x, int y) {
-//        return map[x][y];
-//    }
 
     public static BufferedImage getTerrainImage() {
         return terrainImage;
 
     }
 
-
+    /**
+     *
+     * @param   x the x position on the map
+     * @param   y the y position on the map
+     * @return  boolean whether the terrain on that location is traversable
+     */
     public static boolean isValidMove(int x, int y) {
         int terrainID = getTerrainID(x, y);
         Terrain terrain = terrainHash.get(terrainID);
         return terrain.isTraversable();
-
-
-    }
-
-
-    public synchronized static boolean eatFromSquare(int x, int y) {
-        if (map[x][y] > 0) {
-
-            return true;
-        } else return false;
     }
 
     public static BufferedImage getDisplayableImage() {

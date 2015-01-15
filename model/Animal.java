@@ -61,14 +61,15 @@ public class Animal implements Runnable {
         wayPoints = new ArrayDeque<>();
         moved = true;
         stuck = false;
+        //TODO animal's age is sometimes negative, please fix
         birthDay = DateTime.parse(birthDayString, DateTimeFormat.forPattern("dd.MM.YYYY")).withYear(Preserve.getStartDate().getYear());
         int daysDifference = Days.daysBetween(birthDay, Preserve.getStartDate()).getDays();
 //        System.out.println(daysDifference);
-        age = age + daysDifference;
+        age = age + daysDifference + 365;
         weight = ageGroups[ageGroupNumerical].getStartWeight() + ageGroups[ageGroupNumerical].getNecessaryWeightIncreasePerDay() * age;
         calculateDailyFoodIntake();
         energyAcquiredToday = 0;
-        System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age + " weight:" + weight + "food necessary today:" + energyNeededForToday);
+        System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age + " birthday"+ birthDay.toString()+" weight:" + weight + "food necessary today:" + energyNeededForToday);
 
 
     }
@@ -326,7 +327,7 @@ public class Animal implements Runnable {
 
     public String report() {
 
-        return "Animal [id = " + this.id + ", Eaten = " + this.energyAcquiredToday + "/" + this.energyNeededForToday + ", Dead = " + this.dead + "]";
+        return "Animal [id = " +this.id  +" ,weight " +this.weight +" ,age" +this.age + ", Eaten = " + this.energyAcquiredToday + "/" + this.energyNeededForToday + ", Dead = " + this.dead + "]";
     }
 
     public void useBrain() {
