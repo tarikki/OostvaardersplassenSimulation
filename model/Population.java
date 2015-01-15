@@ -9,6 +9,9 @@ public class Population {
     private int young;
     private int adult;
     private int old;
+    private int startX;
+    private int startY;
+    private int standardDeviationInPixels;
 
 
     public String getName() {
@@ -51,7 +54,29 @@ public class Population {
         this.old = old;
     }
 
+    public int getStandardDeviationInPixels() {
+        return standardDeviationInPixels;
+    }
 
+    public void setStandardDeviationInPixels(int standardDeviationInPixels) {
+        this.standardDeviationInPixels = standardDeviationInPixels;
+    }
+
+    public int getStartX() {
+        return startX;
+    }
+
+    public void setStartX(int startX) {
+        this.startX = startX;
+    }
+
+    public int getStartY() {
+        return startY;
+    }
+
+    public void setStartY(int startY) {
+        this.startY = startY;
+    }
 
     @Override
     public boolean equals(Object o) {

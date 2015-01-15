@@ -51,6 +51,7 @@ public class Preserve {
     private static double currentDailyMinTempIncrement;
     private static double currentHourlyMaxTempIncrement;
     private static double currentHourlyMinTempIncrement;
+    private static double[] dailyTemperatures = new double[24];
     private static HashMap<Integer, MonthlyWeather> weatherHashMap = new HashMap<>();
     private static Populations initialPopulations;
     private static Set<DateTime> birthDays = new HashSet<>();
@@ -122,7 +123,7 @@ public class Preserve {
 //        System.out.println(animals.size());
         List<Future<Object>> dikke = executor.invokeAll(todo);
         todo.clear();
-        System.out.println("Now turn: " + turn++);
+        System.out.println("Now turn: " + turn++ + " " + currentDate.toString());
         currentDate = currentDate.plusMinutes(1);
 //        System.out.println(currentDate.toString());
         if (currentDate.isAfter(endDate)) {
@@ -168,7 +169,7 @@ public class Preserve {
             e.printStackTrace();
         }
 
-        System.out.println("Now turn: " + turn++);
+        System.out.println("Now turn: " + turn++ +" "+ currentDate.toString());
         currentDate = currentDate.plusMinutes(1);
 //        System.out.println(currentDate.toString());
         if (currentDate.isAfter(endDate)) {
@@ -255,23 +256,54 @@ public class Preserve {
         todayMinTemp = startMinTemp + currentDailyMinTempIncrement * (new Duration(currentTempMonthSpan.getStart(), currentDate)).getStandardDays();
         System.out.println("max today: " + todayMaxTemp);
         System.out.println("min today: " + todayMinTemp);
+        calculateAllDayTemperatures();
+    }
+
+    public static void calculateHourlyTemperatureStash() {
+        double tempMultiplyer = 0;
+//        if ((new Interval(currentDate.withTimeAtStartOfDay().withHourOfDay(6), currentDate.withTimeAtStartOfDay().withHourOfDay(18))).contains(currentDate)) {
+//            tempMultiplyer = todayMaxTemp;
+//        } else {
+//            tempMultiplyer = todayMinTemp;
+//        }
+
+        tempMultiplyer = todayMaxTemp - todayMinTemp;
+
+        currentTemperature = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
+                currentDate).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
+
+        System.out.println(currentDate.getHourOfDay() + " " + currentTemperature);
     }
 
     public static void calculateHourlyTemperature() {
+        System.out.println("hour: "+currentDate.hourOfDay().get());
+        currentTemperature = dailyTemperatures[currentDate.hourOfDay().get()];
+        System.out.println(currentTemperature);
+
+    }
+
+    public static void calculateAllDayTemperatures() {
         double tempMultiplyer = 0;
-        if ((new Interval(currentDate.withTimeAtStartOfDay().withHourOfDay(6), currentDate.withTimeAtStartOfDay().withHourOfDay(18))).contains(currentDate)) {
-            tempMultiplyer = todayMaxTemp;
-        } else {
-            tempMultiplyer = todayMinTemp;
-        }
+//        if ((new Interval(currentDate.withTimeAtStartOfDay().withHourOfDay(6), currentDate.withTimeAtStartOfDay().withHourOfDay(18))).contains(currentDate)) {
+//            tempMultiplyer = todayMaxTemp;
+//        } else {
+//            tempMultiplyer = todayMinTemp;
+//        }
 
         tempMultiplyer = todayMaxTemp - todayMinTemp;
-//        System.out.println(tempMultiplyer);
-        currentTemperature = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
-                currentDate).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
-//        System.out.println(((double)new Duration(currentDate.withTimeAtStartOfDay(),
-//                currentDate).getStandardMinutes() / Config.lengthOfDayInMinutes));
-        System.out.println(currentDate.getHourOfDay() + " " + currentTemperature);
+
+        for (int hour = 0; hour < 24; hour++) {
+
+            dailyTemperatures[hour] = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
+                    currentDate.withTimeAtStartOfDay().plusMinutes(hour*60)).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
+
+            System.out.println(currentDate.getHourOfDay() + " " + dailyTemperatures[hour]);
+        }
+
+//        currentTemperature = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
+//                currentDate).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
+
+//        System.out.println(currentDate.getHourOfDay() + " " + currentTemperature);
     }
 
     public static void setupNewDay() {
@@ -465,11 +497,11 @@ public class Preserve {
                     System.out.println(animal.getClass().getName());
 //                    Animal animal = gson.fromJson(animalLoader, Animal.class);
 
-                    int x = r.nextInt(MapHandlerAdvanced.getWidth());
-                    int y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    int x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                    int y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
                     while (!MapHandlerAdvanced.isValidMove(x, y)) {
-                        x = r.nextInt(MapHandlerAdvanced.getWidth());
-                        y = r.nextInt(MapHandlerAdvanced.getHeight());
+                        x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                        y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
@@ -500,11 +532,11 @@ public class Preserve {
                     System.out.println(animal.getClass().getName());
 //                    Animal animal = gson.fromJson(animalLoader, Animal.class);
 
-                    int x = r.nextInt(MapHandlerAdvanced.getWidth());
-                    int y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    int x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                    int y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
                     while (!MapHandlerAdvanced.isValidMove(x, y)) {
-                        x = r.nextInt(MapHandlerAdvanced.getWidth());
-                        y = r.nextInt(MapHandlerAdvanced.getHeight());
+                        x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                        y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
@@ -533,11 +565,11 @@ public class Preserve {
                     System.out.println(animal.getClass().getName());
 //                    Animal animal = gson.fromJson(animalLoader, Animal.class);
 
-                    int x = r.nextInt(MapHandlerAdvanced.getWidth());
-                    int y = r.nextInt(MapHandlerAdvanced.getHeight());
+                    int x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                    int y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
                     while (!MapHandlerAdvanced.isValidMove(x, y)) {
-                        x = r.nextInt(MapHandlerAdvanced.getWidth());
-                        y = r.nextInt(MapHandlerAdvanced.getHeight());
+                        x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                        y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
@@ -558,6 +590,8 @@ public class Preserve {
             }
         }
     }
+
+
 
     public void returnValidCoordinates() {
     }

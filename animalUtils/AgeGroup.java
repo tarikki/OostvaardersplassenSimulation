@@ -2,6 +2,10 @@ package animalUtils;
 
 /**
  * Created by extradikke on 26.12.14.
+ *
+ * The age group in an animal's life cycle
+ *
+ * Enables the animal to have different attributes in different stages in its life
  */
 public class AgeGroup {
 

@@ -1,11 +1,10 @@
 package model;
 
 import animalUtils.AgeGroup;
-import animalUtils.AgeGroups;
 import mapUtils.MapHandlerAdvanced;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Interval;
+
 import org.joda.time.format.DateTimeFormat;
 import util.DijkstraNode;
 
@@ -64,7 +63,7 @@ public class Animal implements Runnable {
         stuck = false;
         birthDay = DateTime.parse(birthDayString, DateTimeFormat.forPattern("dd.MM.YYYY")).withYear(Preserve.getStartDate().getYear());
         int daysDifference = Days.daysBetween(birthDay, Preserve.getStartDate()).getDays();
-        System.out.println(daysDifference);
+//        System.out.println(daysDifference);
         age = age + daysDifference;
         weight = ageGroups[ageGroupNumerical].getStartWeight() + ageGroups[ageGroupNumerical].getNecessaryWeightIncreasePerDay() * age;
         calculateDailyFoodIntake();
@@ -200,7 +199,7 @@ public class Animal implements Runnable {
         }
 
         // clean up
-        innerNodes.clear();
+        innerNodes = new HashMap<>();
         bufferNodes.clear();
 
 
