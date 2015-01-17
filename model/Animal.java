@@ -18,16 +18,12 @@ public class Animal implements Runnable {
 
 
     private int id;
-    private int hunger = 0;
-    private int thirst = 0;
-    private int energy = 100;
     private boolean dead;
     private int age;
     private int ageGroupNumerical;
     private double weight;
     private double energyNeededForToday;
     private double energyAcquiredToday;
-    private double lengthOfDayPerMinutes;
 
 
     //loadable traits
@@ -35,8 +31,9 @@ public class Animal implements Runnable {
     private AgeGroup[] ageGroups;
     private DateTime birthDay;
     private String birthDayString;
-
+    private int speed;
     private int lineOfSight; //how far the animal can see around it
+
     private int xPos;
     private int yPos;
     private boolean moved = true;
@@ -56,8 +53,6 @@ public class Animal implements Runnable {
     }
 
     public void setupAnimal() {
-        hunger = thirst = 0;
-        energy = 100;
         dead = false;
         wayPoints = new ArrayDeque<>();
         moved = true;
@@ -275,21 +270,26 @@ public class Animal implements Runnable {
     public boolean checkForWayPoints() {
         boolean result = false;
         if (!wayPoints.isEmpty()) {
-//            System.out.println("path");
-//            for (DijkstraNode wayPoint : wayPoints) {
-//
-//                System.out.println(wayPoint);
-//                }System.out.println("end path");
-            DijkstraNode nextStep = wayPoints.pop();
-            if (MapHandlerAdvanced.isValidMove(nextStep.getCurrentX(), nextStep.getCurrentY())) {
-
-                move(nextStep.getXDirection(), nextStep.getYDirection());
+            int waypointsToCover = 0;
+            if (wayPoints.size() <= speed) {
+                waypointsToCover = wayPoints.size();
             } else {
-                wayPoints.clear();
-//                System.out.println(MapHandlerAdvanced.getValue(nextStep.getXDirection() + xPos, nextStep.getYDirection() + xPos));
-                System.out.println("waypoint cleared");
+                waypointsToCover = speed;
             }
+            for (int i = 0; i < waypointsToCover; i++) {
 
+
+                DijkstraNode nextStep = wayPoints.pop();
+                if (MapHandlerAdvanced.isValidMove(nextStep.getCurrentX(), nextStep.getCurrentY())) {
+
+                    move(nextStep.getXDirection(), nextStep.getYDirection());
+                } else {
+                    wayPoints.clear();
+//                System.out.println(MapHandlerAdvanced.getValue(nextStep.getXDirection() + xPos, nextStep.getYDirection() + xPos));
+                    System.out.println("waypoint cleared");
+                }
+
+            }
         }
         return result;
     }
@@ -300,19 +300,6 @@ public class Animal implements Runnable {
         energyAcquiredToday = energyAcquiredToday + amountEaten;
 //        System.out.println("Food left: " + MapHandlerAdvanced.getPlantHealth(xPos, yPos));
 
-    }
-
-    public void reduceHunger(int amount) {
-        if (hunger - amount > 0) {
-            hunger -= amount;
-        } else hunger = 0;
-    }
-
-
-    public void reduceThirst(int amount) {
-        if (thirst - amount > 0) {
-            thirst -= amount;
-        } else thirst = 0;
     }
 
 //    public boolean standingNextToWater(int x, int y) {
@@ -371,9 +358,6 @@ public class Animal implements Runnable {
             useBrain();
 
         }
-        hunger++;
-        thirst++;
-        energy--;
 //        System.out.println(id + " " + energy);
         Preserve.latch.countDown();
 
@@ -406,8 +390,8 @@ public class Animal implements Runnable {
 
     }
 
-    public boolean isStarving(){
-        return (energyAcquiredToday/energyNeededForToday < 1);
+    public boolean isStarving() {
+        return (energyAcquiredToday / energyNeededForToday < 1);
     }
 
     private void checkForAgeGroup() {
@@ -509,12 +493,21 @@ public class Animal implements Runnable {
         this.birthDay = birthDay;
     }
 
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
     @Override
     public String toString() {
         return "Animal{" +
                 "id=" + id +
                 ", ageGroup=" + ageGroups[ageGroupNumerical].getName() +
-                ", name='" + name + '\'' +
+                ", name= " + name + '\'' +
+                ", speed= " + speed +
                 '}';
     }
 }
