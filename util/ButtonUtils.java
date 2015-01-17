@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
- * This class is used to easily add and customize button controls
+ * This class is used to easily add and customize button controls.
  */
 
 public class ButtonUtils {

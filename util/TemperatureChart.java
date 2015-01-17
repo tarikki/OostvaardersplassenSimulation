@@ -1,16 +1,28 @@
 package util;
 
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import javafx.scene.chart.Chart;
 import model.Preserve;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.joda.time.Hours;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
+ * Creates a line chart of daily temperatures in the preserve using the JFreeChart library
  * Created by Pepe on 19.12.2014.
  */
 public class TemperatureChart {
@@ -19,38 +31,31 @@ public class TemperatureChart {
 
     public JFreeChart chart;
     public DefaultCategoryDataset dataset;
-
-    /**
-     * Created by extradikke on 14/12/14.
-     */
+    private double[] dailyTemps;
 
 
-    /**
-     * Creates a new demo.
-     *
-     * @param title the frame title.
-     */
+
+
+
     public TemperatureChart(final String title) {
 
 
         dataset = createDataset();
         chart = createChart(dataset);
-
+        dailyTemps = Preserve.getDailyTemperatures();
 
     }
 
-    /// FIX LOGIC AND TIE TO PRESERVE
+    // TODO try to implement as XYChart instead if there's time. Mainly works as a blueprint for other charts / practice scenario at this point
     private DefaultCategoryDataset createDataset() {
 
-        Hours hours = Hours.hoursBetween(Preserve.getCurrentDate().toLocalTime(), Preserve.getCurrentDate().plusHours(1).toLocalTime());
-        int hours2 = hours.getHours();
 
 
         dataset = new DefaultCategoryDataset();
 
-      for (int i = 0; i<hours2; i++)
+      for (int i = 0; i<24; i++)
         {
-            dataset.addValue(null, "Temperature", i);
+            dataset.addValue(null, "Temperature", i + ":00");
 
 
 
@@ -83,7 +88,8 @@ public class TemperatureChart {
         plot.setRangeGridlinePaint(Color.black);
 
 
-
+        /// For X-axis labels so we dont get "..." if value is over 3 characters
+        plot.getDomainAxis().setMaximumCategoryLabelWidthRatio(10);
 
 
         return chart;
@@ -96,18 +102,19 @@ public class TemperatureChart {
     }
 
 
-    // Works somehow. TODO fix chance of eternal loop plus updating in StatsView
-    // TODO make save chart button work. Create more charts!
+    // Get hourly temps per day
     public void updatestats()
     {
-        while (!Preserve.isNewDay())
-        {
-            dataset.addValue(Preserve.getCurrentTemperature(), "Temperature", Preserve.getCurrentDate().getHourOfDay() + ":00");
+
+for (int i = 0; i < dailyTemps.length; i++) {
+    dataset.addValue(dailyTemps[i], "Temperature", i + ":00");
+}
 
 
 
-        }
     }
+
+
 }
 
 
