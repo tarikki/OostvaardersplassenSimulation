@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 
 import org.joda.time.format.DateTimeFormat;
+import util.ClosestNodeFinder;
 import util.DijkstraNode;
 
 import java.util.*;
@@ -69,12 +70,12 @@ public class Animal implements Runnable {
         weight = ageGroups[ageGroupNumerical].getStartWeight() + ageGroups[ageGroupNumerical].getNecessaryWeightIncreasePerDay() * age;
         calculateDailyFoodIntake();
         energyAcquiredToday = 0;
-        System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age + " birthday"+ birthDay.toString()+" weight:" + weight + "food necessary today:" + energyNeededForToday);
+        System.out.println(ageGroups[ageGroupNumerical].getName() + ": age in days " + age + " birthday" + birthDay.toString() + " weight:" + weight + "food necessary today:" + energyNeededForToday);
 
 
     }
 
-    public void findFoodOrWater(String lookingFor, int threshHold) {
+    public void findFoodOrWater(String lookingFor, int threshHold, int targetX, int targetY) {
 
 //        System.out.println("looking for food");
         HashMap<DijkstraNode, DijkstraNode> borderNodes = new HashMap<>();
@@ -112,6 +113,15 @@ public class Animal implements Runnable {
                 if (lookingFor.equals("water")) {
                     int terrainID = MapHandlerAdvanced.getTerrainID(borderNode.getCurrentX(), borderNode.getCurrentY());
                     if ((terrainID == MapHandlerAdvanced.water || terrainID == MapHandlerAdvanced.shallowWater) && !foundIt) {
+                        foundIt = true;
+                        winnerNode = borderNode;
+                        loopingDone = true;
+                    }
+                }
+                // TODO what if target outside bounds?
+                //TODO what if target on unreachable pixel?
+                if (lookingFor.equals("pixel")) {
+                    if (borderNode.getCurrentX() == targetX && borderNode.getCurrentY() == targetY) {
                         foundIt = true;
                         winnerNode = borderNode;
                         loopingDone = true;
@@ -190,6 +200,9 @@ public class Animal implements Runnable {
             currentLoops++;
             if (currentLoops > lineOfSight) {
                 loopingDone = true;
+                if (lookingFor.equals("pixel")) {
+                    winnerNode = ClosestNodeFinder.findClosestNode(bufferNodes, targetX, targetY);
+                }
 //                System.out.println("max dijkstra");
             }
         }
@@ -296,7 +309,6 @@ public class Animal implements Runnable {
     }
 
 
-
     public void reduceThirst(int amount) {
         if (thirst - amount > 0) {
             thirst -= amount;
@@ -327,7 +339,7 @@ public class Animal implements Runnable {
 
     public String report() {
 
-        return "Animal [id = " +this.id  +" ,weight " +this.weight +" ,age" +this.age + ", Eaten = " + this.energyAcquiredToday + "/" + this.energyNeededForToday + ", Dead = " + this.dead + "]";
+        return "Animal [id = " + this.id + " ,weight " + this.weight + " ,age" + this.age + ", Eaten = " + this.energyAcquiredToday + "/" + this.energyNeededForToday + ", Dead = " + this.dead + "]";
     }
 
     public void useBrain() {
@@ -341,7 +353,7 @@ public class Animal implements Runnable {
 
 
                 } else if (!stuck) {
-                    findFoodOrWater("food", 20);
+                    findFoodOrWater("food", 20, 0, 0);
 
                 }
 
@@ -387,10 +399,15 @@ public class Animal implements Runnable {
     public void dailyCheckUp() {
         //TODO check for death, weight gain and everything else here
         age++;
+
         checkForAgeGroup();
         dailyDeathLottery();
         calculateDailyFoodIntake();
 
+    }
+
+    public boolean isStarving(){
+        return (energyAcquiredToday/energyNeededForToday < 1);
     }
 
     private void checkForAgeGroup() {
@@ -405,11 +422,11 @@ public class Animal implements Runnable {
     }
 
     private void dailyDeathLottery() {
-        System.out.println("Dying?");
+//        System.out.println("Dying?");
         Random random = new Random();
         double ticket = random.nextDouble();
         double chanceOfDeath = ageGroups[ageGroupNumerical].getChanceOfDeath();
-        System.out.println("chance of death: " + chanceOfDeath + " ticket number: " + ticket);
+//        System.out.println("chance of death: " + chanceOfDeath + " ticket number: " + ticket);
         if (ticket < chanceOfDeath) {
             dead = true;
         }

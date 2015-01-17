@@ -7,11 +7,14 @@ import mapUtils.MonthlyWeather;
 import org.joda.time.*;
 import util.ColorIcon;
 import util.Config;
+import util.DailyEvents;
 import util.IOUtil;
 
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -22,14 +25,13 @@ public class Preserve {
     private static int numberOfAnimals;
     private static int turn;
 
-    private static boolean simulationComplete = false;
-
-
     private static DateTime startDate;
     private static DateTime endDate;
+    private static boolean simulationComplete;
+
     private static DateTime currentDate;
+
     private static boolean night;
-    private static DateTimeZone timeZone = DateTimeZone.forID(Config.getDateTimeZone());
     private static Interval currentDaySpan;
     private static Interval currentHourSpan;
     private static Interval currentTempMonthSpan;
@@ -57,6 +59,8 @@ public class Preserve {
     private static Set<DateTime> birthDays = new HashSet<>();
 
     private static int deaths = 0;
+    private static int births = 0;
+    private static ArrayList<DailyEvents> allDailyEvents = new ArrayList<>();
 
     private static double latitude;
 
@@ -70,14 +74,17 @@ public class Preserve {
                                      DateTime endDateInput) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
 
+        simulationComplete = false;
+        allDailyEvents = new ArrayList<>();
+
         currentDate = new DateTime(2014, 6, 21, 0, 0, 0);
         maxLengthOfDay = calculateDaylight();
         weatherHashMap = MapHandlerAdvanced.getWeatherHashMap();
 
 
         latitude = latitudeInput;
-        currentDate = startDate = startDateInput;
-        endDate = endDateInput;
+        currentDate = startDate = startDateInput.withTimeAtStartOfDay();
+        endDate = endDateInput.withTimeAtStartOfDay();
         currentDaySpan = new Interval(currentDate, currentDate.plusDays(1).withTimeAtStartOfDay());
         currentHourSpan = new Interval(currentDate, currentDate.plusHours(1));
         currentDayLength = calculateDaylight();
@@ -109,41 +116,6 @@ public class Preserve {
         return numberOfAnimals;
     }
 
-    public static void executeTurn() throws InterruptedException {
-
-        checkForNight();
-        List<Callable<Object>> todo = new ArrayList<Callable<Object>>(animals.size());
-        // TODO shuffle the animals first so they don't always move in order of creation
-        // TODO using the checkdeath results in concurrentmodification exception, fix it
-        for (Animal animal : animals) {
-//            if (!checkDeath(animal)) {
-            todo.add(Executors.callable(animal));
-//            }
-        }
-//        System.out.println(animals.size());
-        List<Future<Object>> dikke = executor.invokeAll(todo);
-        todo.clear();
-        System.out.println("Now turn: " + turn++ + " " + currentDate.toString());
-        currentDate = currentDate.plusMinutes(1);
-//        System.out.println(currentDate.toString());
-        if (currentDate.isAfter(endDate)) {
-            simulationComplete = true;
-        }
-
-        if (isNewHour()) {
-            setupNewHour();
-        }
-
-        if (isNewDay()) {
-            MapHandlerAdvanced.growAllPlants();
-            System.out.println("mycket growth");
-            setupNewDay();
-        }
-
-        if (isNewTempMonth()) {
-            setupNewTempMonth();
-        }
-    }
 
     public static void executeTurn2() throws InterruptedException {
 
@@ -169,7 +141,7 @@ public class Preserve {
             e.printStackTrace();
         }
 
-        System.out.println("Now turn: " + turn++ +" "+ currentDate.toString());
+//        System.out.println("Now turn: " + turn++ +" "+ currentDate.toString());
         currentDate = currentDate.plusMinutes(1);
 //        System.out.println(currentDate.toString());
         if (currentDate.isAfter(endDate)) {
@@ -181,21 +153,12 @@ public class Preserve {
         }
 
         if (isNewDay()) {
-            MapHandlerAdvanced.growAllPlants();
-            System.out.println("mycket growth");
             setupNewDay();
         }
 
         if (isNewTempMonth()) {
             setupNewTempMonth();
         }
-    }
-
-    public static boolean checkDeath(Animal animal) {
-        if (animal.isDead()) {
-            animals.remove(animal.getId());
-            return false;
-        } else return true;
     }
 
     public static boolean isNewDay() {
@@ -259,24 +222,8 @@ public class Preserve {
         calculateAllDayTemperatures();
     }
 
-    public static void calculateHourlyTemperatureStash() {
-        double tempMultiplyer = 0;
-//        if ((new Interval(currentDate.withTimeAtStartOfDay().withHourOfDay(6), currentDate.withTimeAtStartOfDay().withHourOfDay(18))).contains(currentDate)) {
-//            tempMultiplyer = todayMaxTemp;
-//        } else {
-//            tempMultiplyer = todayMinTemp;
-//        }
-
-        tempMultiplyer = todayMaxTemp - todayMinTemp;
-
-        currentTemperature = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
-                currentDate).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
-
-        System.out.println(currentDate.getHourOfDay() + " " + currentTemperature);
-    }
-
     public static void calculateHourlyTemperature() {
-        System.out.println("hour: "+currentDate.hourOfDay().get());
+        System.out.println("hour: " + currentDate.hourOfDay().get());
         currentTemperature = dailyTemperatures[currentDate.hourOfDay().get()];
         System.out.println(currentTemperature);
 
@@ -295,9 +242,9 @@ public class Preserve {
         for (int hour = 0; hour < 24; hour++) {
 
             dailyTemperatures[hour] = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
-                    currentDate.withTimeAtStartOfDay().plusMinutes(hour*60)).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
+                    currentDate.withTimeAtStartOfDay().plusMinutes(hour * 60)).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
 
-            System.out.println(currentDate.getHourOfDay() + " " + dailyTemperatures[hour]);
+//            System.out.println(currentDate.getHourOfDay() + " " + dailyTemperatures[hour]);
         }
 
 //        currentTemperature = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
@@ -307,24 +254,69 @@ public class Preserve {
     }
 
     public static void setupNewDay() {
+        System.out.println("New Day");
+
+        DailyEvents dailyEvents = new DailyEvents(currentDate.withTimeAtStartOfDay());
+
         currentDaySpan = new Interval(currentDate, currentDate.dayOfMonth().addToCopy(1).withTimeAtStartOfDay());
         currentDayLength = calculateDaylight();
         calculateDailyTemperatures();
+
+        dailyEvents.setMaxTemp(todayMaxTemp);
+        dailyEvents.setMinTemp(todayMinTemp);
+        dailyEvents.setLengthOfDay(currentDayLength);
+
+        MapHandlerAdvanced.growAllPlants();
+        System.out.println("mycket growth");
+        System.out.println(MapHandlerAdvanced.getAmountOfFoodBefore());
+        System.out.println(MapHandlerAdvanced.getAmountOfFoodNow());
+        dailyEvents.setAmountOfFood(MapHandlerAdvanced.getAmountOfFoodNow());
+
+        allDailyEvents.add(dailyEvents);
+
         setSunriseAndSunset(currentDayLength);
         Iterator<Animal> animalsIterator = animals.iterator();
         while (animalsIterator.hasNext()) {
             Animal animal = animalsIterator.next();
+            if (animal.isStarving()) {
+                dailyEvents.increaseStarvingAnimals();
+                System.out.println("me starving!");
+
+            }
             animal.dailyCheckUp();
+
             if (animal.isDead()) {
                 animalsIterator.remove();
+                String animalClass = animal.getClass().getSimpleName().toLowerCase();
+                try {
+                    Method method = dailyEvents.getClass().getMethod(animalClass + "DeathsIncrease");
+                    method.invoke(dailyEvents);
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
                 deaths++;
-                System.out.println("Deaths: " + deaths);
+//                System.out.println("Deaths: " + deaths);
             }
         }
 
         if (birthDays.contains(currentDate)) {
-           reproduce();
+            System.out.println("it's my birthday!");
+            reproduce();
         }
+
+        if (currentDaySpan.contains(endDate)) {
+            simulationComplete = true;
+            System.out.println("DONE with simulation!!!");
+            int foodBefore = 0;
+            for (DailyEvents dailyEvent : allDailyEvents) {
+                if (foodBefore != 0) {
+                    System.out.println("Food change = " + (dailyEvent.getAmountOfFood() - foodBefore));
+                }
+                foodBefore = dailyEvent.getAmountOfFood();
+            }
+        }
+
+        System.out.println(allDailyEvents.get(allDailyEvents.size() - 1));
 
 
     }
@@ -354,6 +346,14 @@ public class Preserve {
                         animal.setupAnimal();
                         currentMaxId++;
                         youngOnes.add(animal);
+                        String animalClass = animal.getClass().getSimpleName().toLowerCase();
+                        try {
+                            Method method = allDailyEvents.get(allDailyEvents.size() - 1).getClass().getMethod(animalClass + "BirthsIncrease");
+                            method.invoke(allDailyEvents.get(allDailyEvents.size() - 1));
+                            System.out.println("birth!!!");
+                        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
                         System.out.println(animal);
                     } catch (FileNotFoundException | ClassNotFoundException e) {
                         e.printStackTrace();
@@ -497,11 +497,11 @@ public class Preserve {
                     System.out.println(animal.getClass().getName());
 //                    Animal animal = gson.fromJson(animalLoader, Animal.class);
 
-                    int x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
-                    int y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                    int x = population.getStartX() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
+                    int y = population.getStartY() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
                     while (!MapHandlerAdvanced.isValidMove(x, y)) {
-                        x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
-                        y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                        x = population.getStartX() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
+                        y = population.getStartY() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
@@ -512,7 +512,7 @@ public class Preserve {
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
-                    birthDays.add(animal.getBirthDay());
+                    birthDays.add(animal.getBirthDay().withYear(currentDate.getYear()));
                     System.out.println(animal);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -532,11 +532,11 @@ public class Preserve {
                     System.out.println(animal.getClass().getName());
 //                    Animal animal = gson.fromJson(animalLoader, Animal.class);
 
-                    int x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
-                    int y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                    int x = population.getStartX() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
+                    int y = population.getStartY() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
                     while (!MapHandlerAdvanced.isValidMove(x, y)) {
-                        x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
-                        y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                        x = population.getStartX() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
+                        y = population.getStartY() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
@@ -546,7 +546,7 @@ public class Preserve {
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
-                    birthDays.add(animal.getBirthDay());
+                    birthDays.add(animal.getBirthDay().withYear(currentDate.getYear()));
                     System.out.println(animal);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -565,11 +565,11 @@ public class Preserve {
                     System.out.println(animal.getClass().getName());
 //                    Animal animal = gson.fromJson(animalLoader, Animal.class);
 
-                    int x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
-                    int y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                    int x = population.getStartX() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
+                    int y = population.getStartY() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
                     while (!MapHandlerAdvanced.isValidMove(x, y)) {
-                        x = population.getStartX() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
-                        y = population.getStartY() + (int)(r.nextGaussian() *population.getStandardDeviationInPixels());
+                        x = population.getStartX() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
+                        y = population.getStartY() + (int) (r.nextGaussian() * population.getStandardDeviationInPixels());
                     }
                     animal.setxPos(x);
                     animal.setyPos(y);
@@ -580,16 +580,21 @@ public class Preserve {
                     currentMaxId++;
                     animals.add(animal);
                     System.out.println(animal);
-                    birthDays.add(animal.getBirthDay());
+                    birthDays.add(animal.getBirthDay().withYear(currentDate.getYear()));
                 } catch (FileNotFoundException | ClassNotFoundException e) {
                     e.printStackTrace();
 
                 }
             }
         }
+        for (DateTime birthDay : birthDays) {
+            System.out.println(birthDay);
+        }
     }
 
-
+    public static boolean getSimulationComplete() {
+        return simulationComplete;
+    }
 
     public void returnValidCoordinates() {
     }

@@ -73,6 +73,10 @@ public class Main {
             public void run() {
                 try {
                     Preserve.executeTurn2();
+                    if (Preserve.getSimulationComplete()){
+                        timer.cancel();
+                        timer.purge();
+                    }
 
 
                 } catch (InterruptedException e) {

@@ -43,7 +43,10 @@ public class MapHandlerAdvanced {
     public final static int border = 0;
     public final static int water = 1;
     public final static int shallowWater = 2;
-    //private int scale = 10;
+
+
+    private static int amountOfFoodBefore;
+    private static int amountOfFoodNow;
 
     // Init block
     {
@@ -62,6 +65,8 @@ public class MapHandlerAdvanced {
         loadJsons();
         jsonToHash();
         scanImage();
+        amountOfFoodBefore = 0;
+        amountOfFoodNow = 0;
 
 
     }
@@ -173,10 +178,9 @@ public class MapHandlerAdvanced {
     }
 
     /**
-     *
      * @param terrainID the type of terrain in question
-     * @return  int that has been bitshifted to hold information on
-     *          the type of terrain, the type of plant and the health of the plant
+     * @return int that has been bitshifted to hold information on
+     * the type of terrain, the type of plant and the health of the plant
      */
 
     private int encodeMap(int terrainID) {
@@ -207,14 +211,14 @@ public class MapHandlerAdvanced {
     /**
      * Decrease the plant health, usually as a result of an animal eating it
      *
-     * @param  x the x position on the map
-     * @param  y the y position on the map
-     * @param  amountEaten how much should be reduced from the plant's health
+     * @param x           the x position on the map
+     * @param y           the y position on the map
+     * @param amountEaten how much should be reduced from the plant's health
      * @return return the actual amount of plant consumed
      */
     public static int decreasePlantHealth(int x, int y, int amountEaten) {
-        int plantId = getPlantId(x,y);
-        int plantInt = plantId<< Config.plantIdPosition;
+        int plantId = getPlantId(x, y);
+        int plantInt = plantId << Config.plantIdPosition;
         int plantHealthInt = getPlantHealth(x, y);
         int terrainInt = getTerrainID(x, y) << Config.terrainIdPostion;
         int plantRecoveryTime = getPlantRecoveryDays(x, y);
@@ -233,7 +237,7 @@ public class MapHandlerAdvanced {
         int newHealth = plantHealthInt - amountEaten;
         if (newHealth < plant.getInediblePart()) {
             newHealth = plant.getInediblePart();
-            amountEaten = plantHealthInt -20;
+            amountEaten = plantHealthInt - 20;
         }
 //        System.out.println(newHealth);
 
@@ -245,6 +249,7 @@ public class MapHandlerAdvanced {
 
     /**
      * Increase the health of the plant at this position as a result of natural growth
+     *
      * @param x the x position
      * @param y the y position
      */
@@ -260,7 +265,7 @@ public class MapHandlerAdvanced {
             Plant plant = plantsHash.get(plantId);
 //        System.out.println(plant);
 
-
+            amountOfFoodBefore += plantHealth;
             int growth = 0;
             float currentGrowthRate = 0;
             if (plantRecoveryTime == 0) {
@@ -277,7 +282,7 @@ public class MapHandlerAdvanced {
             int newHealth = plantHealth + growth;
             int maxHealth = plant.getMaxHealth();
             if (newHealth > maxHealth) newHealth = maxHealth;
-
+            amountOfFoodNow += newHealth;
             int encoded = terrainInt | plantInt | newHealth;
             map[x][y] = encoded;
         }
@@ -303,6 +308,8 @@ public class MapHandlerAdvanced {
      * go through the map and make all existing plants grow
      */
     public static void growAllPlants() {
+        amountOfFoodBefore = 0;
+        amountOfFoodNow = 0;
         for (int h = 0; h < height; h++) {
             for (int w = 0; w < width; w++) {
                 increasePlantHealth(w, h);
@@ -311,10 +318,9 @@ public class MapHandlerAdvanced {
     }
 
     /**
-     *
      * @param pixel int value from the scanned image
-     * @return  terrain id value between 0 and 31
-     *          or return -1 if pixel not recognized
+     * @return terrain id value between 0 and 31
+     * or return -1 if pixel not recognized
      */
     private int recognizeTerrain(int pixel) {
         int id = -1;
@@ -346,10 +352,9 @@ public class MapHandlerAdvanced {
     }
 
     /**
-     *
-     * @param   x the x position on the map
-     * @param   y the y position on the map
-     * @return  boolean whether the terrain on that location is traversable
+     * @param x the x position on the map
+     * @param y the y position on the map
+     * @return boolean whether the terrain on that location is traversable
      */
     public static boolean isValidMove(int x, int y) {
         int terrainID = getTerrainID(x, y);
@@ -372,4 +377,16 @@ public class MapHandlerAdvanced {
     public static HashMap<Integer, MonthlyWeather> getWeatherHashMap() {
         return weatherHashMap;
     }
+
+    public static int getAmountOfFoodBefore() {
+        return amountOfFoodBefore;
+    }
+
+
+
+    public static int getAmountOfFoodNow() {
+        return amountOfFoodNow;
+    }
+
+
 }
