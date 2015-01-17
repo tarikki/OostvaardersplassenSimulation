@@ -44,7 +44,7 @@ public class Main {
     public static void createPreserve() {
 
 
-        Preserve.setupPreserve(Config.getLatitude(), Config.getNumberOfAnimals(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
+        Preserve.setupPreserve(Config.getLatitude(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
 
     }
 
@@ -72,7 +72,7 @@ public class Main {
             @Override
             public void run() {
                 try {
-                    Preserve.executeTurn2();
+                    Preserve.executeTurn();
                     if (Preserve.getSimulationComplete()){
                         timer.cancel();
                         timer.purge();

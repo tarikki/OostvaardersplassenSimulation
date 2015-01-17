@@ -17,7 +17,7 @@ public class PreserveTempTest {
 
 
         try {
-            Preserve.executeTurn2();
+            Preserve.executeTurn();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }}

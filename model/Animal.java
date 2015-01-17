@@ -24,6 +24,7 @@ public class Animal implements Runnable {
     private double weight;
     private double energyNeededForToday;
     private double energyAcquiredToday;
+    private boolean male;
 
 
     //loadable traits
@@ -57,7 +58,10 @@ public class Animal implements Runnable {
         wayPoints = new ArrayDeque<>();
         moved = true;
         stuck = false;
-        //TODO animal's age is sometimes negative, please fix
+        Random r = new Random();
+        male = false;
+        if (r.nextDouble() < .5) male = true;
+
         birthDay = DateTime.parse(birthDayString, DateTimeFormat.forPattern("dd.MM.YYYY")).withYear(Preserve.getStartDate().getYear());
         int daysDifference = Days.daysBetween(birthDay, Preserve.getStartDate()).getDays();
 //        System.out.println(daysDifference);
@@ -499,6 +503,10 @@ public class Animal implements Runnable {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    public boolean isMale() {
+        return male;
     }
 
     @Override

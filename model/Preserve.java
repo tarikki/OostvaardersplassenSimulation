@@ -20,9 +20,11 @@ import java.util.concurrent.*;
 
 /**
  * Created by extradikke on 20-11-14.
+ *
+ * A model for the preserve
  */
 public class Preserve {
-    private static int numberOfAnimals;
+
     private static int turn;
 
     private static DateTime startDate;
@@ -51,8 +53,6 @@ public class Preserve {
 
     private static double currentDailyMaxTempIncrement;
     private static double currentDailyMinTempIncrement;
-    private static double currentHourlyMaxTempIncrement;
-    private static double currentHourlyMinTempIncrement;
     private static double[] dailyTemperatures = new double[24];
     private static HashMap<Integer, MonthlyWeather> weatherHashMap = new HashMap<>();
     private static Populations initialPopulations;
@@ -70,8 +70,13 @@ public class Preserve {
     private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     public static CountDownLatch latch;
 
-    public static void setupPreserve(double latitudeInput, int numberOfAnimalsInput, DateTime startDateInput,
-                                     DateTime endDateInput) {
+    /**
+     * Initialize all the values needed in the beginning
+     * @param latitudeInput     latitude of the area in question, used to calculate the amount of daylight
+     * @param startDateInput    start date of simulation
+     * @param endDateInput      end date of simulation
+     */
+    public static void setupPreserve(double latitudeInput, DateTime startDateInput, DateTime endDateInput) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
 
         simulationComplete = false;
@@ -105,19 +110,18 @@ public class Preserve {
 
 
         turn = 0;
-//        Random r = new Random();
-        numberOfAnimals = numberOfAnimalsInput;
+
         loadInitialPopulations();
         loadAnimals();
 
     }
 
-    public static int getNumberOfAnimals() {
-        return numberOfAnimals;
-    }
 
-
-    public static void executeTurn2() throws InterruptedException {
+    /**
+     * a method for performing all the actions during one time tick
+     * @throws InterruptedException
+     */
+    public static void executeTurn() throws InterruptedException {
 
         checkForNight();
 //        List<Callable<Object>> todo = new ArrayList<Callable<Object>>(animals.size());
@@ -178,6 +182,12 @@ public class Preserve {
 
     }
 
+    /**
+     * TempMonths are calculated from halfway of each month to the half of the next.
+     * This method checks weather it's necessary to calculate new values for the temperature month
+     *
+     * @return boolean to indicate change of month
+     */
     public static boolean isNewTempMonth() {
         boolean newTempMonth = false;
         if (!currentTempMonthSpan.contains(currentDate)) {
@@ -198,6 +208,9 @@ public class Preserve {
         setupTempIncrements();
     }
 
+    /**
+     * This method calculates the rate of change in the average temperature during one temperature month
+     */
     public static void setupTempIncrements() {
         startMaxTemp = MapHandlerAdvanced.getWeatherHashMap().get(currentTempMonthSpan.getStart().getMonthOfYear()).getAvMaxTemp();
         endMaxTemp = MapHandlerAdvanced.getWeatherHashMap().get(currentTempMonthSpan.getEnd().getMonthOfYear()).getAvMaxTemp();
@@ -214,6 +227,9 @@ public class Preserve {
 
     }
 
+    /**
+     * Calculate the max and min temperatures of the current day
+     */
     public static void calculateDailyTemperatures() {
         todayMaxTemp = startMaxTemp + currentDailyMaxTempIncrement * (new Duration(currentTempMonthSpan.getStart(), currentDate)).getStandardDays();
         todayMinTemp = startMinTemp + currentDailyMinTempIncrement * (new Duration(currentTempMonthSpan.getStart(), currentDate)).getStandardDays();
@@ -222,6 +238,9 @@ public class Preserve {
         calculateAllDayTemperatures();
     }
 
+    /**
+     * This method sets the current temperature from the hourly temperature array
+     */
     public static void calculateHourlyTemperature() {
         System.out.println("hour: " + currentDate.hourOfDay().get());
         currentTemperature = dailyTemperatures[currentDate.hourOfDay().get()];
@@ -231,28 +250,18 @@ public class Preserve {
 
     public static void calculateAllDayTemperatures() {
         double tempMultiplyer = 0;
-//        if ((new Interval(currentDate.withTimeAtStartOfDay().withHourOfDay(6), currentDate.withTimeAtStartOfDay().withHourOfDay(18))).contains(currentDate)) {
-//            tempMultiplyer = todayMaxTemp;
-//        } else {
-//            tempMultiplyer = todayMinTemp;
-//        }
-
         tempMultiplyer = todayMaxTemp - todayMinTemp;
 
         for (int hour = 0; hour < 24; hour++) {
 
             dailyTemperatures[hour] = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
                     currentDate.withTimeAtStartOfDay().plusMinutes(hour * 60)).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
-
-//            System.out.println(currentDate.getHourOfDay() + " " + dailyTemperatures[hour]);
         }
-
-//        currentTemperature = Math.cos(2 * Math.PI * ((Config.lengthOfDayInMinutes / 2 + (double) new Duration(currentDate.withTimeAtStartOfDay(),
-//                currentDate).getStandardMinutes()) / Config.lengthOfDayInMinutes)) * tempMultiplyer / 2 + todayMinTemp + tempMultiplyer / 2;
-
-//        System.out.println(currentDate.getHourOfDay() + " " + currentTemperature);
     }
 
+    /**
+     * This method sets all the variables and actions necessary for the start of a new day
+     */
     public static void setupNewDay() {
         System.out.println("New Day");
 
@@ -263,6 +272,7 @@ public class Preserve {
         calculateDailyTemperatures();
 
         dailyEvents.setMaxTemp(todayMaxTemp);
+
         dailyEvents.setMinTemp(todayMinTemp);
         dailyEvents.setLengthOfDay(currentDayLength);
 
@@ -321,7 +331,19 @@ public class Preserve {
 
     }
 
+    /**
+     * This method loops through all the animals and makes them reproduce if they are pregnant
+     */
     private static void reproduce() {
+        boolean deerMales = false;
+        boolean cowMales = false;
+        boolean horseMales = false;
+        for (Animal animal : animals) {
+            if (animal.getClass().getSimpleName().equals("Deer") && animal.isMale()){
+                deerMales = true;
+            }
+        }
+
         ArrayList<Animal> youngOnes = new ArrayList<>();
         Random r = new Random();
         for (Animal animalBreeding : animals) {
@@ -596,6 +618,7 @@ public class Preserve {
         return simulationComplete;
     }
 
-    public void returnValidCoordinates() {
+    public static double[] getDailyTemperatures() {
+        return dailyTemperatures;
     }
 }
