@@ -83,7 +83,7 @@ public class Main {
                     e.printStackTrace();
                 }
             }
-        }, 0, 1000/Config.getSpeedOfSimulation());
+        }, 0, (1000/Config.getSpeedOfSimulation()));
 
         timer2 = new Timer();
 
