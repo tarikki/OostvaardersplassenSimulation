@@ -1,5 +1,6 @@
 package view;
 
+import controller.Main;
 import mapUtils.MapHandlerAdvanced;
 import model.Animal;
 import model.Preserve;
@@ -22,12 +23,14 @@ import java.util.ArrayList;
 import static controller.Main.*;
 
 /**
+ * A class that creates the map view of the preserve.
  * Created by Pepe on 27.11.2014.
  */
 public class MapView extends JPanel {
 
 
     public BriefStatistics briefStatistics;
+    private boolean isFinished;
     private JPanel mapButtons;
     public JLabel drawHolder;
     private BufferedImage backgroundImage;
@@ -42,11 +45,12 @@ public class MapView extends JPanel {
     public MapView() {
 
         this.setLayout(new BorderLayout());
+        isFinished = false;
         rectangles = new ArrayList<AnimalRectangle>();
 
         mapHolder = new JPanel();
 
-        /// Shitty tooltip finally works with Borderlayout west! However, keep map centered for now
+
         this.add(mapHolder);
 
         this.setOpaque(false);
@@ -180,7 +184,7 @@ public class MapView extends JPanel {
             int newX = Preserve.getAnimals().get(i).getxPos() / scale;
             int newY = Preserve.getAnimals().get(i).getyPos() / scale;
 
-            rectangles.add(new AnimalRectangle(newX, newY, 5, 5, Preserve.getAnimals().get(i), Preserve.getAnimals().get(i).getName())); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
+            rectangles.add(new AnimalRectangle(newX, newY, 2, 2, Preserve.getAnimals().get(i), Preserve.getAnimals().get(i).getName())); //// LOCATION X, LOCATION Y, WIDTH, HEIGHT, ID
 
 
         }
@@ -243,12 +247,13 @@ public class MapView extends JPanel {
         clearAnimals();
         animalstoRectangles();
         drawAnimals();
+        endSimulation();
 
 
     }
 
 
-    /// Ask Harald about this. Only works with frame.pack() or without BorderLayOut
+
     public void tooltipTest() {
         final AnimalRectangle[] animalRectangle = new AnimalRectangle[1];
 
@@ -275,6 +280,20 @@ public class MapView extends JPanel {
                 }
             }
         });
+
+    }
+    public  void endSimulation()
+    {
+
+        if (Preserve.isSimulationComplete() && !isFinished) {
+            JOptionPane.showMessageDialog(this.getRootPane(), "The simulation successfully finished", "Simulation complete", JOptionPane.ERROR_MESSAGE);
+            isFinished = true;
+            Main.timer.cancel();
+            Main.timer2.cancel();
+            Main.statsTimer.cancel();
+        }
+
+
     }
 
 
@@ -289,9 +308,11 @@ public class MapView extends JPanel {
         private JLabel temperature;
         private JLabel nightOrDay;
 
+
         protected JLabel cow;
         protected JLabel deer;
         protected JLabel horse;
+        protected JLabel legendTitle;
 
 
         final String DEGREE = "\u00b0";
@@ -348,10 +369,12 @@ public class MapView extends JPanel {
             this.add(Box.createVerticalStrut(10));
             this.add(birthDeathRatio);
 
-            this.add(Box.createVerticalStrut(10));
+            this.add(Box.createVerticalStrut(30));
 
 
             // TODO try to add these to a single JLabel
+            this.add(legendTitle);
+            this.add(Box.createVerticalStrut(10));
             this.add(cow);
             this.add(deer);
             this.add(horse);
@@ -377,11 +400,12 @@ public class MapView extends JPanel {
             nightOrDay = new JLabel();
             temperature = new JLabel();
             currentTime = new JLabel();
+            legendTitle = new JLabel();
         }
 
         public void updateStats() {
 
-
+            legendTitle.setText("Legend");
             cow.setText("Cow");
             deer.setText("Deer");
             horse.setText("Horse");
@@ -396,6 +420,8 @@ public class MapView extends JPanel {
             nightOrDay.setText("It is currently: ");
             temperature.setText("Temperature: " + String.valueOf(Preserve.getCurrentTemperature()).substring(0, 3) + " " + DEGREE + "C");
         }
+
+
 
     }
 

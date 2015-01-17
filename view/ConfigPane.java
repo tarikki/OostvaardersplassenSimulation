@@ -13,8 +13,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created by extradikke on 27/11/14.
+ * Configuration screen to change variables in the preserve.
+ * Created by Pepe on 27/11/14.
  */
+
 public class ConfigPane extends JPanel {
 
     private static final String simulationConfig = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/Simulation.json";
@@ -172,7 +174,7 @@ public class ConfigPane extends JPanel {
         numAnimals.setToolTipText("Enter the number of animals");
         numAnimals.setVisible(true);
 
-        String [] speedValues = {String.valueOf(10),String.valueOf(50),String.valueOf(100),String.valueOf(200), String.valueOf(500), String.valueOf(1000) + " (MAX)"};
+        String [] speedValues = {String.valueOf(100),String.valueOf(200),String.valueOf(500), String.valueOf(1000)};
         speed = new JComboBox(speedValues);     /// Get default speed
         speed.setToolTipText("Select the speed of simulation");
         speed.setBackground(Color.WHITE);

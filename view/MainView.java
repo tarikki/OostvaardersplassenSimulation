@@ -1,5 +1,7 @@
 package view;
 
+import model.Preserve;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
@@ -8,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
+ * Controller for GUI.
  * Created by Pepe on 19.11.2014.
  */
 public class MainView {
@@ -18,8 +21,8 @@ public class MainView {
     public static final int DEFAULT_HEIGHT = SCREEN_SIZE.height * 2 / 3;
     public static final Color DEFAULT_BG_COLOR = new Color(238, 238, 238);
 
-    private JMenu simulationMenu; ////  Simulation menu
-    private JMenu mapMenu; ///  map menu
+    private JMenu simulationMenu;
+    private JMenu mapMenu;
     private JMenuBar menuBar;
     public GUI gui;
     private StartScreen startScreen;
@@ -38,9 +41,6 @@ public class MainView {
 
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-
-
-
 
 
                 gui = new GUI();
@@ -86,11 +86,10 @@ public class MainView {
 
             /// Create the tabbed pane
             tabbedPane = new TabbedPane(this);
-//            tabbedPane.setVisible(true);
+
             startScreen = new StartScreen(this);
 
             this.add(startScreen);
-//            this.add(tabbedPane); // Add tabbedPane tab to center
 
 
         }
@@ -193,13 +192,14 @@ public class MainView {
                         tabbedPane.mapView.briefStatistics.cow.setVisible(false);
                         tabbedPane.mapView.briefStatistics.deer.setVisible(false);
                         tabbedPane.mapView.briefStatistics.horse.setVisible(false);
-
+                        tabbedPane.mapView.briefStatistics.legendTitle.setVisible(false);
                         gui.pack();
 
                     } else {
                         tabbedPane.mapView.briefStatistics.cow.setVisible(true);
                         tabbedPane.mapView.briefStatistics.deer.setVisible(true);
                         tabbedPane.mapView.briefStatistics.horse.setVisible(true);
+                        tabbedPane.mapView.briefStatistics.legendTitle.setVisible(true);
                         gui.pack();
 
                     }

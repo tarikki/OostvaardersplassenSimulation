@@ -1,6 +1,8 @@
 package view;
 
+import model.Preserve;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
 import util.ButtonUtils;
 import util.TemperatureChart;
 
@@ -12,9 +14,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 /**
- * Created by Veera on 27.11.2014.
+ * Creates the statistics view tab of the program
+ * Created by Pepe on 27.11.2014.
  */
 public class StatisticsView extends JPanel {
     private JList chartList;
@@ -23,7 +27,7 @@ public class StatisticsView extends JPanel {
     private JPanel chartHolder;
     private TemperatureChart temperatureChart;
     private MainView.GUI gui;
-public ChartPanel chartPanel;
+
     public BufferedImage image;
 
     private JLabel test;
@@ -73,13 +77,13 @@ public ChartPanel chartPanel;
         statisticButtons.setLayout(new FlowLayout());
         statisticButtons.setVisible(true);
 
-
+        //TODO fix file path below
         /// Save button
         ButtonUtils.addButton(statisticButtons, "Save chart", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    // Add functionality to save chart here
+                    ChartUtilities.saveChartAsPNG(new File("C:/Pelit/extradikke.png"), temperatureChart.getChart(), chartHolder.getWidth(), chartHolder.getHeight());
 
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -87,14 +91,7 @@ public ChartPanel chartPanel;
             }
         });
 
-        // Stop button
-        ButtonUtils.addButton(statisticButtons, "PLACEHOLDER", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                /// ENABLE BUTTON FUNCTIONALITY HERE
 
-            }
-        });
 
     }
 
