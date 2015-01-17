@@ -1,7 +1,10 @@
 package util;
 import javax.swing.*;
 import java.awt.*;
-
+/**
+ *
+ * This class produces the colored rectangles as icons for the Legend
+ */
 
 public class ColorIcon implements Icon
 {

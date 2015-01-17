@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * Configuration screen to change variables in the preserve.
  * Created by extradikke on 27/11/14.
  */
 public class ConfigPane extends JPanel {
@@ -46,7 +47,7 @@ public class ConfigPane extends JPanel {
     private JLabel configLabels;
     private DateVerifier dateVerifier;
 
-    //// Implement speed as drop down (combo box?) now we use JFormattedTextField
+
 
     private MainView.GUI gui;
 
@@ -146,7 +147,7 @@ public class ConfigPane extends JPanel {
     }
 
 
-    // TODO display popup / change color of textfield if inputs are wrong.
+
     private void createTextFields() {
 
 
@@ -180,7 +181,7 @@ public class ConfigPane extends JPanel {
 
     }
 
-    //TODO fix textField size
+
     private void createConfigPanel() {
         holder = new JPanel();
         GridBagConstraints gbc = new GridBagConstraints();

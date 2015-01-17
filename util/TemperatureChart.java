@@ -11,6 +11,7 @@ import org.joda.time.Hours;
 import java.awt.*;
 
 /**
+ * Creates a line chart of temperatures in the preserve using the JFreeChart library
  * Created by Pepe on 19.12.2014.
  */
 public class TemperatureChart {
@@ -20,16 +21,7 @@ public class TemperatureChart {
     public JFreeChart chart;
     public DefaultCategoryDataset dataset;
 
-    /**
-     * Created by extradikke on 14/12/14.
-     */
 
-
-    /**
-     * Creates a new demo.
-     *
-     * @param title the frame title.
-     */
     public TemperatureChart(final String title) {
 
 

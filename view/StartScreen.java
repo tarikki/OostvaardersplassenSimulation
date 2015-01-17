@@ -9,7 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created by extradikke on 27/11/14.
+ * First screen to display when the program is run. Options to start, exit or to configure the settings of the preserve
+ * Created by Pepe on 27/11/14.
  */
 public class StartScreen extends JPanel {
     private JLabel title;

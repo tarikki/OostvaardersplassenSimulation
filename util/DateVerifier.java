@@ -10,8 +10,11 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * Used to verify correct user input when inserting dates
  * Created by Pepe on 7.12.2014.
  */
+
+
 public class DateVerifier extends InputVerifier {
     DateTimeFormatter df;
    public static DateTimeParser[] parsers = {
@@ -49,7 +52,7 @@ public class DateVerifier extends InputVerifier {
 
 
 
-        /// How do we fail?
+
 
        // System.out.println("date = " + date.toString());
 

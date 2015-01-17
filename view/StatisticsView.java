@@ -14,7 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 /**
- * Created by Veera on 27.11.2014.
+ * Creates the statistics view tab of the program
+ * Created by Pepe on 27.11.2014.
  */
 public class StatisticsView extends JPanel {
     private JList chartList;
@@ -98,7 +99,7 @@ public ChartPanel chartPanel;
 
     }
 
-    // TODO add mouselisteners to each item in list and make them switch between charts
+
     public void createChartList() {
         chartList = new JList(chartNames);
 

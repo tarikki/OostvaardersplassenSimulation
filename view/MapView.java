@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import static controller.Main.*;
 
 /**
+ * A class that creates the map view of the preserve.
  * Created by Pepe on 27.11.2014.
  */
 public class MapView extends JPanel {
@@ -248,7 +249,9 @@ public class MapView extends JPanel {
     }
 
 
-    /// Ask Harald about this. Only works with frame.pack() or without BorderLayOut
+    /**
+     * Mouse-over tooltip for each animal
+     */
     public void tooltipTest() {
         final AnimalRectangle[] animalRectangle = new AnimalRectangle[1];
 
@@ -277,7 +280,10 @@ public class MapView extends JPanel {
         });
     }
 
-
+    /**
+     *
+     * Displays the brief statistics on the right hand side of the map view
+     */
     public class BriefStatistics extends JPanel {
         private JLabel currentDate;
         private JLabel currentTime;

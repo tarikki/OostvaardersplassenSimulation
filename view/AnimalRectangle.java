@@ -5,6 +5,7 @@ import model.Animal;
 import java.awt.*;
 
 /**
+ * Custom rectangle class used to display animals in the map view tab
  * Created by Pepe on 27.11.2014.
  */
 public class AnimalRectangle extends Rectangle {

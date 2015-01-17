@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
+ * Controller for GUI.
  * Created by Pepe on 19.11.2014.
  */
 public class MainView {
@@ -52,7 +53,10 @@ public class MainView {
         });
     }
 
-
+    /**
+     *
+     * Main frame for the program.
+     */
     /// Our frame with simulationMenu
     public class GUI extends JFrame {
         public TabbedPane tabbedPane;
@@ -86,11 +90,11 @@ public class MainView {
 
             /// Create the tabbed pane
             tabbedPane = new TabbedPane(this);
-//            tabbedPane.setVisible(true);
+
             startScreen = new StartScreen(this);
 
             this.add(startScreen);
-//            this.add(tabbedPane); // Add tabbedPane tab to center
+
 
 
         }
@@ -118,7 +122,7 @@ public class MainView {
         }
 
         public void createMapMenuButtons() {
-            /// FIRST ITEM
+
             JMenuItem saveMap = new JMenuItem("Save map");
             saveMap.setBackground(Color.black);
             saveMap.setForeground(Color.white);
@@ -130,7 +134,7 @@ public class MainView {
             });
             mapMenu.add(saveMap);
 
-            /// FOURTH MENU ITEM
+
             JMenuItem openMap = new JMenuItem("Open map");
             openMap.setBackground(Color.black);
             openMap.setForeground(Color.white);
