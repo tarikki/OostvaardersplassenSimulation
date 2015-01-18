@@ -4,6 +4,7 @@ import model.Preserve;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import util.ButtonUtils;
+import util.IOUtil;
 import util.PopulationChangeChart;
 import util.TemperatureChart;
 
@@ -25,7 +26,7 @@ import java.io.IOException;
  */
 public class StatisticsView extends JPanel {
     private JList chartList;
-    private String[] chartNames = {"Hourly temperature for current day", "Changes in population per animaltype", "Chart 3"};
+    private String[] chartNames = {"Hourly temperature for current day", "Changes in populations"};
     private JPanel statisticButtons;
     private JPanel chartHolder;
     private TemperatureChart temperatureChart;
@@ -79,13 +80,14 @@ public class StatisticsView extends JPanel {
         statisticButtons.setLayout(new FlowLayout());
         statisticButtons.setVisible(true);
 
-        //TODO fix file path below
+
         /// Save button
         ButtonUtils.addButton(statisticButtons, "Save chart", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                    saveChart();
+                    JOptionPane.showMessageDialog(gui.getRootPane(), "Saved chart successfully", "Chart saved", JOptionPane.INFORMATION_MESSAGE);
 
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -97,11 +99,11 @@ public class StatisticsView extends JPanel {
     }
 
     public void saveChart() throws IOException {
-        File f = new File("C:/Pelit/MyFile.png");
+        File f = new File(IOUtil.getConfigDirectory() +"SavedChart.png");
         ImageIO.write(image, "PNG", f);
     }
 
-    // TODO add mouselisteners to each item in list and make them switch between charts
+
     public void createChartList() {
         chartList = new JList(chartNames);
 
@@ -151,7 +153,7 @@ public class StatisticsView extends JPanel {
                     }
                 } else {
                     /// Do something here if nothing is selected. Maybe display the 1st one by default??
-                    /// Maybe do nothing
+
 
 
                 }

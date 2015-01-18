@@ -1,5 +1,6 @@
 package util;
 
+import model.Preserve;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -20,22 +21,22 @@ public class PopulationChangeChart {
     JFreeChart chart;
 
 
-    public PopulationChangeChart()
-    {
-     dataset = createDataset();
-     chart = createChart(dataset);
+    public PopulationChangeChart() {
+        dataset = createDataset();
+        chart = createChart(dataset);
     }
 
     private CategoryDataset createDataset() {
 
         // row keys...
         final String series1 = "Population at start";
-        final String series2 = "Deaths";
-        final String series3 = "Final population";
+        final String series2 = "Final population";
+        final String series3 = "Births";
+        final String series4 = "Deaths";
 
         // column keys...
         final String category1 = "Cows";
-        final String category2 = "Deers";
+        final String category2 = "Deer";
         final String category3 = "Horses";
 
 
@@ -43,19 +44,24 @@ public class PopulationChangeChart {
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
 
-        dataset.addValue(1.0, series1, category1); /// Cow population at start
-        dataset.addValue(4.0, series1, category2); /// Deer population at start
-        dataset.addValue(3.0, series1, category3); /// Horse population at start
+        dataset.addValue(Preserve.getStatisticsStorage().get("Cow").getNumberAtStart(), series1, category1); /// Cow population at start
+        dataset.addValue(Preserve.getStatisticsStorage().get("Deer").getNumberAtStart(), series1, category2); /// Deer population at start
+        dataset.addValue(Preserve.getStatisticsStorage().get("Horse").getNumberAtStart(), series1, category3); /// Horse population at start
+
+        dataset.addValue(Preserve.getStatisticsStorage().get("Cow").getNumberAtEnd(), series2, category1); // Final cow population
+        dataset.addValue(Preserve.getStatisticsStorage().get("Deer").getNumberAtEnd(), series2, category2); // Final deer population
+        dataset.addValue(Preserve.getStatisticsStorage().get("Horse").getNumberAtEnd(), series2, category3); // Final horse population
+
+        dataset.addValue(Preserve.getStatisticsStorage().get("Cow").getBirths(), series3, category1); // Final cow births
+        dataset.addValue(Preserve.getStatisticsStorage().get("Deer").getBirths(), series3, category2); // Final deer births
+        dataset.addValue(Preserve.getStatisticsStorage().get("Horse").getBirths(), series3, category3); // Final horse births
 
 
-        dataset.addValue(5.0, series2, category1); // Cow deaths
-        dataset.addValue(7.0, series2, category2); // Deer deaths
-        dataset.addValue(6.0, series2, category3); // Horse deaths
+        dataset.addValue(Preserve.getStatisticsStorage().get("Cow").getDeaths(), series4, category1); // Cow deaths
+        dataset.addValue(Preserve.getStatisticsStorage().get("Deer").getDeaths(), series4, category2); // Deer deaths
+        dataset.addValue(Preserve.getStatisticsStorage().get("Horse").getDeaths(), series4, category3); // Horse deaths
 
 
-        dataset.addValue(4.0, series3, category1); // Final cow population
-        dataset.addValue(3.0, series3, category2); // Final deer population
-        dataset.addValue(2.0, series3, category3); // Final horse population
 
 
         return dataset;
@@ -82,7 +88,6 @@ public class PopulationChangeChart {
         );
 
 
-
         // set the background color for the chart...
         chart.setBackgroundPaint(Color.white);
 
@@ -93,7 +98,6 @@ public class PopulationChangeChart {
         plot.setRangeGridlinePaint(Color.white);
 
 
-
         // disable bar outlines...
         final BarRenderer renderer = (BarRenderer) plot.getRenderer();
         renderer.setDrawBarOutline(false);
@@ -102,8 +106,6 @@ public class PopulationChangeChart {
         renderer.setSeriesPaint(0, Color.BLUE);
         renderer.setSeriesPaint(1, Color.YELLOW);
         renderer.setSeriesPaint(2, Color.GREEN);
-
-
 
 
         return chart;

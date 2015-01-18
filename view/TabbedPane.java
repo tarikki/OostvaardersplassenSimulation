@@ -1,6 +1,8 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * A TabbedPane to hold  map view and statistics view -tabs
@@ -24,6 +26,8 @@ public class TabbedPane extends JTabbedPane {
         this.addTab("Statistics", statisticsView);
 
 
+
     }
+
 }
 
