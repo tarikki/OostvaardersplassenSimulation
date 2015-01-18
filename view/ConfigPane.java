@@ -24,31 +24,16 @@ public class ConfigPane extends JPanel {
     private JPanel configButtons;
     private JPanel itsame;
     private JFormattedTextField startTime;
+    private JFormattedTextField shootingDay;
 
-    public JFormattedTextField getEndTime() {
-        return endTime;
-    }
-
-    public JFormattedTextField getNumAnimals() {
-        return numAnimals;
-    }
-
-    public JComboBox getSpeed() {
-        return speed;
-    }
-
-    public JFormattedTextField getStartTime() {
-        return startTime;
-    }
 
     private JFormattedTextField endTime;
     private JFormattedTextField numAnimals;
     private JComboBox speed;
     private JPanel holder;
-    private JLabel configLabels;
+
     private DateVerifier dateVerifier;
 
-    //// Implement speed as drop down (combo box?) now we use JFormattedTextField
 
     private MainView.GUI gui;
 
@@ -77,10 +62,6 @@ public class ConfigPane extends JPanel {
         this.add(configButtons, BorderLayout.SOUTH);
         this.add(title, BorderLayout.NORTH);
 
-        //holder.add("Starting date:", startTime);
-        // holder.add("Ending date:", endTime);
-        // holder.add ("Number of animals:", numAnimals);
-        // holder.add("Speed of simulation:", speed);
 
         this.add(holder, BorderLayout.CENTER);
 
@@ -89,7 +70,6 @@ public class ConfigPane extends JPanel {
 
     private void createConfigFiles() {
 
-        /// TODO fix variable and string names so they are easier to read
 
         /// Simulation config
 
@@ -98,12 +78,31 @@ public class ConfigPane extends JPanel {
         Config.setStartingDate(DateVerifier.formatter.parseDateTime(getStartTime().getText()));
         Config.setEndingDate(DateVerifier.formatter.parseDateTime(getEndTime().getText()));
 
-//        util.JsonWriter.writeSimulationConfig(IOUtil.configLoader, IOUtil.DEFAULT_CONFIG_PATH); // OUTPUT ---- filepath
+
         IOUtil.saveConfig();
 
 
     }
 
+    public JFormattedTextField getEndTime() {
+        return endTime;
+    }
+
+    public JFormattedTextField getNumAnimals() {
+        return numAnimals;
+    }
+
+    public JComboBox getSpeed() {
+        return speed;
+    }
+
+    public JFormattedTextField getStartTime() {
+        return startTime;
+    }
+
+    public JFormattedTextField getShootingDay() {
+        return shootingDay;
+    }
 
 
     private void createButtons() {
@@ -148,7 +147,6 @@ public class ConfigPane extends JPanel {
     }
 
 
-    // TODO display popup / change color of textfield if inputs are wrong.
     private void createTextFields() {
 
 
@@ -169,12 +167,16 @@ public class ConfigPane extends JPanel {
         endTime.setToolTipText("Enter the end date, eg. 10/12/1990");
         endTime.setVisible(true);
 
+        shootingDay = new JFormattedTextField(defaultEnd);
+        shootingDay.setInputVerifier(new DateVerifier(dateVerifier.formatter));
+        shootingDay.setToolTipText("Enter the shooting date, eg. 10/12/1990");
+        shootingDay.setVisible(true);
 
-        numAnimals = new JFormattedTextField(Config.getNumberOfAnimals()); //// Get default num of animals
-        numAnimals.setToolTipText("Enter the number of animals");
+        numAnimals = new JFormattedTextField(0); //// Get default num of animals
+        numAnimals.setToolTipText("Enter the number of animals to shoot");
         numAnimals.setVisible(true);
 
-        String [] speedValues = {String.valueOf(100),String.valueOf(200),String.valueOf(500), String.valueOf(1000)};
+        String[] speedValues = {String.valueOf(100), String.valueOf(200), String.valueOf(500), String.valueOf(1000)};
         speed = new JComboBox(speedValues);     /// Get default speed
         speed.setToolTipText("Select the speed of simulation");
         speed.setBackground(Color.WHITE);
@@ -182,7 +184,7 @@ public class ConfigPane extends JPanel {
 
     }
 
-    //TODO fix textField size
+
     private void createConfigPanel() {
         holder = new JPanel();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -191,11 +193,12 @@ public class ConfigPane extends JPanel {
 
         JLabel start = new JLabel("Start date:");
         JLabel end = new JLabel("End date:");
-        JLabel animuls = new JLabel("# of animals:");
+        JLabel animuls = new JLabel("# of animals to shoot:");
         JLabel speedster = new JLabel("Speed:");
+        JLabel shoot = new JLabel("Shooting day:");
 
 
-        gbc.insets = new Insets(3, 3, 15, 15);
+        gbc.insets = new Insets(3, 4, 15, 15);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
@@ -221,21 +224,29 @@ public class ConfigPane extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        holder.add(animuls, gbc);
+        holder.add(speedster, gbc);
 
         gbc.gridx = 3;
         gbc.gridy = 2;
-        holder.add(numAnimals, gbc);
+        holder.add(speed, gbc);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        holder.add(speedster, gbc);
+        holder.add(shoot, gbc);
 
         gbc.gridx = 3;
         gbc.gridy = 3;
-        holder.add(speed, gbc);
+        holder.add(shootingDay, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        holder.add(animuls, gbc);
+
+        gbc.gridx = 3;
+        gbc.gridy = 4;
+        holder.add(numAnimals, gbc);
 
 
     }
