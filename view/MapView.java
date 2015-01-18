@@ -254,7 +254,6 @@ public class MapView extends JPanel {
     }
 
 
-
     public void tooltipTest() {
         final AnimalRectangle[] animalRectangle = new AnimalRectangle[1];
 
@@ -283,8 +282,8 @@ public class MapView extends JPanel {
         });
 
     }
-    public  void endSimulation()
-    {
+
+    public void endSimulation() {
 
         if (Preserve.isSimulationComplete() && !isFinished) {
             JOptionPane.showMessageDialog(this.getRootPane(), "The simulation successfully finished", "Simulation complete", JOptionPane.INFORMATION_MESSAGE);
@@ -305,7 +304,6 @@ public class MapView extends JPanel {
         private JLabel timeElapsed;
         private JLabel births;
         private JLabel deaths;
-        private JLabel birthDeathRatio;
         private JLabel temperature;
         private JLabel nightOrDay;
         private JLabel startingDate;
@@ -372,8 +370,7 @@ public class MapView extends JPanel {
             this.add(births);
             this.add(Box.createVerticalStrut(10));
             this.add(deaths);
-            this.add(Box.createVerticalStrut(10));
-            this.add(birthDeathRatio);
+
 
             this.add(Box.createVerticalStrut(30));
 
@@ -400,7 +397,7 @@ public class MapView extends JPanel {
             numberofAnimals = new JLabel();
             births = new JLabel();
             deaths = new JLabel();
-            birthDeathRatio = new JLabel();
+
             currentDate = new JLabel();
             timeElapsed = new JLabel();
             nightOrDay = new JLabel();
@@ -418,10 +415,9 @@ public class MapView extends JPanel {
             deer.setText("Deer");
             horse.setText("Horse");
 
-            numberofAnimals.setText("# of animals:  " + Preserve.getAnimals().size());
-            births.setText("# of births:");
-            deaths.setText("# of deaths:");
-            birthDeathRatio.setText("Births / deaths:");
+            numberofAnimals.setText("# of animals: " + Preserve.getAnimals().size());
+            births.setText("# of births: " + Preserve.getBirths());
+            deaths.setText("# of deaths: " + Preserve.getDeaths());
             startingDate.setText("Starting date: " + Preserve.getStartDate().toString("dd/MM/yyyy"));
             currentDate.setText("Current date: " + Preserve.getCurrentDate().toString("dd/MM/yyyy"));
             endingDate.setText("Ending date: " + Preserve.getEndDate().toString("dd/MM/yyyy"));
@@ -429,16 +425,12 @@ public class MapView extends JPanel {
             timeElapsed.setText("Time elapsed: " + Days.daysBetween(Preserve.getStartDate().toLocalDate(), Preserve.getCurrentDate().toLocalDate()).getDays() + " days");
             temperature.setText("Temperature: " + String.valueOf(Preserve.getCurrentTemperature()).substring(0, 3) + " " + DEGREE + "C");
 
-            if (Preserve.isNight())
-            {
+            if (Preserve.isNight()) {
                 nightOrDay.setText("It is currently: " + "Night");
-            }
-            else
-            {
+            } else {
                 nightOrDay.setText("It is currently: " + "Day");
             }
         }
-
 
 
     }
