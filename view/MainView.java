@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
- * Controller for GUI.
+ * Controller for GUI. Also contains the main JFrame of the application
  * Created by Pepe on 19.11.2014.
  */
 public class MainView {
@@ -22,17 +22,10 @@ public class MainView {
     public static final Color DEFAULT_BG_COLOR = new Color(238, 238, 238);
 
     private JMenu simulationMenu;
-    private JMenu mapMenu;
+
     private JMenuBar menuBar;
     public GUI gui;
     private StartScreen startScreen;
-
-
-    private static java.util.Timer timer;
-
-    /// Instantiated here because simulationMenu needs to use it
-
-    private JFileChooser chooser;
 
 
     // Constructor for creating the GUI
@@ -53,7 +46,7 @@ public class MainView {
     }
 
 
-    /// Our frame with simulationMenu
+    /// Our main frame for the program
     public class GUI extends JFrame {
         public TabbedPane tabbedPane;
 
@@ -75,16 +68,8 @@ public class MainView {
             createSimulationMenuButtons();
 
 
-            createMapMenu();
-            createMapMenuButtons();
-
-
-            createFileChooser();
-
             this.setTitle("Simulation project - Group 2");
 
-
-            /// Create the tabbed pane
             tabbedPane = new TabbedPane(this);
 
             startScreen = new StartScreen(this);
@@ -102,45 +87,11 @@ public class MainView {
             this.setJMenuBar(menuBar);
         }
 
-        /// Menu and its buttons for Maps
-        public void createMapMenu() {
-            mapMenu = new JMenu("Map configuration");
-            mapMenu.setBackground(Color.black);
-            mapMenu.setForeground(Color.white);
-
-            menuBar.add(mapMenu);
-
-        }
 
         public JMenuBar getMenuBarHandler() {
             return menuBar;
         }
 
-        public void createMapMenuButtons() {
-            /// FIRST ITEM
-            JMenuItem saveMap = new JMenuItem("Save map");
-            saveMap.setBackground(Color.black);
-            saveMap.setForeground(Color.white);
-            saveMap.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    saveMap();
-                }
-            });
-            mapMenu.add(saveMap);
-
-            /// FOURTH MENU ITEM
-            JMenuItem openMap = new JMenuItem("Open map");
-            openMap.setBackground(Color.black);
-            openMap.setForeground(Color.white);
-            openMap.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    openNewMap();
-                }
-            });
-            mapMenu.add(openMap);
-        }
 
         /// Menu and its buttons for Simulation
         public void createSimulationMenu() {
@@ -163,7 +114,7 @@ public class MainView {
             showHideAnimals.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    /// Toggle between show and hide legend
+                    /// Toggle between show and hide animals
                     counter2[0] = !counter2[0];
 
                     if (counter2[0]) {
@@ -207,56 +158,6 @@ public class MainView {
             });
             simulationMenu.add(showHideLegend);
 
-
-        }
-
-        // Filechooser
-        public void createFileChooser() {
-            chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new File("MapFiles")); //Set directory to local MapFiles folder
-            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            chooser.addChoosableFileFilter(new FileFilter() //User can only save and load txt files
-            {
-
-                @Override
-                public boolean accept(File file) {
-                    return file.getName().endsWith(".png");
-                }
-
-                @Override
-                public String getDescription() {
-                    return ".png files";
-                }
-
-            });
-        }
-
-
-        /// ADD FUNCTIONALITY FOR MENU ITEMS HERE!
-        public void saveMap() {
-
-            int returnVal = chooser.showSaveDialog(this);
-
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                /// Add functionality to save map here!
-
-                System.out.println("Saved: " + chooser.getSelectedFile().getAbsolutePath());
-            }
-
-        }
-
-        public void openNewMap() {
-            int returnVal = chooser.showOpenDialog(this);
-
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File input = new File(chooser.getSelectedFile().getAbsolutePath());
-
-                /// Add functionality to open a new map here
-
-            }
-        }
-
-        public void createThirdPane() {
 
         }
 

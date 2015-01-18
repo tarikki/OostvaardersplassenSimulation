@@ -113,6 +113,7 @@ public class StatisticsView extends JPanel {
 
     }
 
+    // Mouselisteners for chartList.
     public void mouseListeners() {
         chartList.addListSelectionListener(new ListSelectionListener() {
             @Override

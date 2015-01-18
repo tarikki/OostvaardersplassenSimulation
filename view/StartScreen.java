@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * First screen to display when the program is run. Options to start, exit or to configure the settings of the preserve
+ * First screen to display when the program is run. Contains options to start the simulation, exit the program or to configure the settings of the preserve
  * Created by Pepe on 27/11/14.
  */
 public class StartScreen extends JPanel {

@@ -14,6 +14,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import java.awt.*;
 
 /**
+ * Creates a bar chart consisting of population at start, population at end, birth and deaths per each animal type in the preserve
  * Created by Pepe on 18.1.2015.
  */
 public class PopulationChangeChart {
@@ -78,7 +79,7 @@ public class PopulationChangeChart {
         // create the chart...
         this.chart = ChartFactory.createBarChart(
                 "Changes in populations",         // chart title
-                "Changes in population per type of animal",               // domain axis label
+                "Changes in populations",               // domain axis label
                 "Number of animals",                  // range axis label
                 dataset,                  // data
                 PlotOrientation.VERTICAL, // orientation

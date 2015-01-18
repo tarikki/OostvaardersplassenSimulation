@@ -35,7 +35,7 @@ import java.io.IOException;
 public class TemperatureChart {
 
 
-    public TimeSeriesCollection data;
+
     public TimeSeries series;
     public JFreeChart chart;
     public TimeSeriesCollection dataset;
@@ -63,13 +63,13 @@ public class TemperatureChart {
     private JFreeChart createChart() {
         final String chartTitle = "Hourly temperature for " + Preserve.getCurrentDate().toString("dd/MM/yyyy");
         final JFreeChart chart = ChartFactory.createTimeSeriesChart(
-                chartTitle,
-                "Time",
-                "Temperature in celsius",
-                dataset,
-                true,
-                true,
-                false
+                chartTitle, // title
+                "Hour of day", /// x-axis title
+                "Temperature in celsius", /// y-axis title
+                dataset, /// dataset
+                true, /// legend
+                true, /// tooltip
+                false /// urls
         );
 
 

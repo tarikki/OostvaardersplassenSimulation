@@ -19,7 +19,7 @@ import java.awt.event.ActionListener;
 
 public class ConfigPane extends JPanel {
 
-    private static final String simulationConfig = "/media/extradikke/UbuntuData/SimulationProjectData/Simulation/src/Simulation.json";
+
     private JLabel title;
     private JPanel configButtons;
     private JPanel itsame;
@@ -106,7 +106,7 @@ public class ConfigPane extends JPanel {
 
 
     private void createButtons() {
-        createOpenMapButton();
+
         ButtonUtils.addButton(configButtons, "Start Simulation", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -137,14 +137,8 @@ public class ConfigPane extends JPanel {
 
     }
 
-    private void createOpenMapButton() {
-        ButtonUtils.addButton(this, "Select map", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gui.openNewMap();
-            }
-        });
-    }
+
+
 
 
     private void createTextFields() {

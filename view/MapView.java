@@ -322,9 +322,6 @@ public class MapView extends JPanel {
         public BriefStatistics(ArrayList<Animal> animals) {
             super();
 
-            /// Set size like this
-            //Dimension d = new Dimension (200, 200);
-            //this.setPreferredSize(d);
 
             this.setVisible(true);
             this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -336,7 +333,7 @@ public class MapView extends JPanel {
 
 
 
-            /*
+            /* If you want to make a fancier font here's how..
             statsTitle = new JLabel("Brief statistics");
             Font font = new Font("Serif", Font.BOLD, 24);
             Map attributes = font.getAttributes();
