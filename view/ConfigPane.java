@@ -73,7 +73,8 @@ public class ConfigPane extends JPanel {
 
         /// Simulation config
 
-        Config.setNumberOfAnimals(Integer.parseInt(getNumAnimals().getValue().toString()));
+        Config.setAnimalsToShoot(Integer.parseInt(getNumAnimals().getValue().toString()));
+        Config.setShootingDay(DateVerifier.formatter.parseDateTime(getShootingDay().getText()));
         Config.setSpeedOfSimulation(Integer.parseInt(getSpeed().getSelectedItem().toString()));
         Config.setStartingDate(DateVerifier.formatter.parseDateTime(getStartTime().getText()));
         Config.setEndingDate(DateVerifier.formatter.parseDateTime(getEndTime().getText()));

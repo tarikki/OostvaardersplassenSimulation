@@ -48,6 +48,9 @@ public class Config {
 
     private static DateTime startingDate;
     private static DateTime endingDate;
+    private static DateTime shootingDay;
+    private static int animalsToShoot;
+
 
     public static DateTimeParser[] parsers = {
             DateTimeFormat.forPattern("dd-MM-yyyy").getParser(),
@@ -166,6 +169,22 @@ public class Config {
 
     public static void setPopulationsFilePath(String populationsFilePath) {
         Config.populationsFilePath = populationsFilePath;
+    }
+
+    public static int getAnimalsToShoot() {
+        return animalsToShoot;
+    }
+
+    public static void setAnimalsToShoot(int animalsToShoot) {
+        Config.animalsToShoot = animalsToShoot;
+    }
+
+    public static DateTime getShootingDay() {
+        return shootingDay;
+    }
+
+    public static void setShootingDay(DateTime shootingDay) {
+        Config.shootingDay = shootingDay;
     }
 
     public static String print() {

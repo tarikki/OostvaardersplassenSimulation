@@ -12,7 +12,7 @@ public class PreserveTempTest {
     public static void main(String[] args) {
         IOUtil.loadConfig();
         MapHandlerAdvanced mapHandler = new MapHandlerAdvanced();
-        Preserve.setupPreserve(Config.getLatitude(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
+        Preserve.setupPreserve(Config.getLatitude(), Config.getStartingDate(), Config.getEndingDate(), Config.getAnimalsToShoot(), Config.getShootingDay()); /// Create preserve with X amount of animals
         for (int minutes = 0; minutes < Config.lengthOfDayInMinutes; minutes++) {
 
 

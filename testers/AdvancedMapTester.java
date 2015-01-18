@@ -17,7 +17,7 @@ public class AdvancedMapTester {
         IOUtil.loadConfig();
         System.out.println(Config.print());
         MapHandlerAdvanced mapHandlerAdvanced = new MapHandlerAdvanced();
-        Preserve.setupPreserve(Config.getLatitude(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
+        Preserve.setupPreserve(Config.getLatitude(), Config.getStartingDate(), Config.getEndingDate(), Config.getAnimalsToShoot(), Config.getShootingDay()); /// Create preserve with X amount of animals
 
         int terrain = MapHandlerAdvanced.getTerrainID(1000, 1000);
         int health = MapHandlerAdvanced.getPlantHealth(1000, 1000);

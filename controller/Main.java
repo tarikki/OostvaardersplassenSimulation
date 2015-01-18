@@ -44,7 +44,7 @@ public class Main {
     public static void createPreserve() {
 
 
-        Preserve.setupPreserve(Config.getLatitude(), Config.getStartingDate(), Config.getEndingDate()); /// Create preserve with X amount of animals
+        Preserve.setupPreserve(Config.getLatitude(), Config.getStartingDate(), Config.getEndingDate(), Config.getAnimalsToShoot(), Config.getShootingDay()); /// Create preserve with X amount of animals
 
     }
 

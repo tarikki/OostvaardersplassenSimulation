@@ -26,6 +26,8 @@ public class Preserve {
 
     private static DateTime startDate;
     private static DateTime endDate;
+    private static DateTime shootingDay;
+    private static int animalsToShoot;
     private static boolean simulationComplete;
 
     private static DateTime currentDate;
@@ -77,10 +79,12 @@ public class Preserve {
      * @param startDateInput start date of simulation
      * @param endDateInput   end date of simulation
      */
-    public static void setupPreserve(double latitudeInput, DateTime startDateInput, DateTime endDateInput) {
+    public static void setupPreserve(double latitudeInput, DateTime startDateInput, DateTime endDateInput, int numberOfAnimalsToShoot, DateTime dayToShoot) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
 
         statisticsStorage = new HashMap<>(3);
+        animalsToShoot = numberOfAnimalsToShoot;
+        shootingDay = dayToShoot;
 
 
         simulationComplete = false;
@@ -291,6 +295,9 @@ public class Preserve {
 
         setSunriseAndSunset(currentDayLength);
         Iterator<Animal> animalsIterator = animals.iterator();
+        if (currentDaySpan.contains(shootingDay)) {
+            shootThemBuggers();
+        }
         while (animalsIterator.hasNext()) {
             Animal animal = animalsIterator.next();
             if (animal.isStarving()) {
@@ -345,6 +352,18 @@ public class Preserve {
 
     }
 
+    public static void shootThemBuggers() {
+        Collections.shuffle(animals);
+        int animalsShot = 0;
+        for (Animal animal : animals) {
+            if (animalsShot < animalsToShoot) {
+                animal.setDead(true);
+                animalsShot++;
+                System.out.println("Shot!");
+            }
+        }
+    }
+
     /**
      * This method loops through all the animals and makes them reproduce if they are pregnant
      */
@@ -371,8 +390,8 @@ public class Preserve {
             if (currentDaySpan.contains(animalBreeding.getBirthDay())) {
                 if (r.nextDouble() < animalBreeding.getAgeGroups()[animalBreeding.getAgeGroupNumerical()].getChanceOfPregnancy()
                         && ((animalBreeding.getClass().getSimpleName().equals("Deer") && deerMales) ||
-                                (animalBreeding.getClass().getSimpleName().equals("Cow") && cowMales) ||
-                                (animalBreeding.getClass().getSimpleName().equals("Horse") && horseMales))) {
+                        (animalBreeding.getClass().getSimpleName().equals("Cow") && cowMales) ||
+                        (animalBreeding.getClass().getSimpleName().equals("Horse") && horseMales))) {
                     JsonReader animalLoader = null;
 
                     try {
