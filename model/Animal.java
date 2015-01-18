@@ -25,6 +25,7 @@ public class Animal implements Runnable {
     private double energyNeededForToday;
     private double energyAcquiredToday;
     private boolean male;
+    private int minutesSinceLastDrink;
 
 
     //loadable traits
@@ -60,6 +61,7 @@ public class Animal implements Runnable {
         stuck = false;
         Random r = new Random();
         male = false;
+        minutesSinceLastDrink = 0;
         if (r.nextDouble() < .5) male = true;
 
         birthDay = DateTime.parse(birthDayString, DateTimeFormat.forPattern("dd.MM.YYYY")).withYear(Preserve.getStartDate().getYear());
@@ -115,6 +117,7 @@ public class Animal implements Runnable {
                         foundIt = true;
                         winnerNode = borderNode;
                         loopingDone = true;
+                        System.out.println("found water!");
                     }
                 }
                 // TODO what if target outside bounds?
@@ -206,18 +209,40 @@ public class Animal implements Runnable {
             }
         }
 
-        if (foundIt) {
+        if (foundIt && !lookingFor.equals("water")) {
 
             stackDijkstra(winnerNode);
+        } else if (foundIt && lookingFor.equals("water")) {
+            stackDijkstra(innerNodes.get(new DijkstraNode(
+                    winnerNode.getCurrentX() + -winnerNode.getXDirection(), winnerNode.getCurrentY() + -winnerNode.getYDirection(), 0, 0, 1)));
+
         }
+
+//        if (foundIt) {
+//
+//            stackDijkstra(winnerNode);
+//        }
 
         // clean up
         innerNodes = new HashMap<>();
-        bufferNodes.clear();
 
 
         moved = false;
 
+    }
+
+    private boolean drink() {
+        boolean waterNear = false;
+        for (int x = -1; x < 2; x++) {
+            for (int y = -1; y < 2; y++) {
+                if (MapHandlerAdvanced.getTerrainID(xPos + x, yPos + y) == 1 || MapHandlerAdvanced.getTerrainID(xPos + x, yPos + y) == 2) {
+                    waterNear = true;
+                    minutesSinceLastDrink = 0;
+                }
+            }
+        }
+
+        return waterNear;
     }
 
     private boolean stackDijkstra(DijkstraNode targetAcquired) {
@@ -337,6 +362,7 @@ public class Animal implements Runnable {
 
         if (wayPoints.isEmpty()) {
 //            System.out.println("using brain");
+
             if (energyAcquiredToday < energyNeededForToday) {
 //                System.out.println("hungry");
                 if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 20) {
@@ -348,6 +374,36 @@ public class Animal implements Runnable {
 
                 }
 
+//                }
+            }
+        }
+        checkForWayPoints();
+//        System.out.println("Number of waypoints: " + wayPoints.size());
+    }
+
+    public void useBrain2() {
+
+        if (wayPoints.isEmpty()) {
+//            System.out.println("using brain");
+            if (minutesSinceLastDrink > 400) {
+                if (!drink()) {
+                    findFoodOrWater("water", 20, 0, 0);
+                }
+            } else {
+
+                if (energyAcquiredToday < energyNeededForToday) {
+//                System.out.println("hungry");
+                    if (MapHandlerAdvanced.getPlantHealth(xPos, yPos) > 20) {
+                        eat();
+
+
+                    } else if (!stuck) {
+                        findFoodOrWater("food", 20, 0, 0);
+
+                    }
+
+//                }
+                }
             }
         }
         checkForWayPoints();
@@ -356,13 +412,10 @@ public class Animal implements Runnable {
 
     @Override
     public void run() {
-//        System.out.println("running");
         if (!Preserve.isNight()) {
-//        System.out.println("animal id:" + id);
             useBrain();
-
         }
-//        System.out.println(id + " " + energy);
+        minutesSinceLastDrink++;
         Preserve.latch.countDown();
 
     }

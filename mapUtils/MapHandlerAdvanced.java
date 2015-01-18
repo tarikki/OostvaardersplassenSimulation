@@ -43,6 +43,7 @@ public class MapHandlerAdvanced {
     public final static int border = 0;
     public final static int water = 1;
     public final static int shallowWater = 2;
+    private static int shallowWaterPixels = 0;
 
 
     private static int amountOfFoodBefore;
@@ -126,6 +127,7 @@ public class MapHandlerAdvanced {
 //            System.out.println();
         }
         System.out.println("Broken pixels: " + brokenPixels);
+        System.out.println("Shallow water " + shallowWaterPixels);
     }
 
     /**
@@ -332,6 +334,7 @@ public class MapHandlerAdvanced {
         for (Terrain terrain : terrains.getTerrains()) {
             if (terrain.compareColor(red, green, blue)) {
                 id = terrain.getId();
+                if (id == 2) shallowWaterPixels ++;
             }
         }
         return id;

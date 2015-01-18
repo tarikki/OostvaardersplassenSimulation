@@ -8,6 +8,8 @@ import java.util.zip.DataFormatException;
 
 /**
  * Created by extradikke on 14/12/14.
+ *
+ * a wrapper class for the weather months, helps loading the files
  */
 public class Months {
 
