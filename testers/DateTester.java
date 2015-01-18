@@ -5,6 +5,8 @@ import org.joda.time.Days;
 
 /**
  * Created by extradikke on 09/01/15.
+ *
+ * A test class to explore the funtionalities of Joda.time
  */
 public class DateTester {
 

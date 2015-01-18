@@ -17,6 +17,8 @@ import java.awt.*;
 
 /**
  * Created by extradikke on 14/12/14.
+ *
+ * a tester class for the JFreeChart library
  */
 public class TemperatureTester extends ApplicationFrame {
 public JFreeChart chart;

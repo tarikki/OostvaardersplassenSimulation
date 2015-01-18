@@ -658,6 +658,14 @@ public class Preserve {
         return dailyTemperatures;
     }
 
+    public static int getBirths() {
+        return births;
+    }
+
+    public static int getDeaths() {
+        return deaths;
+    }
+
     public static HashMap<String, StatisticsStorage> getStatisticsStorage() {
         return statisticsStorage;
     }

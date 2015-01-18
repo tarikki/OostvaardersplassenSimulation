@@ -8,6 +8,8 @@ import java.util.zip.DataFormatException;
 
 /**
  * Created by extradikke on 13/12/14.
+ *
+ * a test class for testing the range-checking capabilities of the RangeChecker
  */
 public class ErrorTester {
 

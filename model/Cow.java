@@ -4,6 +4,8 @@ import java.awt.*;
 
 /**
  * Created by extradikke on 30.12.14.
+ *
+ * Cow class, extends animal class
  */
 public class Cow extends Animal {
 

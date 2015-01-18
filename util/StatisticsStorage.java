@@ -2,6 +2,8 @@ package util;
 
 /**
  * Created by extradikke on 18/01/15.
+ *
+ * A class for storing statistics on a certain species of animals
  */
 public class StatisticsStorage {
     private String name;

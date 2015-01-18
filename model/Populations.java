@@ -7,6 +7,8 @@ import java.util.zip.DataFormatException;
 
 /**
  * Created by extradikke on 30.12.14.
+ *
+ * a wrapper class for the Population class. Helps loading information.
  */
 public class Populations {
     private List<Population>populations;

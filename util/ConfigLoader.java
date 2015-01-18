@@ -1,9 +1,10 @@
 package util;
 
-import org.joda.time.DateTime;
-
 /**
  * Created by extradikke on 10/12/14.
+ *
+ * A class for loading all the information necessary to run the simulation.
+ * Could be replaced by some methods in the static config class so no need to have this extra class.
  */
 public class ConfigLoader {
 

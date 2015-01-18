@@ -2,7 +2,17 @@ package model;
 
 /**
  * Created by extradikke on 30.12.14.
+ *
+ * A class for storing information on a certain animal population.
+ *
+ * Most attributes self-explanatory.
+ *
+ * standardDeviationInPixels defines the gaussian distribution of the animals on the map
+ *
+ *
  */
+
+
 public class Population {
     private String name;
     private int id;

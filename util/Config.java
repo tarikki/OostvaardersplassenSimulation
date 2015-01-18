@@ -11,6 +11,8 @@ import java.util.Arrays;
 
 /**
  * Created by extradikke on 10/12/14.
+ *
+ * A static class for storing all the information necessary to run the simulation
  */
 public class Config {
 

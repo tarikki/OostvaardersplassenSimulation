@@ -8,6 +8,8 @@ import util.IOUtil;
 
 /**
  * Created by extradikke on 06/12/14.
+ *
+ * A test class for the AdvancedMap class
  */
 public class AdvancedMapTester {
 
