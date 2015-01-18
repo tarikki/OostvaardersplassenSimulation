@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 
 /**
  * Created by extradikke on 20-11-14.
- * <p/>
+ *
  * A model for the preserve
  */
 public class Preserve {
@@ -75,9 +75,11 @@ public class Preserve {
     /**
      * Initialize all the values needed in the beginning
      *
-     * @param latitudeInput  latitude of the area in question, used to calculate the amount of daylight
-     * @param startDateInput start date of simulation
-     * @param endDateInput   end date of simulation
+     * @param latitudeInput     latitude of the area in question, used to calculate the amount of daylight
+     * @param startDateInput    start date of simulation
+     * @param endDateInput      end date of simulation
+     * @param numberOfAnimalsToShoot self explanatory
+     * @param dayToShoot        the day to shoot them animals
      */
     public static void setupPreserve(double latitudeInput, DateTime startDateInput, DateTime endDateInput, int numberOfAnimalsToShoot, DateTime dayToShoot) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
@@ -352,6 +354,9 @@ public class Preserve {
 
     }
 
+    /**
+     * A method for marking the animal to be killed
+     */
     public static void shootThemBuggers() {
         Collections.shuffle(animals);
         int animalsShot = 0;
@@ -366,6 +371,7 @@ public class Preserve {
 
     /**
      * This method loops through all the animals and makes them reproduce if they are pregnant
+     * Also checks if there are males, so no miracle births thank you
      */
     private static void reproduce() {
         boolean deerMales = false;
@@ -433,7 +439,10 @@ public class Preserve {
         animals.addAll(youngOnes);
     }
 
-
+    /**
+     * Calculate the time for sunrise and sunset based on the length of the day
+     * @param lengthOfDay   self-explanatory
+     */
     public static void setSunriseAndSunset(double lengthOfDay) {
         System.out.println(lengthOfDay);
         long halfLightHoursDuration = (Hours.hours((int) Math.floor(lengthOfDay)).toStandardDuration().getMillis() / 2);
@@ -450,7 +459,7 @@ public class Preserve {
     }
 
     public static void checkForNight() {
-        //TODO this is not working, must be able to check for times only, not dates
+
         if (currentDate.isAfter(sunset) || currentDate.isBefore(sunrise)) {
             night = true;
         } else {
@@ -530,6 +539,9 @@ public class Preserve {
         return night;
     }
 
+    /**
+     * Load the initial population structure from a config file
+     */
     public static void loadInitialPopulations() {
         JsonReader populationsLoader = null;
         try {
@@ -544,6 +556,9 @@ public class Preserve {
         System.out.println(initialPopulations);
     }
 
+    /**
+     * Load the animals from a config file and initialize them
+     */
     public static void loadAnimals() {
         System.out.println("asdfsd " + Animal.class);
 //        System.out.println(Class.forName());

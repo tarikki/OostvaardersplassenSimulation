@@ -13,6 +13,10 @@ import java.util.*;
 
 /**
  * Created by extradikke on 20-11-14.
+ *
+ * This is the main class for handling information that pertains to the animals
+ *
+ *
  */
 public class Animal implements Runnable {
 
@@ -54,6 +58,9 @@ public class Animal implements Runnable {
 
     }
 
+    /**
+     * This method has to be run after loading the animal class from JSON so everything is instantated
+     */
     public void setupAnimal() {
         dead = false;
         wayPoints = new ArrayDeque<>();
@@ -76,6 +83,13 @@ public class Animal implements Runnable {
 
     }
 
+    /**
+     * Method for finding points of interest on the map and find a path to it. Stores the retrieved information in a waypoint stack
+     * @param lookingFor    "food", "water" or "pixel". The later is used to go to a specific pixel on the map
+     * @param threshHold    the amount of food to look for. It's not worth walking a mile for a tuft of grass
+     * @param targetX       if looking for pixel, this is the x
+ * @param targetY           if looking for pixel, this is the y
+     */
     public void findFoodOrWater(String lookingFor, int threshHold, int targetX, int targetY) {
 
 //        System.out.println("looking for food");
@@ -231,6 +245,10 @@ public class Animal implements Runnable {
 
     }
 
+    /**
+     * if animal near deep or shallow water, drink
+     * @return waternear: a boolean if water near and drinking successful
+     */
     private boolean drink() {
         boolean waterNear = false;
         for (int x = -1; x < 2; x++) {
@@ -245,6 +263,11 @@ public class Animal implements Runnable {
         return waterNear;
     }
 
+    /**
+     * Recursive algorithm for storing the way points in a stack so the animals can retrieve them later
+     * @param targetAcquired the dijkstraNode with the thing being searched for
+     * @return boolean whether operation successful
+     */
     private boolean stackDijkstra(DijkstraNode targetAcquired) {
 
 //        System.out.println(targetAcquired);
@@ -265,37 +288,10 @@ public class Animal implements Runnable {
         return id;
     }
 
-//    public boolean findClosestStraight(MapHandler.ColorCode lookingFor) {
-//        int closestX = 0;
-//        int closestY = 0;
-//        double lowestCost = lineOfSight * lineOfSight;
-//        for (int h = -lineOfSight / 2; h < lineOfSight; h++) {
-//            for (int w = -lineOfSight / 2; w < lineOfSight; w++) {
-//                double cost = Math.pow(xPos + w, 2) + Math.pow(yPos + h, 2);
-//                if (MapHandler.getValue(xPos + w, yPos + h) == lookingFor.getValue()) {
-//                    closestX = xPos + w;
-//                    closestY = yPos + h;
-//                    lowestCost = cost;
-//                }
-//            }
-//        }
-//
-//        int xDistance = closestX-xPos;
-//        int xDirection = xDistance/Math.abs(xDistance);
-//        int yDistance = closestY - yPos;
-//        int yDirection = yDistance/Math.abs(yDistance);
-//        float scale = Math.abs(xDistance)/Math.abs(yDistance);
-//        float y= 0;
-//        float yExtra = 0;
-//        for (int x = 0; x < Math.abs(xDistance); x++) {
-//            y +=scale;
-//            yExtra +=
-//            wayPoints.add(new DijkstraNode(xDirection, yDirection,1));
-//        }
-//        return true;
-//    }
-
-
+    /**
+     * Consume way points and move the animal accordingly
+     * @return boolean whether the operation was a success
+     */
     public boolean checkForWayPoints() {
         boolean result = false;
         if (!wayPoints.isEmpty()) {
@@ -323,6 +319,10 @@ public class Animal implements Runnable {
         return result;
     }
 
+    /**
+     * try to consume 50 units of health from a plant
+     * add the amount eaten to the energyAcquiredToday
+     */
     public void eat() {
 
         int amountEaten = MapHandlerAdvanced.decreasePlantHealth(xPos, yPos, 50);
@@ -353,11 +353,18 @@ public class Animal implements Runnable {
 //        System.out.println("moving!");
     }
 
+    /**
+     * a method called by the tooltip function
+     * @return status of the animal
+     */
     public String report() {
 
-        return "Animal [id = " + this.id + " ,weight " + this.weight + " ,age" + this.age + ", Eaten = " + this.energyAcquiredToday + "/" + this.energyNeededForToday + ", Dead = " + this.dead + "]";
+        return "Animal [id = " + this.id + " , Weight " + this.weight + " , Age=" + this.age + ", Eaten = " + this.energyAcquiredToday + "/" + this.energyNeededForToday + ", Dead = " + this.dead + "]";
     }
 
+    /**
+     * A simple method to determine what the animal does each turn
+     */
     public void useBrain() {
 
         if (wayPoints.isEmpty()) {
@@ -381,6 +388,9 @@ public class Animal implements Runnable {
 //        System.out.println("Number of waypoints: " + wayPoints.size());
     }
 
+    /**
+     * Experimental method that includes drinking. Not used.
+     */
     public void useBrain2() {
 
         if (wayPoints.isEmpty()) {
@@ -410,6 +420,12 @@ public class Animal implements Runnable {
 //        System.out.println("Number of waypoints: " + wayPoints.size());
     }
 
+    /**
+     * The runnable method that is executed in the threadpool of the preserve.
+     *
+     * If it's night, don't do anything
+     *
+     */
     @Override
     public void run() {
         if (!Preserve.isNight()) {
@@ -437,6 +453,10 @@ public class Animal implements Runnable {
         this.yPos = yPos;
     }
 
+
+    /**
+     * Execute all the things that should be run once a day
+     */
     public void dailyCheckUp() {
         //TODO check for death, weight gain and everything else here
         age++;
@@ -451,6 +471,10 @@ public class Animal implements Runnable {
         return (energyAcquiredToday / energyNeededForToday < 1);
     }
 
+    /**
+     * If the animal's age goes beyond a certain day count, move it to the next age group
+     * If it's in the last age group, kill it
+     */
     private void checkForAgeGroup() {
         if (age > ageGroups[ageGroupNumerical].getEndAge()) {
             if (ageGroupNumerical < 2) {
@@ -462,17 +486,23 @@ public class Animal implements Runnable {
         }
     }
 
+    /**
+     * Check whether the animal dies
+     */
     private void dailyDeathLottery() {
-//        System.out.println("Dying?");
+
         Random random = new Random();
         double ticket = random.nextDouble();
         double chanceOfDeath = ageGroups[ageGroupNumerical].getChanceOfDeath();
-//        System.out.println("chance of death: " + chanceOfDeath + " ticket number: " + ticket);
+
         if (ticket < chanceOfDeath) {
             dead = true;
         }
     }
 
+    /**
+     * Calculate how much energy the animal needs per day
+     */
     private void calculateDailyFoodIntake() {
         energyAcquiredToday = 0;
         AgeGroup currentAgeGroup = ageGroups[ageGroupNumerical];
