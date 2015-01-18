@@ -4,6 +4,7 @@ import model.Preserve;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import util.ButtonUtils;
+import util.IOUtil;
 import util.TemperatureChart;
 
 import javax.swing.*;
@@ -83,7 +84,7 @@ public class StatisticsView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    ChartUtilities.saveChartAsPNG(new File("C:/Pelit/extradikke.png"), temperatureChart.getChart(), chartHolder.getWidth(), chartHolder.getHeight());
+                    ChartUtilities.saveChartAsPNG(new File(IOUtil.getConfigDirectory() + "extradikke.png"), temperatureChart.getChart(), chartHolder.getWidth(), chartHolder.getHeight());
 
                 } catch (Exception e1) {
                     e1.printStackTrace();

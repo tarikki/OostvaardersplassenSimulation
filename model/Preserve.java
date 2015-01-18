@@ -5,10 +5,7 @@ import com.google.gson.stream.JsonReader;
 import mapUtils.MapHandlerAdvanced;
 import mapUtils.MonthlyWeather;
 import org.joda.time.*;
-import util.ColorIcon;
-import util.Config;
-import util.DailyEvents;
-import util.IOUtil;
+import util.*;
 
 
 import java.io.FileNotFoundException;
@@ -62,6 +59,7 @@ public class Preserve {
     private static int deaths = 0;
     private static int births = 0;
     private static ArrayList<DailyEvents> allDailyEvents = new ArrayList<>();
+    private static HashMap<String, StatisticsStorage> statisticsStorage;
 
 
     private static double latitude;
@@ -81,6 +79,9 @@ public class Preserve {
      */
     public static void setupPreserve(double latitudeInput, DateTime startDateInput, DateTime endDateInput) {
         //TODO still possible to place animals on top of each other, not a big bug, will fix it if time
+
+        statisticsStorage = new HashMap<>(3);
+
 
         simulationComplete = false;
         allDailyEvents = new ArrayList<>();
@@ -309,6 +310,7 @@ public class Preserve {
                     e.printStackTrace();
                 }
                 deaths++;
+                statisticsStorage.get(animal.getName()).increaseDeaths();
 //                System.out.println("Deaths: " + deaths);
             }
         }
@@ -328,6 +330,14 @@ public class Preserve {
                 }
                 foodBefore = dailyEvent.getAmountOfFood();
             }
+
+            for (Animal animal : animals) {
+                statisticsStorage.get(animal.getName()).increaseNumberAtEnd();
+            }
+
+            for (StatisticsStorage storage : statisticsStorage.values()) {
+                System.out.println(storage);
+            }
         }
 
         System.out.println(allDailyEvents.get(allDailyEvents.size() - 1));
@@ -342,6 +352,7 @@ public class Preserve {
         boolean deerMales = false;
         boolean cowMales = false;
         boolean horseMales = false;
+
         for (Animal animal : animals) {
             if (animal.getClass().getSimpleName().equals("Deer") && animal.isMale()) {
                 deerMales = true;
@@ -382,6 +393,7 @@ public class Preserve {
                         currentMaxId++;
                         births++;
                         youngOnes.add(animal);
+                        statisticsStorage.get(animal.getName()).increaseBirths();
                         String animalClass = animal.getClass().getSimpleName().toLowerCase();
                         try {
                             Method method = allDailyEvents.get(allDailyEvents.size() - 1).getClass().getMethod(animalClass + "BirthsIncrease");
@@ -517,7 +529,10 @@ public class Preserve {
         System.out.println("asdfsd " + Animal.class);
 //        System.out.println(Class.forName());
         Random r = new Random();
+        int statsNumber = 0;
         for (Population population : initialPopulations.getPopulations()) {
+            statisticsStorage.put(population.getName(), new StatisticsStorage(population.getName()));
+            statsNumber++;
             try {
                 System.out.println(Class.forName("model.Animal"));
             } catch (ClassNotFoundException e) {
@@ -548,6 +563,7 @@ public class Preserve {
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
+                    statisticsStorage.get(population.getName()).increaseNumberAtStart();
                     birthDays.add(animal.getBirthDay().withYear(currentDate.getYear()));
                     System.out.println(animal);
                 } catch (FileNotFoundException e) {
@@ -582,6 +598,7 @@ public class Preserve {
                     animal.setupAnimal();
                     currentMaxId++;
                     animals.add(animal);
+                    statisticsStorage.get(population.getName()).increaseNumberAtStart();
                     birthDays.add(animal.getBirthDay().withYear(currentDate.getYear()));
                     System.out.println(animal);
                 } catch (FileNotFoundException e) {
@@ -616,6 +633,7 @@ public class Preserve {
                     currentMaxId++;
                     animals.add(animal);
                     System.out.println(animal);
+                    statisticsStorage.get(population.getName()).increaseNumberAtStart();
                     birthDays.add(animal.getBirthDay().withYear(currentDate.getYear()));
                 } catch (FileNotFoundException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -625,6 +643,10 @@ public class Preserve {
         }
         for (DateTime birthDay : birthDays) {
             System.out.println(birthDay);
+        }
+
+        for (StatisticsStorage storage : statisticsStorage.values()) {
+            System.out.println(storage);
         }
     }
 
@@ -636,5 +658,8 @@ public class Preserve {
         return dailyTemperatures;
     }
 
+    public static HashMap<String, StatisticsStorage> getStatisticsStorage() {
+        return statisticsStorage;
+    }
 
 }

@@ -2,6 +2,8 @@ package mapUtils;
 
 /**
  * Created by extradikke on 14/12/14.
+ *
+ * a class for storing and loading the monthly weather information of the terrain
  */
 public class MonthlyWeather {
     private int month = 1;

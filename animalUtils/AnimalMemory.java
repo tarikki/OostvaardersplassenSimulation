@@ -5,6 +5,8 @@ import util.DijkstraNode;
 
 /**
  * Created by extradikke on 28.12.14.
+ *
+ * A memory class for the animal, not used because of lack of time
  */
 public class AnimalMemory {
     private double[][] potentialFood; // how much food the area could have
