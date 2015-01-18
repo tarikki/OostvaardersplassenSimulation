@@ -4,8 +4,10 @@ import model.Preserve;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import util.ButtonUtils;
+import util.PopulationChangeChart;
 import util.TemperatureChart;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
@@ -15,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Creates the statistics view tab of the program
@@ -22,10 +25,11 @@ import java.io.File;
  */
 public class StatisticsView extends JPanel {
     private JList chartList;
-    private String[] chartNames = {"Temperature", "Chart 2", "Chart 3"};
+    private String[] chartNames = {"Hourly temperature for current day", "Changes in population per animaltype", "Chart 3"};
     private JPanel statisticButtons;
     private JPanel chartHolder;
     private TemperatureChart temperatureChart;
+    private PopulationChangeChart populationchangeChart;
     private MainView.GUI gui;
 
     public BufferedImage image;
@@ -37,7 +41,6 @@ public class StatisticsView extends JPanel {
         this.setLayout(new BorderLayout());
 
         this.gui = gui;
-
 
 
         createStatisticButtons();
@@ -64,10 +67,9 @@ public class StatisticsView extends JPanel {
     }
 
 
-    public void createCharts()
-    {
+    public void createCharts() {
         temperatureChart = new TemperatureChart("Temperatures");
-
+        populationchangeChart = new PopulationChangeChart();
         chartHolder.add(test);
         image = temperatureChart.getChart().createBufferedImage(chartHolder.getWidth(), chartHolder.getHeight());
     }
@@ -83,7 +85,7 @@ public class StatisticsView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    ChartUtilities.saveChartAsPNG(new File("C:/Pelit/extradikke.png"), temperatureChart.getChart(), chartHolder.getWidth(), chartHolder.getHeight());
+                   saveChart();
 
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -92,7 +94,11 @@ public class StatisticsView extends JPanel {
         });
 
 
+    }
 
+    public void saveChart() throws IOException {
+        File f = new File("C:/Pelit/MyFile.png");
+        ImageIO.write(image, "PNG", f);
     }
 
     // TODO add mouselisteners to each item in list and make them switch between charts
@@ -117,7 +123,7 @@ public class StatisticsView extends JPanel {
                             test.setIcon(null);
                             createCharts();
 
-                            temperatureChart.updatestats();
+
                             image = temperatureChart.getChart().createBufferedImage(chartHolder.getWidth(), chartHolder.getHeight());
                             chartHolder.repaint();
 
@@ -129,12 +135,18 @@ public class StatisticsView extends JPanel {
                             break;
                         case 1:
                             // the user selected the 2nd item in the list; display the appropriate chart
+                            createCharts();
                             test.setIcon(null);
+                            image = populationchangeChart.getChart().createBufferedImage(chartHolder.getWidth(), chartHolder.getHeight());
+                            chartHolder.repaint();
+
+                            test.setIcon(new ImageIcon(image));
+                            chartHolder.repaint();
                             gui.pack();
                             break;
                         default:
                             /// Do something here if nothing is selected. Maybe display the 1st one by default??
-gui.pack();
+                            gui.pack();
                             break;
                     }
                 } else {
