@@ -8,6 +8,7 @@ import org.joda.time.Days;
 import util.ButtonUtils;
 import util.ColorIcon;
 import util.Config;
+import util.StatisticsStorage;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -286,7 +287,7 @@ public class MapView extends JPanel {
     {
 
         if (Preserve.isSimulationComplete() && !isFinished) {
-            JOptionPane.showMessageDialog(this.getRootPane(), "The simulation successfully finished", "Simulation complete", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this.getRootPane(), "The simulation successfully finished", "Simulation complete", JOptionPane.INFORMATION_MESSAGE);
             isFinished = true;
             Main.timer.cancel();
             Main.timer2.cancel();
@@ -307,6 +308,8 @@ public class MapView extends JPanel {
         private JLabel birthDeathRatio;
         private JLabel temperature;
         private JLabel nightOrDay;
+        private JLabel startingDate;
+        private JLabel endingDate;
 
 
         protected JLabel cow;
@@ -346,8 +349,11 @@ public class MapView extends JPanel {
 
             createStats();
 
-
+            this.add(startingDate);
+            this.add(Box.createVerticalStrut(10));
             this.add(currentDate);
+            this.add(Box.createVerticalStrut(10));
+            this.add(endingDate);
             this.add(Box.createVerticalStrut(10));
             this.add(currentTime);
             this.add(Box.createVerticalStrut(10));
@@ -401,6 +407,8 @@ public class MapView extends JPanel {
             temperature = new JLabel();
             currentTime = new JLabel();
             legendTitle = new JLabel();
+            startingDate = new JLabel();
+            endingDate = new JLabel();
         }
 
         public void updateStats() {
@@ -414,11 +422,21 @@ public class MapView extends JPanel {
             births.setText("# of births:");
             deaths.setText("# of deaths:");
             birthDeathRatio.setText("Births / deaths:");
+            startingDate.setText("Starting date: " + Preserve.getStartDate().toString("dd/MM/yyyy"));
             currentDate.setText("Current date: " + Preserve.getCurrentDate().toString("dd/MM/yyyy"));
+            endingDate.setText("Ending date: " + Preserve.getEndDate().toString("dd/MM/yyyy"));
             currentTime.setText("Current time: " + Preserve.getCurrentDate().toLocalTime().toString().substring(0, 5));
             timeElapsed.setText("Time elapsed: " + Days.daysBetween(Preserve.getStartDate().toLocalDate(), Preserve.getCurrentDate().toLocalDate()).getDays() + " days");
-            nightOrDay.setText("It is currently: ");
             temperature.setText("Temperature: " + String.valueOf(Preserve.getCurrentTemperature()).substring(0, 3) + " " + DEGREE + "C");
+
+            if (Preserve.isNight())
+            {
+                nightOrDay.setText("It is currently: " + "Night");
+            }
+            else
+            {
+                nightOrDay.setText("It is currently: " + "Day");
+            }
         }
 
 

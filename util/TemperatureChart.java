@@ -11,7 +11,14 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.Hour;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.joda.time.Hours;
 
 import java.awt.*;
@@ -28,70 +35,50 @@ import java.io.IOException;
 public class TemperatureChart {
 
 
-
+    public TimeSeriesCollection data;
+    public TimeSeries series;
     public JFreeChart chart;
-    public DefaultCategoryDataset dataset;
+    public TimeSeriesCollection dataset;
     private double[] dailyTemps;
 
 
-
-
-
     public TemperatureChart(final String title) {
-
-
-        dataset = createDataset();
-        chart = createChart(dataset);
         dailyTemps = Preserve.getDailyTemperatures();
+        series = new TimeSeries("Hourly temperature in celsius", Hour.class);
+        final Day today = new Day();
 
-    }
-
-    // TODO try to implement as XYChart instead if there's time. Mainly works as a blueprint for other charts / practice scenario at this point
-    private DefaultCategoryDataset createDataset() {
-
-
-
-        dataset = new DefaultCategoryDataset();
-
-      for (int i = 0; i<24; i++)
-        {
-            dataset.addValue(null, "Temperature", i + ":00");
-
-
-
+        for (int i = 0; i < dailyTemps.length; i++) {
+            series.add(new Hour(i, today), dailyTemps[i]);
         }
 
+        dataset = new TimeSeriesCollection(series);
 
 
-        return dataset;
+        chart = createChart();
+
 
     }
 
 
-    /// HOURLY TEMPERATURE
-    private JFreeChart createChart(final DefaultCategoryDataset dataset) {
+    private JFreeChart createChart() {
         final String chartTitle = "Hourly temperature for " + Preserve.getCurrentDate().toString("dd/MM/yyyy");
-        this.chart = ChartFactory.createLineChart(chartTitle, "Hour of day", "Temperature in celsius", dataset, PlotOrientation.VERTICAL,
+        final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+                chartTitle,
+                "Time",
+                "Temperature in celsius",
+                dataset,
                 true,
                 true,
-                false);
+                false
+        );
 
 
-
-        CategoryPlot plot = (CategoryPlot) chart.getPlot();
-        plot.setDataset(dataset);
-        if (chart != null)
-        {
+        if (chart != null) {
             chart.fireChartChanged();
         }
-        plot.setBackgroundPaint(Color.white);
-        plot.setRangeGridlinePaint(Color.black);
 
-
-        /// For X-axis labels so we dont get "..." if value is over 3 characters
-        plot.getDomainAxis().setMaximumCategoryLabelWidthRatio(10);
-
-
+        final XYPlot plot = chart.getXYPlot();
+        plot.getDomainAxis().setAutoRange(false);
         return chart;
 
 
@@ -99,19 +86,6 @@ public class TemperatureChart {
 
     public JFreeChart getChart() {
         return chart;
-    }
-
-
-    // Get hourly temps per day
-    public void updatestats()
-    {
-
-for (int i = 0; i < dailyTemps.length; i++) {
-    dataset.addValue(dailyTemps[i], "Temperature", i + ":00");
-}
-
-
-
     }
 
 
